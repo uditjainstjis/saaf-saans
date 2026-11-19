@@ -189,7 +189,11 @@ describe('the registry', () => {
     for (const profile of [FAMILY, COMMUNITY]) {
       for (const air of airs) {
         for (const rec of buildPlan(situation(profile, air)).recommendations) {
-          expect(Math.min(...Object.values(rec.impact)), rec.id).toBeGreaterThanOrEqual(0);
+          const { inhaledAvoidedUg, notEmittedG, co2eSavedKg } = rec.impact;
+          expect(
+            Math.min(inhaledAvoidedUg, notEmittedG, co2eSavedKg),
+            rec.id,
+          ).toBeGreaterThanOrEqual(0);
           expect(rec.calculation, rec.id).not.toBe('');
           expect(rec.factorIds.length, rec.id).toBeGreaterThan(0);
         }

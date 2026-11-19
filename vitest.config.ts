@@ -44,7 +44,7 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'istanbul',
-      reporter: ['text', 'json-summary'],
+      reporter: [['text', { skipFull: false }], 'json-summary'],
       include: ['src/**/*.ts'],
       thresholds: { statements: 100, branches: 100, functions: 100, lines: 100 },
     },

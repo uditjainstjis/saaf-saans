@@ -39,20 +39,14 @@ describe('checkReply', () => {
 
   it('rejects a missing, an unknown and a repeated recommendation id', () => {
     const reply = goodReply(brief);
-    const [first, second, ...rest] = reply.explanations;
-    const tampered = {
-      ...reply,
-      explanations: [
-        { id: first?.id ?? '', text: first?.text ?? '' },
-        { id: first?.id ?? '', text: first?.text ?? '' },
-        { id: 'buy-our-purifier', text: second?.text ?? '' },
-        ...rest,
-      ],
-    };
+    const renamed = reply.explanations.map((e, i) =>
+      i === 1 ? { ...e, id: 'buy-our-purifier' } : e,
+    );
+    const tampered = { ...reply, explanations: [...renamed, ...reply.explanations.slice(0, 1)] };
     expect(issuesOf(tampered)).toEqual([
-      `No explanation for recommendation id "${second?.id ?? ''}".`,
+      'No explanation for recommendation id "air-at-cleanest-hour".',
       '"buy-our-purifier" is not a recommendation id in the FACTS.',
-      `More than one explanation for id "${first?.id ?? ''}".`,
+      'More than one explanation for id "shift-outdoor-time".',
     ]);
   });
 

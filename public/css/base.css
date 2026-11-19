@@ -67,10 +67,6 @@ a:hover {
   outline-offset: 3px;
   border-radius: 4px;
 }
-main:focus,
-section:focus {
-  outline: none;
-}
 
 .skip-link {
   position: absolute;
