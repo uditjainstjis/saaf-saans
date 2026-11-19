@@ -1,0 +1,18 @@
+node_modules/
+.wrangler/
+dist/
+coverage/
+.dev.vars
+.env
+.DS_Store
+*.log
+worker-configuration.d.ts
+
+# Generated from src/ by scripts/build-assets.mjs (npm run generate), so they
+# cannot drift from their source.
+public/js/shared/
+public/_headers
+
+# Local working notes, never part of the project.
+.claude/
+CLAUDE.md

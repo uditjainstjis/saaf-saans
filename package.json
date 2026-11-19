@@ -1,0 +1,56 @@
+{
+  "name": "saaf-saans",
+  "version": "1.0.0",
+  "description": "Saaf Saans (clean breath): a GenAI-powered urban air quality assistant for families and communities facing severe winter smog. Cloudflare Workers + Workers AI + Open-Meteo.",
+  "scripts": {
+    "build": "node scripts/build-assets.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "generate": "wrangler types && npm run build",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.dom.json && tsc --noEmit -p tsconfig.app.json",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "precheck": "npm run generate",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test"
+  },
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.3",
+    "@vitest/coverage-istanbul": "^4.1.12",
+    "axe-core": "^4.13.0",
+    "eslint": "^10.10.0",
+    "globals": "^17.13.0",
+    "jsdom": "^30.0.1",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^4.1.12",
+    "wrangler": "^4.131.1"
+  },
+  "dependencies": {
+    "hono": "^4.13.7",
+    "zod": "4.6.7"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "overrides": {
+    "sharp": "0.35.5",
+    "undici": "7.30.1",
+    "zod": "4.6.7"
+  },
+  "allowScripts": {
+    "workerd@1.20260815.1": true,
+    "esbuild@0.28.1": true,
+    "esbuild@0.28.2": true,
+    "workerd@1.20261019.1": true,
+    "fsevents": false
+  }
+}

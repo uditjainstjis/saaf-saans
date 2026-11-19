@@ -1,0 +1,9 @@
+coverage
+.wrangler
+node_modules
+worker-configuration.d.ts
+package-lock.json
+public/js/shared
+public/_headers
+.claude
+CLAUDE.md
