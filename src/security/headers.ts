@@ -100,6 +100,10 @@ const SECURITY_HEADERS: HeaderMap = {
 
 /** Headers for static paths beyond the policy every path gets. */
 const STATIC_RULES: Readonly<Record<string, HeaderMap>> = {
+  // Styles and scripts are small and change only on deploy: ten minutes fresh,
+  // then served stale while the edge revalidates, so repeat visits skip the wait.
+  '/css/*': { 'cache-control': 'public, max-age=600, stale-while-revalidate=86400' },
+  '/js/*': { 'cache-control': 'public, max-age=600, stale-while-revalidate=86400' },
   // RFC 9116: plain text, so it is machine-readable, and cached for an hour
   // only, so the contact details a reporter reads are current.
   '/.well-known/*': {

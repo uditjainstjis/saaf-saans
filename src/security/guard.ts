@@ -56,8 +56,9 @@ const RULES: Rule[] = [
   },
   {
     kind: 'safety-steering',
+    // A question ("tell me if the air is safe") is not steering, so `if` and `whether` are let through.
     detail: 'Text telling an AI system what to say about the air.',
-    re: /\b(?:say|state|tell|report|claim|declare|confirm)\b[^.\n]{0,40}\b(?:air|aqi|pollution|smog)\b[^.\n]{0,20}\b(?:is|are)\s+(?:safe|fine|good|clean|healthy|harmless)\b/gi,
+    re: /\b(?:say|state|tell|report|claim|declare|confirm)\b(?![^.\n]{0,40}\b(?:if|whether)\b)[^.\n]{0,40}\b(?:air|aqi|pollution|smog)\b[^.\n]{0,20}\b(?:is|are)\s+(?:safe|fine|good|clean|healthy|harmless)\b/gi,
   },
   {
     kind: 'suppression',
