@@ -95,3 +95,21 @@ export const POLLUTANT_LABEL: Readonly<Record<Pollutant, string>> = {
   ozone: 'Ozone',
   sulphur_dioxide: 'Sulphur dioxide',
 };
+
+/** US EPA PM2.5 breakpoints (2024): concentration ranges in µg/m³ and the index range each maps to. */
+const PM25_BREAKPOINTS: readonly (readonly [number, number, number, number])[] = [
+  [0, 9, 0, 50],
+  [9, 35.4, 50, 100],
+  [35.4, 55.4, 100, 150],
+  [55.4, 125.4, 150, 200],
+  [125.4, 225.4, 200, 300],
+  [225.4, 325.4, 300, 500],
+];
+
+/** The US AQI for a PM2.5 concentration, by linear interpolation within its breakpoint range; 500 above the scale. */
+export function aqiFromPm25(pm25: number): number {
+  const range = PM25_BREAKPOINTS.find(([, high]) => pm25 <= high);
+  if (!range) return 500;
+  const [low, high, indexLow, indexHigh] = range;
+  return Math.round(indexLow + ((pm25 - low) / (high - low)) * (indexHigh - indexLow));
+}
