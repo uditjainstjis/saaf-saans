@@ -13,8 +13,10 @@ import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
  * `dom` runs in jsdom on Node for what workerd cannot host: axe-core, the
  * front-end modules in public/js/, and checks that read shipped files off disk.
  *
- * Coverage is measured over every TypeScript module in src/ and gated at 100%
- * for statements, branches, functions and lines: below that, `npm test` fails.
+ * Coverage is measured over every TypeScript module in src/ and every
+ * front-end module in public/js/ (the compiled copy of src/shared/ aside, which
+ * is measured as its source), and gated at 100% for statements, branches,
+ * functions and lines: below that, `npm test` fails.
  */
 export default defineConfig({
   test: {
@@ -39,13 +41,16 @@ export default defineConfig({
           name: 'dom',
           environment: 'jsdom',
           include: ['test/**/*.dom.test.ts'],
+          // axe-core audits a full page per test; on a loaded CI runner that can pass five seconds.
+          testTimeout: 30_000,
         },
       },
     ],
     coverage: {
       provider: 'istanbul',
       reporter: [['text', { skipFull: false }], 'json-summary'],
-      include: ['src/**/*.ts'],
+      include: ['src/**/*.ts', 'public/js/**/*.js'],
+      exclude: ['public/js/shared/**'],
       thresholds: { statements: 100, branches: 100, functions: 100, lines: 100 },
     },
   },

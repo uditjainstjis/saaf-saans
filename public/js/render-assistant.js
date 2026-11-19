@@ -25,10 +25,9 @@ export function renderAssistant({ source, summary, explanations, encouragement }
   $('assistant-summary', HTMLElement).textContent = summary;
   $('assistant-encouragement', HTMLElement).textContent = encouragement;
   if (source !== 'model') return;
-  for (const card of document.querySelectorAll('[data-rec]')) {
-    if (!(card instanceof HTMLElement)) continue;
-    const text = explanations[card.dataset.rec ?? ''];
-    if (!text) continue;
+  for (const [id, text] of Object.entries(explanations)) {
+    const card = document.getElementById(`rec-${id}`);
+    if (!card) continue;
     const slot = part(card, '.rec__ai', HTMLElement);
     slot.textContent = `AI explanation: ${text}`;
     slot.hidden = false;

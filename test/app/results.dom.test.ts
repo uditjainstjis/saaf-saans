@@ -88,12 +88,12 @@ describe('the direct impact of your choices', () => {
 
   it('files each recommendation under its heading from the brief, with its impact and working', async () => {
     await run(ok(planReply()), ok(await modelNarrative()));
-    expect(cards('routine').map((c) => c.dataset.rec)).toEqual([
+    expect(cards('routine').map((c) => c.id.slice(4))).toEqual([
       'shift-outdoor-time',
       'air-at-cleanest-hour',
     ]);
     expect(cards('indoor')).toHaveLength(3);
-    expect(cards('alternative').map((c) => c.dataset.rec)).toEqual(['switch-commute']);
+    expect(cards('alternative').map((c) => c.id.slice(4))).toEqual(['switch-commute']);
     const [shift] = cards('routine');
     expect(partText(shift, 'title')).toBe('Move outdoor time to 3 pm');
     expect(partText(shift, 'impact')).toBe(
@@ -107,7 +107,7 @@ describe('the direct impact of your choices', () => {
 
   it('labels assumptions as assumptions', async () => {
     await run(ok(planReply()), ok(await modelNarrative()));
-    const seal = cards('indoor').find((c) => c.dataset.rec === 'seal-gaps');
+    const seal = cards('indoor').find((c) => c.id.slice(4) === 'seal-gaps');
     expect(seal?.querySelector('.rec__factors')?.textContent).toContain('Assumption: ');
   });
 
@@ -123,7 +123,7 @@ describe('the direct impact of your choices', () => {
 
   it('lists community recommendations for a community', async () => {
     await run(ok(planReply(COMMUNITY)), ok(await modelNarrative(COMMUNITY)));
-    expect(cards('alternative').map((c) => c.dataset.rec)).toContain('stop-waste-burning');
+    expect(cards('alternative').map((c) => c.id.slice(4))).toContain('stop-waste-burning');
   });
 });
 
@@ -139,7 +139,7 @@ describe('your GenAI-powered assistant', () => {
   });
 
   it('leaves a card as it is when the model had nothing for it', async () => {
-    const narrative = { ...(await modelNarrative()), explanations: {} };
+    const narrative = { ...(await modelNarrative()), explanations: { 'no-such-card': 'Ignored.' } };
     await run(ok(planReply()), ok(narrative));
     expect(cards('routine')[0]?.querySelector<HTMLElement>('.rec__ai')?.hidden).toBe(true);
   });

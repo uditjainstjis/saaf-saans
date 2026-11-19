@@ -7,14 +7,14 @@ import { CATEGORIES, formatNumber } from './shared/constants.js';
 /** @typedef {import('../../src/http/present').RecommendationView} RecommendationView */
 
 /**
- * One recommendation card. Its id is kept on the element so the assistant's
- * explanation can be added to it when it arrives.
+ * One recommendation card. Its element id carries the recommendation id, so
+ * the assistant's explanation can be added to it when it arrives.
  * @param {RecommendationView} rec
  * @returns {HTMLElement}
  */
 function card(rec) {
   const el = cloneTemplate($('rec-tpl', HTMLTemplateElement));
-  el.dataset.rec = rec.id;
+  el.id = `rec-${rec.id}`;
   part(el, '.rec__title', HTMLElement).textContent = rec.title;
   part(el, '.rec__status', HTMLElement).hidden = rec.status !== 'keep';
   part(el, '.rec__action', HTMLElement).textContent = rec.action;

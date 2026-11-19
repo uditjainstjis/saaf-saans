@@ -6,7 +6,7 @@
 /**
  * Server-side a model call is capped at 15 s and tried at most twice, so the
  * assistant can take 30 s; the client allows 35.
- * @type {Readonly<Record<string, number>>}
+ * @type {Readonly<Record<'/api/plan' | '/api/assistant', number>>}
  */
 const TIMEOUT_MS = { '/api/plan': 12_000, '/api/assistant': 35_000 };
 
@@ -63,7 +63,7 @@ export async function postJson(path, body) {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(TIMEOUT_MS[path] ?? 12_000),
+      signal: AbortSignal.timeout(TIMEOUT_MS[path]),
     });
   } catch {
     throw new ApiError([

@@ -112,6 +112,25 @@ describe('errors', () => {
     expect($('status').textContent).toBe('');
   });
 
+  it('marks a field that has no message slot of its own, such as a checkbox', async () => {
+    const issues = [{ field: 'purifier', message: 'Air purifier: choose yes or no.' }];
+    stubFetch({ status: 400, body: { issues } });
+    input('place').value = 'Delhi';
+    submit();
+    await settled();
+    expect(input('purifier').getAttribute('aria-invalid')).toBe('true');
+    expect(errorLinks()).toEqual(['Air purifier: choose yes or no.']);
+  });
+
+  it('reports a reply it cannot render as a general problem, not a blank page', async () => {
+    const hollow = { place: {}, air: {}, totals: {}, recommendations: [], findings: [] };
+    stubFetch(ok(hollow));
+    input('place').value = 'Delhi';
+    submit();
+    await settled();
+    expect(errorLinks()).toEqual(['Something went wrong. Please try again.']);
+  });
+
   it('survives a reply that is not JSON at all', async () => {
     vi.stubGlobal(
       'fetch',
