@@ -31,10 +31,20 @@ export function buildPlan(
   return { recommendations, totals: totalOf(recommendations) };
 }
 
+/** A total dose, the people it is shared by, and the air it is compared with. */
+export interface DoseInContext {
+  doseUg: number;
+  people: number;
+  /** Today's outdoor PM2.5, µg/m³. */
+  pm25: number;
+  /** Air breathed at rest, m³/h. */
+  restRate: number;
+}
+
 /**
- * A dose in µg restated as minutes of breathing today's outdoor air at rest,
- * so a number of micrograms means something to a person.
+ * A dose restated as minutes of breathing today's outdoor air at rest, per
+ * person on average, so a number of micrograms means something to a person.
  */
-export function asOutdoorMinutes(doseUg: number, pm25: number, restRate: number): number {
-  return pm25 > 0 ? Math.round((doseUg / (pm25 * restRate)) * 60) : 0;
+export function asOutdoorMinutes({ doseUg, people, pm25, restRate }: DoseInContext): number {
+  return pm25 > 0 ? Math.round((doseUg / people / (pm25 * restRate)) * 60) : 0;
 }

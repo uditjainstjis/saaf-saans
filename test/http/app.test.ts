@@ -34,8 +34,8 @@ describe('POST /api/plan', () => {
     expect(body.recommendations[0]?.impactText).toContain('468 µg');
     expect(body.recommendations[0]?.factors[0]?.kind).toBe('published');
     expect(body.totals.inhaledAvoidedUg).toBe(1593.2);
-    // 1593.2 µg ÷ (149 µg/m³ × 0.25 m³/h) × 60
-    expect(body.totals.outdoorMinutes).toBe(2566);
+    // 1593.2 µg ÷ 4 people ÷ (149 µg/m³ × 0.25 m³/h) × 60
+    expect(body.totals.outdoorMinutes).toBe(642);
     expect(body.findings).toEqual([]);
   });
 

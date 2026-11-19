@@ -40,7 +40,7 @@ function renderTotals(totals) {
   $('total-emitted', HTMLElement).textContent = `${formatNumber(totals.notEmittedG)} g a week`;
   $('total-co2e', HTMLElement).textContent = `${formatNumber(totals.co2eSavedKg)} kg CO2e a week`;
   $('total-equivalent', HTMLElement).textContent =
-    `That much PM2.5 is what one person at rest would breathe in over ${formatNumber(totals.outdoorMinutes)} minutes outdoors in today’s air.`;
+    `Per person, that is as much PM2.5 as ${formatNumber(totals.outdoorMinutes)} minutes of breathing today’s outdoor air at rest.`;
 }
 
 /**

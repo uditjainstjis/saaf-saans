@@ -62,7 +62,7 @@ describe('rulePlanGenerator', () => {
     const narrative = await rulePlanGenerator.generate(brief);
     expect(narrative.source).toBe('rules');
     expect(narrative.summary).toBe(
-      `Air in Delhi is unhealthy right now, with a US AQI of 186. ${brief.advisory} The 6 changes below would keep about 1,593.2 µg of PM2.5 a day out of your lungs and save about 32.6 kg CO2e a week.`,
+      `Air in Delhi is unhealthy right now, with a US AQI of 186. ${brief.advisory} The 6 changes below would keep everyone in the plan from breathing in about 1,593.2 µg of PM2.5 a day, and save about 32.6 kg CO2e a week.`,
     );
     expect(narrative.explanations['switch-commute']).toBe(
       'Direct impact: about 32.6 kg CO2e a week not emitted.',

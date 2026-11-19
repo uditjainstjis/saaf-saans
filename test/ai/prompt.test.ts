@@ -23,7 +23,9 @@ describe('factsOf', () => {
       'air purifier: no; sensitive people (asthma, heart or lung disease): no',
     );
     for (const rec of brief.plan.recommendations) expect(facts).toContain(`- id: ${rec.id} |`);
-    expect(facts).toContain('about 468 µg of PM2.5 a day kept out of your lungs');
+    expect(facts).toContain(
+      'about 468 µg of PM2.5 a day not breathed in, counting everyone in the plan',
+    );
   });
 
   it('describes a community, and says when the air is typical rather than live', () => {

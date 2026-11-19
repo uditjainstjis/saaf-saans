@@ -64,12 +64,12 @@ describe('buildPlan', () => {
 
 describe('asOutdoorMinutes', () => {
   it('restates a dose as minutes of breathing outdoor air at rest', () => {
-    // 100 µg ÷ (200 µg/m³ × 0.25 m³/h) = 2 h
-    expect(asOutdoorMinutes(100, 200, 0.25)).toBe(120);
+    // 400 µg ÷ 4 people ÷ (200 µg/m³ × 0.25 m³/h) = 2 h each
+    expect(asOutdoorMinutes({ doseUg: 400, people: 4, pm25: 200, restRate: 0.25 })).toBe(120);
   });
 
   it('is zero in perfectly clean air, where no amount of breathing reaches the dose', () => {
-    expect(asOutdoorMinutes(100, 0, 0.25)).toBe(0);
+    expect(asOutdoorMinutes({ doseUg: 100, people: 1, pm25: 0, restRate: 0.25 })).toBe(0);
   });
 });
 
@@ -83,7 +83,7 @@ describe('impactSentence', () => {
         impact: { inhaledAvoidedUg: 468, notEmittedG: 137.2, co2eSavedKg: 20.3 },
       }),
     ).toBe(
-      'Direct impact: about 468 µg of PM2.5 a day kept out of your lungs, and about 137.2 g of PM2.5 a week kept out of the neighbourhood’s air, and about 20.3 kg CO2e a week not emitted.',
+      'Direct impact: about 468 µg of PM2.5 a day not breathed in, counting everyone in the plan, and about 137.2 g of PM2.5 a week kept out of the neighbourhood’s air, and about 20.3 kg CO2e a week not emitted.',
     );
   });
 

@@ -12,7 +12,9 @@ import type { Impact, Recommendation } from './types';
 function clauses(impact: Impact): string[] {
   const parts: string[] = [];
   if (impact.inhaledAvoidedUg > 0) {
-    parts.push(`about ${n(impact.inhaledAvoidedUg)} µg of PM2.5 a day kept out of your lungs`);
+    parts.push(
+      `about ${n(impact.inhaledAvoidedUg)} µg of PM2.5 a day not breathed in, counting everyone in the plan`,
+    );
   }
   if (impact.notEmittedG > 0) {
     parts.push(

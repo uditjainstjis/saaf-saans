@@ -83,7 +83,7 @@ describe('the direct impact of your choices', () => {
     expect($('total-inhaled').textContent).toBe('1,593.2 µg a day');
     expect($('total-emitted').textContent).toBe('0 g a week');
     expect($('total-co2e').textContent).toBe('32.6 kg CO2e a week');
-    expect($('total-equivalent').textContent).toContain('2,566 minutes outdoors');
+    expect($('total-equivalent').textContent).toContain('642 minutes of breathing');
   });
 
   it('files each recommendation under its heading from the brief, with its impact and working', async () => {
@@ -97,7 +97,7 @@ describe('the direct impact of your choices', () => {
     const [shift] = cards('routine');
     expect(partText(shift, 'title')).toBe('Move outdoor time to 3 pm');
     expect(partText(shift, 'impact')).toBe(
-      'Direct impact: about 468 µg of PM2.5 a day kept out of your lungs.',
+      'Direct impact: about 468 µg of PM2.5 a day not breathed in, counting everyone in the plan.',
     );
     expect(partText(shift, 'calc')).toBe('(180 − 30 µg/m³) × 1.56 m³/h × 0.5 h × 4 people');
     expect(partText(shift, 'factors')).toContain(

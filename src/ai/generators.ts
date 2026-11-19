@@ -64,7 +64,7 @@ export const rulePlanGenerator: PlanGenerator = {
     const fresh = plan.recommendations.filter((r) => r.status === 'new').length;
     const narrative: Narrative = {
       source: 'rules',
-      summary: `Air in ${place.name} is ${bandFor(air.aqi).label.toLowerCase()} right now, with a US AQI of ${n(air.aqi)}. ${advisory} The ${n(fresh)} changes below would keep about ${n(plan.totals.inhaledAvoidedUg)} µg of PM2.5 a day out of your lungs and save about ${n(plan.totals.co2eSavedKg)} kg CO2e a week.`,
+      summary: `Air in ${place.name} is ${bandFor(air.aqi).label.toLowerCase()} right now, with a US AQI of ${n(air.aqi)}. ${advisory} The ${n(fresh)} changes below would keep everyone in the plan from breathing in about ${n(plan.totals.inhaledAvoidedUg)} µg of PM2.5 a day, and save about ${n(plan.totals.co2eSavedKg)} kg CO2e a week.`,
       explanations: Object.fromEntries(plan.recommendations.map((r) => [r.id, impactSentence(r)])),
       encouragement:
         'Start with the one step that is easiest today; clean air adds up breath by breath.',

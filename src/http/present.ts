@@ -3,6 +3,7 @@ import { impactSentence } from '../domain/explain';
 import { FACTORS, factorsFor, type Factor } from '../domain/factors';
 import { clock, outlookFor } from '../domain/forecast';
 import { asOutdoorMinutes } from '../domain/plan';
+import { situationOf } from '../domain/situation';
 import type { HourReading, Impact, Recommendation } from '../domain/types';
 import type { PlanBrief } from '../ports';
 import { scanForInjection, type InjectionFinding } from '../security/guard';
@@ -36,7 +37,7 @@ export interface PlanView {
   };
   advisory: string;
   recommendations: RecommendationView[];
-  /** What the new changes add up to, and that dose restated as minutes of outdoor breathing. */
+  /** What the new changes add up to, and that dose per person restated as minutes of outdoor breathing. */
   totals: Impact & { outdoorMinutes: number };
   findings: InjectionFinding[];
 }
@@ -81,11 +82,12 @@ export function presentPlan(brief: PlanBrief): PlanView {
     })),
     totals: {
       ...plan.totals,
-      outdoorMinutes: asOutdoorMinutes(
-        plan.totals.inhaledAvoidedUg,
-        air.pm25,
-        FACTORS.breathingRest.value,
-      ),
+      outdoorMinutes: asOutdoorMinutes({
+        doseUg: plan.totals.inhaledAvoidedUg,
+        people: situationOf(brief.profile, air).people,
+        pm25: air.pm25,
+        restRate: FACTORS.breathingRest.value,
+      }),
     },
     findings: findingsIn(brief),
   };
