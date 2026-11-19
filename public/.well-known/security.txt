@@ -1,0 +1,8 @@
+# RFC 9116. If you have found a vulnerability in Saaf Saans, this is where to
+# send it. Please do not include real personal details in your report; see SECURITY.md.
+
+Contact: https://github.com/uditjainstjis/saaf-saans/security/advisories/new
+Expires: 2027-11-20T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://saaf-saans.seriouss.workers.dev/.well-known/security.txt
+Policy: https://github.com/uditjainstjis/saaf-saans/blob/main/SECURITY.md

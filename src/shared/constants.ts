@@ -26,7 +26,7 @@ export const COMMUTE_MODES = [
 export type CommuteMode = (typeof COMMUTE_MODES)[number];
 
 /** What the kitchen burns. */
-export const COOKING_FUELS = ['lpg_png', 'electric', 'biomass', 'kerosene'] as const;
+export const COOKING_FUELS = ['lpg_png', 'electric', 'biomass'] as const;
 /** One of {@link COOKING_FUELS}. */
 export type CookingFuel = (typeof COOKING_FUELS)[number];
 
@@ -62,7 +62,10 @@ export const LIMITS = {
   outdoorMinutes: { min: 0, max: 240 },
 } as const;
 
-/** Display labels, worded once for the form, the results and the prompt. */
+/**
+ * Display labels, worded once for the form, the results and the prompt. Every
+ * use indexes a group by its enum type, so a missing label is a type error.
+ */
 export const LABELS = {
   mode: { family: 'My family', community: 'My community' },
   commute: {
@@ -78,7 +81,6 @@ export const LABELS = {
     lpg_png: 'LPG or piped gas',
     electric: 'Electric or induction',
     biomass: 'Wood, dung or coal',
-    kerosene: 'Kerosene',
   },
   homeType: {
     apartment: 'Apartment above the ground floor',
@@ -100,22 +102,14 @@ export const LABELS = {
     indoor: 'Indoor air quality hacks',
     alternative: 'Sustainable alternatives',
   },
-} as const satisfies {
-  mode: Record<Mode, string>;
-  commute: Record<CommuteMode, string>;
-  cookingFuel: Record<CookingFuel, string>;
-  homeType: Record<HomeType, string>;
-  outdoorTime: Record<OutdoorTime, string>;
-  groupType: Record<GroupType, string>;
-  category: Record<Category, string>;
-};
+} as const;
 
 /** The local hour each habitual outdoor time stands for. */
 export const OUTDOOR_HOUR = { morning: 7, evening: 19 } as const;
 
-const NUMBER = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 1 });
+const NUMBER = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 4 });
 
-/** A number as the page and the Worker both print it: Indian grouping, one decimal at most. */
+/** A number as the page and the Worker both print it: Indian grouping, four decimals at most. */
 export const formatNumber = (n: number): string => NUMBER.format(n);
 
 /**

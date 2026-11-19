@@ -47,8 +47,3 @@ export interface Trip {
 export function weeklyKm({ oneWayKm, daysPerWeek, travellers }: Trip): number {
   return oneWayKm * 2 * daysPerWeek * travellers;
 }
-
-/** Greenhouse gas from a week of trips, kg CO2e, at `perKm` kg CO2e per kilometre. */
-export function weeklyTravelCo2e(trip: Trip, perKm: number): number {
-  return weeklyKm(trip) * perKm;
-}

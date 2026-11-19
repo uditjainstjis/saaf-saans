@@ -1,5 +1,5 @@
 import { LABELS, formatNumber as n, type CommuteMode } from '../../shared/constants';
-import { weeklyKm } from '../exposure';
+import { round1, weeklyKm } from '../exposure';
 import { FACTORS, type FactorId } from '../factors';
 import type { Situation } from '../situation';
 import { audience, impact, type Strategy } from './strategy';
@@ -111,7 +111,7 @@ const stopWasteBurning: Strategy = {
         notEmittedG: kg * FACTORS.wasteBurnPm.value,
         co2eSavedKg: kg * FACTORS.wasteBurnCo2.value,
       }),
-      calculation: `${n(kg)} kg burned a week × ${n(FACTORS.wasteBurnPm.value)} g PM2.5 per kg, and × ${n(FACTORS.wasteBurnCo2.value)} kg CO2 per kg`,
+      calculation: `${n(round1(kg))} kg burned a week × ${n(FACTORS.wasteBurnPm.value)} g PM2.5 per kg, and × ${n(FACTORS.wasteBurnCo2.value)} kg CO2 per kg`,
       factorIds: ['wastePerHundred', 'wasteBurnPm', 'wasteBurnCo2'],
     };
   },

@@ -1,5 +1,5 @@
 import { formatNumber as n } from '../../shared/constants';
-import { cleanerReduction, inhaledDose } from '../exposure';
+import { cleanerReduction, inhaledDose, round1 } from '../exposure';
 import { FACTORS, type FactorId } from '../factors';
 import { clock } from '../forecast';
 import type { Situation } from '../situation';
@@ -72,7 +72,7 @@ const cleanAirRoom: Strategy = {
       title: room.title,
       action: room.action,
       impact: impact({ inhaledAvoidedUg: dose }),
-      calculation: `${n(indoor)} µg/m³ indoors × ${n(removed * 100)}% removed × ${n(rate)} m³/h × ${n(hours)} h × ${n(room.people)} people`,
+      calculation: `${n(round1(indoor))} µg/m³ indoors × ${n(round1(removed * 100))}% removed × ${n(rate)} m³/h × ${n(hours)} h × ${n(room.people)} people`,
       factorIds: [
         room.cadrId,
         room.volumeId,

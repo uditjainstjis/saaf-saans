@@ -1,0 +1,239 @@
+/* Page frame, type and the shared pieces: buttons, cards, links, focus. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-0);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 var(--space);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.25;
+  margin: 1.5em 0 0.5em;
+  overflow-wrap: anywhere;
+}
+h1 {
+  font-size: 1.9rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.25rem;
+}
+h4 {
+  font-size: 1.125rem;
+  margin-top: 0;
+}
+
+p,
+ul,
+dl {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.15em;
+}
+a:hover {
+  color: var(--accent-strong);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+main:focus,
+section:focus {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space);
+  top: -6rem;
+  z-index: 10;
+  padding: 0.75rem 1rem;
+  background: var(--surface-1);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+}
+.skip-link:focus {
+  top: var(--space);
+}
+
+.site-header {
+  border-bottom: 1px solid var(--field-border);
+  background: var(--surface-1);
+}
+.site-header__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.brand {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--accent);
+}
+.site-footer {
+  margin-top: 3rem;
+  padding: 1.5rem 0;
+  background: var(--surface-2);
+  color: var(--ink-soft);
+}
+
+.lede {
+  font-size: 1.2rem;
+  color: var(--ink-soft);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--target);
+  min-width: var(--target);
+  padding: 0.6rem 1.25rem;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn--primary {
+  width: 100%;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.btn--primary:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+.btn--quiet {
+  background: var(--surface-1);
+  color: var(--accent);
+}
+.btn--quiet:hover {
+  color: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+.btn[aria-disabled='true'] {
+  cursor: progress;
+  opacity: 1;
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  border-color: var(--field-border);
+}
+
+.card {
+  margin: 1.25rem 0;
+  padding: 1.25rem;
+  background: var(--surface-1);
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+}
+.card > h3:first-child {
+  margin-top: 0;
+}
+
+.hint {
+  color: var(--ink-soft);
+  font-size: 1.0625rem;
+  margin-bottom: 0.4rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid var(--field-border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.status {
+  min-height: 1.6em;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+details > summary {
+  min-height: var(--target);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+}
+details > summary:hover {
+  color: var(--accent-strong);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn,
+  input,
+  select,
+  textarea {
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .btn,
+  .card,
+  .band {
+    border: 2px solid CanvasText;
+  }
+}

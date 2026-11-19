@@ -1,0 +1,66 @@
+/* Design tokens. Light is the default theme; dark is chosen with the toggle.
+   Every colour pair used on the page is checked for WCAG contrast in
+   test/contrast.dom.test.ts, in both themes. */
+:root {
+  --surface-0: #fbfaf7;
+  --surface-1: #ffffff;
+  --surface-2: #f1efe9;
+  --ink: #1b1f24;
+  --ink-soft: #46515c;
+  --accent: #0b6b5d;
+  --accent-strong: #084f45;
+  --on-accent: #ffffff;
+  --field-border: #66707b;
+  --field-border-hover: #1b1f24;
+  --focus: #0b57d0;
+  --error: #b3261e;
+  --error-bg: #fdecea;
+  --notice-bg: #fff4d6;
+  --band-good: #1a7f37;
+  --band-good-bg: #e3f4e8;
+  --band-moderate: #7a5600;
+  --band-moderate-bg: #fff5cc;
+  --band-sensitive: #a34a00;
+  --band-sensitive-bg: #ffe9d1;
+  --band-unhealthy: #b3261e;
+  --band-unhealthy-bg: #fde3e1;
+  --band-very-unhealthy: #7b2d9b;
+  --band-very-unhealthy-bg: #f1e2f7;
+  --band-hazardous: #7a0e2a;
+  --band-hazardous-bg: #f6dde3;
+
+  --radius: 12px;
+  --space: 1rem;
+  --target: 48px;
+  --font:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Noto Sans Devanagari', sans-serif;
+}
+
+:root[data-theme='dark'] {
+  --surface-0: #101418;
+  --surface-1: #171c22;
+  --surface-2: #1f262e;
+  --ink: #eef1f4;
+  --ink-soft: #b9c3cd;
+  --accent: #62d2bf;
+  --accent-strong: #8fe3d4;
+  --on-accent: #06211d;
+  --field-border: #8d98a4;
+  --field-border-hover: #eef1f4;
+  --focus: #9cc2ff;
+  --error: #ffb4ab;
+  --error-bg: #3a1512;
+  --notice-bg: #33290a;
+  --band-good: #6fdc8c;
+  --band-good-bg: #12301c;
+  --band-moderate: #f2cc60;
+  --band-moderate-bg: #332a05;
+  --band-sensitive: #ffb070;
+  --band-sensitive-bg: #3a2208;
+  --band-unhealthy: #ffa39a;
+  --band-unhealthy-bg: #3b1414;
+  --band-very-unhealthy: #dcb0f2;
+  --band-very-unhealthy-bg: #2c1838;
+  --band-hazardous: #ffa3b8;
+  --band-hazardous-bg: #3a0f1a;
+}

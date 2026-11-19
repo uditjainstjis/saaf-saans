@@ -1,5 +1,5 @@
 import { OUTDOOR_HOUR, formatNumber as n, type CommuteMode } from '../../shared/constants';
-import { inhaledDose } from '../exposure';
+import { inhaledDose, round1 } from '../exposure';
 import { FACTORS, type FactorId } from '../factors';
 import { clock, readingAt } from '../forecast';
 import type { Situation } from '../situation';
@@ -104,9 +104,9 @@ const maskOnCommute: Strategy = {
     return {
       status: 'new',
       title: 'Wear a well-fitted N95 mask on the commute',
-      action: `Street air is at ${n(pm25)} µg/m³. A snug N95 for the ${n(hours)} hours a day each commuter spends travelling filters most of it; cloth and surgical masks do not.`,
+      action: `Street air is at ${n(pm25)} µg/m³. A snug N95 for the ${n(round1(hours))} hours a day each commuter spends travelling filters most of it; cloth and surgical masks do not.`,
       impact: impact({ inhaledAvoidedUg: dose * filtered }),
-      calculation: `${n(pm25)} µg/m³ × ${n(rate)} m³/h × ${n(hours)} h × ${n(s.travellers)} commuters × ${n(FACTORS.n95Filter.value)} filtration × ${n(FACTORS.maskFit.value)} fit`,
+      calculation: `${n(pm25)} µg/m³ × ${n(rate)} m³/h × ${n(round1(hours))} h × ${n(s.travellers)} commuters × ${n(FACTORS.n95Filter.value)} filtration × ${n(FACTORS.maskFit.value)} fit`,
       factorIds: [travel.speedId, travel.breathingId, 'n95Filter', 'maskFit', 'whoDaily'],
     };
   },

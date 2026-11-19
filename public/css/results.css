@@ -1,0 +1,150 @@
+/* Results: the air card with its AQI band, the totals, and recommendations. */
+.air__place {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+.air__advisory {
+  font-weight: 600;
+}
+
+/* The band is named in words and marked with a symbol that fills as the air
+   worsens; colour repeats that message and is never the only carrier of it. */
+.band {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-left: 0.5rem solid var(--band-colour);
+  border-radius: 8px;
+  background: var(--band-bg);
+  color: var(--ink);
+  font-size: 1.3rem;
+}
+.band__symbol {
+  color: var(--band-colour);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.band--good {
+  --band-colour: var(--band-good);
+  --band-bg: var(--band-good-bg);
+}
+.band--moderate {
+  --band-colour: var(--band-moderate);
+  --band-bg: var(--band-moderate-bg);
+}
+.band--sensitive {
+  --band-colour: var(--band-sensitive);
+  --band-bg: var(--band-sensitive-bg);
+}
+.band--unhealthy {
+  --band-colour: var(--band-unhealthy);
+  --band-bg: var(--band-unhealthy-bg);
+}
+.band--very-unhealthy {
+  --band-colour: var(--band-very-unhealthy);
+  --band-bg: var(--band-very-unhealthy-bg);
+}
+.band--hazardous {
+  --band-colour: var(--band-hazardous);
+  --band-bg: var(--band-hazardous-bg);
+}
+
+.readings,
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+}
+.readings > div,
+.totals > div {
+  padding: 0.75rem;
+  background: var(--surface-2);
+  border-radius: 8px;
+}
+dt {
+  color: var(--ink-soft);
+  font-size: 1.0625rem;
+}
+dd {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+caption {
+  text-align: left;
+  color: var(--ink-soft);
+  padding-bottom: 0.5rem;
+}
+th,
+td {
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--field-border);
+}
+
+.notice {
+  margin: 1.25rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--notice-bg);
+  border: 2px solid var(--field-border);
+  border-radius: var(--radius);
+}
+.notice h3 {
+  margin-top: 0;
+}
+
+.encouragement {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.recs {
+  list-style: none;
+  padding: 0;
+}
+.rec {
+  margin-bottom: 1rem;
+  padding: 1.25rem;
+  background: var(--surface-1);
+  border: 1px solid var(--field-border);
+  border-left: 0.4rem solid var(--accent);
+  border-radius: var(--radius);
+}
+.rec__impact {
+  padding: 0.6rem 0.8rem;
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-weight: 600;
+}
+.rec__calc {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.0625rem;
+  overflow-wrap: anywhere;
+}
+.rec__factors {
+  padding-left: 1.2rem;
+  color: var(--ink-soft);
+  font-size: 1.0625rem;
+}
+.rec__empty {
+  color: var(--ink-soft);
+}
+
+@media print {
+  .site-header button,
+  form,
+  .skip-link {
+    display: none;
+  }
+}

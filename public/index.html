@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Saaf Saans: a clean-air plan for your family or community</title>
+    <meta
+      name="description"
+      content="A GenAI-powered urban air quality assistant: live smog readings for your city, and a plan of low-emission routines, indoor air hacks and sustainable alternatives with their measured impact."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="/css/tokens.css" />
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/form.css" />
+    <link rel="stylesheet" href="/css/results.css" />
+    <script type="module" src="/js/main.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="wrap site-header__row">
+        <p class="brand"><span aria-hidden="true">◍</span> Saaf Saans</p>
+        <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+          Dark theme
+        </button>
+      </div>
+    </header>
+
+    <main id="main" class="wrap" tabindex="-1">
+      <h1>Breathe cleaner air through the smog season</h1>
+      <p class="lede">
+        Saaf Saans (“clean breath”) is a GenAI-powered assistant for severe winter smog and urban
+        air pollution. Tell it where you live and how you live, and it builds a plan for your family
+        or your community, with the direct impact of every choice worked out.
+      </p>
+
+      <form id="profile-form" novalidate aria-labelledby="form-h">
+        <h2 id="form-h">Build your clean-air plan</h2>
+
+        <div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden>
+          <h3 id="error-summary-h">There is a problem</h3>
+          <ul id="error-list"></ul>
+        </div>
+
+        <fieldset>
+          <legend>Families and communities: who is this plan for?</legend>
+          <div class="choices">
+            <label class="choice" for="mode-family">
+              <input type="radio" name="mode" id="mode-family" value="family" checked />
+              <span>My family</span>
+            </label>
+            <label class="choice" for="mode-community">
+              <input type="radio" name="mode" id="mode-community" value="community" />
+              <span>My community (RWA, school or neighbourhood group)</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Tailored to your location</legend>
+          <div class="field">
+            <label for="place">City or locality</label>
+            <p class="hint" id="place-hint">For example: Delhi, Lucknow or Gurugram.</p>
+            <input
+              type="text"
+              id="place"
+              name="place"
+              autocomplete="address-level2"
+              autocapitalize="words"
+              spellcheck="false"
+              required
+              aria-describedby="place-hint place-error"
+            />
+            <p class="field-error" id="place-error"></p>
+          </div>
+        </fieldset>
+
+        <fieldset id="family-fields">
+          <legend>Tailored to your lifestyle: your household</legend>
+          <div class="field-row">
+            <div class="field">
+              <label for="adults">Adults</label>
+              <input
+                type="number"
+                id="adults"
+                name="adults"
+                inputmode="numeric"
+                value="2"
+                required
+                aria-describedby="adults-error"
+              />
+              <p class="field-error" id="adults-error"></p>
+            </div>
+            <div class="field">
+              <label for="children">Children</label>
+              <input
+                type="number"
+                id="children"
+                name="children"
+                inputmode="numeric"
+                value="0"
+                required
+                aria-describedby="children-error"
+              />
+              <p class="field-error" id="children-error"></p>
+            </div>
+            <div class="field">
+              <label for="elders">Elders (60 and over)</label>
+              <input
+                type="number"
+                id="elders"
+                name="elders"
+                inputmode="numeric"
+                value="0"
+                required
+                aria-describedby="elders-error"
+              />
+              <p class="field-error" id="elders-error"></p>
+            </div>
+          </div>
+          <div class="field">
+            <label for="homeType">Home type</label>
+            <select id="homeType" name="homeType" aria-describedby="homeType-error"></select>
+            <p class="field-error" id="homeType-error"></p>
+          </div>
+          <div class="field">
+            <label for="cookingFuel">Cooking fuel</label>
+            <select
+              id="cookingFuel"
+              name="cookingFuel"
+              aria-describedby="cookingFuel-error"
+            ></select>
+            <p class="field-error" id="cookingFuel-error"></p>
+          </div>
+        </fieldset>
+
+        <fieldset id="community-fields" hidden disabled>
+          <legend>Tailored to your lifestyle: your community</legend>
+          <div class="field">
+            <label for="groupType">Kind of group</label>
+            <select id="groupType" name="groupType" aria-describedby="groupType-error"></select>
+            <p class="field-error" id="groupType-error"></p>
+          </div>
+          <div class="field">
+            <label for="people">People in the group</label>
+            <input
+              type="number"
+              id="people"
+              name="people"
+              inputmode="numeric"
+              value="200"
+              required
+              aria-describedby="people-error"
+            />
+            <p class="field-error" id="people-error"></p>
+          </div>
+          <label class="choice" for="wasteBurning">
+            <input type="checkbox" id="wasteBurning" name="wasteBurning" />
+            <span>Waste or leaves are burned in the open nearby</span>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Tailored to your lifestyle: daily habits</legend>
+          <div class="field">
+            <label for="commute">Usual commute</label>
+            <select id="commute" name="commute" aria-describedby="commute-error"></select>
+            <p class="field-error" id="commute-error"></p>
+          </div>
+          <div class="field">
+            <label for="commuteKm">Commute distance, one way (km)</label>
+            <input
+              type="number"
+              id="commuteKm"
+              name="commuteKm"
+              inputmode="decimal"
+              step="any"
+              value="8"
+              required
+              aria-describedby="commuteKm-error"
+            />
+            <p class="field-error" id="commuteKm-error"></p>
+          </div>
+          <div class="field">
+            <label for="outdoorTime">Outdoor exercise, play or assembly</label>
+            <select
+              id="outdoorTime"
+              name="outdoorTime"
+              aria-describedby="outdoorTime-error"
+            ></select>
+            <p class="field-error" id="outdoorTime-error"></p>
+          </div>
+          <div class="field">
+            <label for="outdoorMinutes">Minutes outdoors each day</label>
+            <input
+              type="number"
+              id="outdoorMinutes"
+              name="outdoorMinutes"
+              inputmode="numeric"
+              value="30"
+              required
+              aria-describedby="outdoorMinutes-error"
+            />
+            <p class="field-error" id="outdoorMinutes-error"></p>
+          </div>
+          <label class="choice" for="purifier">
+            <input type="checkbox" id="purifier" name="purifier" />
+            <span>We have an air purifier</span>
+          </label>
+          <label class="choice" for="sensitive">
+            <input type="checkbox" id="sensitive" name="sensitive" />
+            <span>Someone has asthma, or heart or lung disease</span>
+          </label>
+          <div class="field">
+            <label for="notes">Anything else we should know? (optional)</label>
+            <p class="hint" id="notes-hint">For example: “We walk the dog at 6 am.”</p>
+            <textarea
+              id="notes"
+              name="notes"
+              rows="3"
+              autocomplete="off"
+              aria-describedby="notes-hint notes-error"
+            ></textarea>
+            <p class="field-error" id="notes-error"></p>
+          </div>
+        </fieldset>
+
+        <button type="submit" id="submit-btn" class="btn btn--primary" aria-disabled="false">
+          Get my clean-air plan
+        </button>
+      </form>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+
+      <section id="results" aria-labelledby="results-h" tabindex="-1" hidden>
+        <h2 id="results-h">Your clean-air plan</h2>
+
+        <section id="guard-alert" class="notice" aria-labelledby="guard-h" hidden>
+          <h3 id="guard-h">We removed some text before asking the AI</h3>
+          <p>
+            Part of what you typed read like instructions to an AI system, so it was left out of the
+            request. Your plan is unaffected.
+          </p>
+          <ul id="guard-list"></ul>
+        </section>
+
+        <section id="air" class="card air" aria-labelledby="air-h">
+          <h3 id="air-h">Severe winter smog and urban air pollution: your air now</h3>
+          <p id="air-place" class="air__place"></p>
+          <p id="air-band" class="band">
+            <span id="air-symbol" class="band__symbol" aria-hidden="true"></span>
+            <span class="band__text"
+              >US AQI <strong id="air-aqi"></strong>: <strong id="air-label"></strong
+            ></span>
+          </p>
+          <p id="air-advisory" class="air__advisory"></p>
+          <dl class="readings">
+            <div>
+              <dt>PM2.5</dt>
+              <dd id="air-pm25"></dd>
+            </div>
+            <div>
+              <dt>PM10</dt>
+              <dd id="air-pm10"></dd>
+            </div>
+            <div>
+              <dt>Dominant pollutant</dt>
+              <dd id="air-dominant"></dd>
+            </div>
+            <div>
+              <dt>Cleanest hour, next 24 h</dt>
+              <dd id="air-best"></dd>
+            </div>
+            <div>
+              <dt>Worst hour, next 24 h</dt>
+              <dd id="air-worst"></dd>
+            </div>
+          </dl>
+          <p id="air-source" class="hint"></p>
+          <details>
+            <summary>PM2.5 hour by hour</summary>
+            <div class="table-scroll" tabindex="0" role="region" aria-labelledby="hours-caption">
+              <table>
+                <caption id="hours-caption">
+                  Forecast PM2.5 for the next 24 hours, local time
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Hour</th>
+                    <th scope="col">PM2.5 (µg/m³)</th>
+                  </tr>
+                </thead>
+                <tbody id="air-hours"></tbody>
+              </table>
+            </div>
+          </details>
+        </section>
+
+        <section class="card" aria-labelledby="assistant-h">
+          <h3 id="assistant-h">Your GenAI-powered assistant says</h3>
+          <p id="assistant-source" class="tag"></p>
+          <p id="assistant-summary"></p>
+          <p id="assistant-encouragement" class="encouragement"></p>
+        </section>
+
+        <section class="card" aria-labelledby="impact-h">
+          <h3 id="impact-h">The direct impact of your choices</h3>
+          <p class="hint">
+            If you make every new change below. Worked out by fixed formulas from published factors,
+            never by the AI.
+          </p>
+          <dl class="totals">
+            <div>
+              <dt>PM2.5 kept out of your lungs</dt>
+              <dd id="total-inhaled"></dd>
+            </div>
+            <div>
+              <dt>PM2.5 kept out of the neighbourhood’s air</dt>
+              <dd id="total-emitted"></dd>
+            </div>
+            <div>
+              <dt>Greenhouse gas not emitted</dt>
+              <dd id="total-co2e"></dd>
+            </div>
+          </dl>
+          <p id="total-equivalent"></p>
+        </section>
+
+        <section aria-labelledby="routine-h">
+          <h3 id="routine-h">Low-emission daily routines</h3>
+          <ul id="list-routine" class="recs"></ul>
+        </section>
+        <section aria-labelledby="indoor-h">
+          <h3 id="indoor-h">Indoor air quality hacks</h3>
+          <ul id="list-indoor" class="recs"></ul>
+        </section>
+        <section aria-labelledby="alternative-h">
+          <h3 id="alternative-h">Sustainable alternatives</h3>
+          <ul id="list-alternative" class="recs"></ul>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>
+          Air quality data: Open-Meteo Air Quality API (CAMS). This is general guidance, not medical
+          advice; see a doctor about symptoms.
+        </p>
+      </div>
+    </footer>
+
+    <template id="rec-tpl">
+      <li class="rec">
+        <h4 class="rec__title"></h4>
+        <p class="rec__status tag" hidden>Already doing this</p>
+        <p class="rec__action"></p>
+        <p class="rec__impact"></p>
+        <p class="rec__ai" hidden></p>
+        <details>
+          <summary>How this was calculated</summary>
+          <p class="rec__calc"></p>
+          <ul class="rec__factors"></ul>
+        </details>
+      </li>
+    </template>
+  </body>
+</html>
