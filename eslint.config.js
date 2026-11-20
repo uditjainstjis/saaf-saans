@@ -1,12 +1,13 @@
+/**
+ * Lint configuration: typescript-eslint's strict type-checked rules plus the
+ * size and safety limits CODE_QUALITY.md states, applied to source, front end,
+ * tests and scripts alike, with inline suppressions switched off.
+ */
 import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-/**
- * Lint rules catch the mistakes that matter in a Worker (floating promises,
- * unchecked `any` crossing a trust boundary, dead code) and hold the size
- * limits CODE_QUALITY.md states, for source, front end and tests alike.
- */
+/** The size limits every file is held to. */
 const SIZE_LIMITS = {
   'max-lines': ['error', { max: 110, skipBlankLines: true, skipComments: true }],
   'max-lines-per-function': ['error', { max: 30, skipBlankLines: true, skipComments: true }],

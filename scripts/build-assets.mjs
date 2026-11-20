@@ -1,13 +1,8 @@
 /**
- * Writes the files in public/ that are generated from TypeScript in src/, so
- * the page, the edge and the Worker share one definition of each:
- *
- *   public/js/shared/{options,limits,labels}.js   src/config/*.ts, compiled
- *   public/js/shared/*.d.ts                       their declarations, which type the front end
- *   public/_headers                               headersFile() from src/config/security-policy.ts
- *
- * Generated files are gitignored. `npm run generate` runs this script, and
- * wrangler runs it as build.command before `dev` and `deploy`.
+ * Writes the files in public/ that are generated from src/config, so the page,
+ * the edge and the Worker share one definition: the compiled options, limits
+ * and labels (with their declarations) and public/_headers. Outputs are
+ * gitignored; `npm run generate` and wrangler's build step run this script.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import ts from 'typescript';

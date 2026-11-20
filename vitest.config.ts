@@ -1,22 +1,16 @@
+/**
+ * Test configuration: two projects, because the code runs in two places, and
+ * one coverage gate at 100% over src/ and public/js/ (the compiled copy of
+ * src/config aside, which is measured as its source). TESTING.md explains both.
+ */
 import { defineConfig } from 'vitest/config';
 import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
 
 /**
- * Two projects, because the suite has two different jobs.
- *
- * `workers` runs inside workerd, the runtime the Worker is deployed to, so the
- * Cache API, crypto, HTMLRewriter and Request/Response behave in tests as they
- * do in production. It is deliberately not pointed at wrangler.jsonc: Workers
- * AI has no local implementation, and every test injects fakes through the
- * ports in src/lib/ports.ts, so the suite is hermetic and needs no credentials.
- *
- * `dom` runs in jsdom on Node for what workerd cannot host: axe-core, the
- * front-end modules in public/js/, and checks that read shipped files off disk.
- *
- * Coverage is measured over every TypeScript module in src/ and every
- * front-end module in public/js/ (the compiled copy of src/config/ aside, which
- * is measured as its source), and gated at 100% for statements, branches,
- * functions and lines: below that, `npm test` fails.
+ * `workers` runs inside workerd, the runtime the Worker is deployed to. It is
+ * deliberately not pointed at wrangler.jsonc: Workers AI has no local
+ * implementation, and every test injects fakes through ports, so the suite is
+ * hermetic. `dom` runs in jsdom for the page, axe-core and shipped-file checks.
  */
 export default defineConfig({
   test: {
