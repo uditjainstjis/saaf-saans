@@ -52,8 +52,8 @@ end-to-end run, uncompressed; an `/api/assistant` reply was about 2 KB.
 
 ## Worker bundle
 
-Bundled and minified with esbuild, the Worker is 160.0 KB (53.5 KB gzipped). It
-was 502.6 KB (116.5 KB gzipped) until zod was imported as a namespace
+Bundled and minified with esbuild, the Worker is 163,845 bytes (53,522 gzipped).
+It was 514,644 bytes (116,503 gzipped) until zod was imported as a namespace
 (`import * as z from 'zod'`), which lets the bundler drop the locale files the
 code never uses. Hono and zod are the only runtime dependencies.
 

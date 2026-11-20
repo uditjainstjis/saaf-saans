@@ -27,18 +27,22 @@ it('holds the published figures exactly as their sources print them', () => {
   expect(FACTORS.twoWheelerCo2e.value).toBe(0.1137);
   expect(FACTORS.busCo2e.value).toBe(0.1085);
   expect(FACTORS.metroCo2e.value).toBe(0.0286);
-  // Akagi et al. 2011, Table 1: garbage burning PM2.5 9.8 g/kg, CO2 1453 g/kg;
+  // Akagi et al. 2011, Table 2: garbage burning PM2.5 9.8 g/kg, CO2 1453 g/kg;
   // open cooking PM2.5 6.64 g/kg.
   expect(FACTORS.wasteBurnPm.value).toBe(9.8);
   expect(FACTORS.wasteBurnCo2.value).toBe(1.453);
   expect(FACTORS.woodCookPm.value).toBe(6.64);
-  expect(FACTORS.whoDaily.value).toBe(15);
+  // US EPA 2024 fact sheet: sensitive groups from 35.5 µg/m³, everyone from 55.5 µg/m³.
+  expect(FACTORS.sensitiveLimit.value).toBe(35.4);
+  expect(FACTORS.generalLimit.value).toBe(55.4);
 });
 
 it('marks modelling choices as assumptions, never as published', () => {
   for (const id of ['groupUptake', 'maskFit', 'sealingGain', 'woodPerDay'] as const) {
     expect(FACTORS[id].kind).toBe('assumption');
   }
+  // The threshold for protective steps follows the WHO 24-hour level, but is this project's choice.
+  expect(FACTORS.whoDaily).toMatchObject({ value: 15, kind: 'assumption' });
 });
 
 it('looks factors up by id and ignores ids it does not know', () => {

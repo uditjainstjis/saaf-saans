@@ -5,7 +5,7 @@ and communities live through severe winter smog. You tell it where you live and
 how you live; it reads the live air for your city, builds a plan of low-emission
 daily routines, indoor air quality hacks and sustainable alternatives, and shows
 the direct impact of every choice, worked out by fixed formulas from cited
-factors. Generative AI explains the plan; it never produces a number.
+factors. Generative AI explains the plan; the figures come from the engine.
 
 Live: <https://saaf-saans.seriouss.workers.dev>
 
@@ -48,12 +48,13 @@ Live: <https://saaf-saans.seriouss.workers.dev>
 - **Numbers you can check.** Three impact figures per recommendation and in
   total, the formula with its inputs, and every factor labelled as a published
   figure or an assumption.
-- **An assistant that cannot invent figures.** A model reply containing any
-  number that is not in the computed facts (or the visitor's own notes) is
-  rejected.
-- **Always answers.** If Open-Meteo is unreachable the app plans from typical
-  winter values and says so; if the model is unavailable the same explanation is
-  written by rules and labelled as such.
+- **An assistant held to the computed facts.** A model reply containing a
+  numeral that is not in the computed facts (or the visitor's own notes) is
+  rejected, so the model cannot introduce a figure of its own.
+- **Degrades instead of failing.** If the air data API is unreachable the app
+  plans from typical winter values and says so (place search then knows ten
+  built-in Indian cities only); if the model is unavailable the same explanation
+  is written by rules and labelled as such.
 - **Accessible and light.** WCAG 2.2 AA, light and dark themes, no framework,
   about 19 KB of HTML, CSS and JavaScript over the wire.
 
@@ -246,8 +247,8 @@ security, conventions) and the end-to-end run against the live services.
 - **Small payloads.** The page is 51.9 KB uncompressed and 19.4 KB gzipped for
   all twenty files; no framework and no third-party request.
 - **Small bundle.** Importing zod as a namespace lets the bundler drop unused
-  locales: 160 KB minified (53.5 KB gzipped) when bundled with esbuild, down
-  from 503 KB.
+  locales: 164 KB minified (54 KB gzipped) when bundled with esbuild, down from
+  515 KB.
 
 [EFFICIENCY.md](EFFICIENCY.md) has the measurements.
 
@@ -305,7 +306,8 @@ uses `aria-disabled` while a request is in flight, so it stays focusable.
 - **Emission factors from the UK.** Travel factors are the UK government's 2024
   conversion factors, used for want of an equally citable Indian table.
 - **Typical values are illustrative.** The offline fallback uses round winter
-  figures for ten Indian cities, marked as typical wherever they appear.
+  figures for ten Indian cities, marked as typical wherever they appear. While
+  the geocoder is unreachable, only those ten cities can be found.
 - **A group changes partly.** Community travel figures assume 30% of the group
   takes part.
 - **General guidance only.** The assistant does not diagnose or prescribe.

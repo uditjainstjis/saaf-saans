@@ -4,11 +4,12 @@
 /** @typedef {import('./form.js').Issue} Issue */
 
 /**
- * Server-side a model call is capped at 15 s and tried at most twice, so the
- * assistant can take 30 s; the client allows 35.
+ * How long the page waits. The plan route makes at most two upstream calls of
+ * 4 s each. The assistant route adds at most two model calls of 15 s each, so
+ * it can take 38 s; the page allows 45.
  * @type {Readonly<Record<'/api/plan' | '/api/assistant', number>>}
  */
-const TIMEOUT_MS = { '/api/plan': 12_000, '/api/assistant': 35_000 };
+const TIMEOUT_MS = { '/api/plan': 12_000, '/api/assistant': 45_000 };
 
 /** A request that did not succeed, with the issues to show for it. */
 export class ApiError extends Error {

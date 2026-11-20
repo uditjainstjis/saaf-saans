@@ -61,6 +61,10 @@ Text coming out
 3. **Number firewall**: every numeral in it must appear in the computed facts or
    the visitor's own notes. A reply that invents a statistic is rejected.
 
+The firewall reads numerals written in digits. It cannot tell whether a figure
+that is in the facts has been attached to the right thing, which is why the
+engine's own impact line is always shown beside the model's wording.
+
 A rejected reply gets one repair attempt; after that the rule-based generator
 answers. The client never tells the model what the air or the numbers are: the
 brief is rebuilt server-side from the validated profile on every request.

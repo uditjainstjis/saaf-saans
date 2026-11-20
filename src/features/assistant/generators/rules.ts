@@ -1,7 +1,7 @@
 /**
  * The deterministic PlanGenerator: the same narrative shape as the model's,
  * written from the plan by rule. It is what the assistant says when the model
- * is unavailable, so the app always answers. Model path: ../service.ts.
+ * is unavailable, so the assistant always answers. Model path: ../service.ts.
  */
 import { formatNumber as n } from '../../../config/limits';
 import { bandFor } from '../../air-quality/aqi';

@@ -1,8 +1,8 @@
 /**
- * The number firewall: a model may repeat a figure it was given, and nothing
- * else. Any numeral in generated text that is not among the facts is reported,
- * which makes "the model explains, the engine computes" a property of the
- * code rather than a request in a prompt. Applied by ./reply-checks.ts.
+ * The number firewall: reports every numeral (written in digits) in generated
+ * text that is not among the facts, so a model cannot introduce a figure of
+ * its own. It cannot tell whether a permitted figure is used correctly, which
+ * is why the engine's own impact line is always shown. Applied by ./reply-checks.ts.
  */
 
 /** Names that contain digits without being quantities. */

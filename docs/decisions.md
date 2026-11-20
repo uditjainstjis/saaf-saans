@@ -79,7 +79,9 @@ and says so on the page.
 **Why.** Advice for a typical smog day is more use than an error page, as long
 as it is never mistaken for a measurement.
 
-**Cost.** The figures are illustrative.
+**Cost.** The figures are illustrative, and place search falls back to those ten
+cities only: any other name is refused with a clear message until the geocoder
+is reachable again.
 
 ## 8. Published figures and assumptions, kept apart
 
