@@ -8,7 +8,7 @@ import type { HttpGet } from '../../../../src/lib/ports';
 import { jsonGet } from '../../../support/fakes';
 import { DELHI } from '../../../support/fixtures';
 
-/** A reply in the shape the Open-Meteo Air Quality API returned for Delhi on 2026-11-20, shortened to three hours. */
+/** Open-Meteo's air quality reply for Delhi on 2026-11-20, cut to three hours. */
 const AIR_REPLY = {
   latitude: 28.7,
   longitude: 77.2,
@@ -44,6 +44,7 @@ it('reads AQI, PM2.5, PM10, the dominant pollutant and the hourly forecast', asy
       { hour: 15, pm25: 59.8 },
     ],
     local: { timeZone: 'Asia/Kolkata', date: '2026-11-20' },
+    observedAt: '2026-11-20T03:30',
   });
 });
 

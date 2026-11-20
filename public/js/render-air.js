@@ -1,5 +1,5 @@
 // @ts-check
-/** Renders the air card: the AQI band in words and symbol, readings, and the hourly table. */
+/** Renders the air card: the AQI band in words and symbol, readings, their source and time, and the hourly table. */
 import { $, textEl } from './dom.js';
 import { formatNumber } from './shared/limits.js';
 
@@ -10,6 +10,18 @@ const micrograms = (value) => `${formatNumber(value)} µg/m³`;
 
 /** @param {{ time: string, pm25: number }} hour */
 const hourText = (hour) => `${hour.time} (${micrograms(hour.pm25)})`;
+
+/**
+ * Where the figures come from, and when a live reading was taken.
+ * @param {PlanView['air']} air
+ */
+function sourceText({ source, takenAt }) {
+  if (source !== 'live') {
+    return 'Live data is unavailable right now, so these are typical winter values for this area, not a measurement.';
+  }
+  const when = takenAt ? `, taken at ${takenAt}, local time` : '';
+  return `Live reading from the Open-Meteo Air Quality API${when}.`;
+}
 
 /**
  * Fill the air card from a plan reply.
@@ -29,10 +41,7 @@ export function renderAir({ place, air, advisory }) {
   $('air-dominant', HTMLElement).textContent = air.dominant;
   $('air-best', HTMLElement).textContent = hourText(air.best);
   $('air-worst', HTMLElement).textContent = hourText(air.worst);
-  $('air-source', HTMLElement).textContent =
-    air.source === 'live'
-      ? 'Live reading from the Open-Meteo Air Quality API.'
-      : 'Live data is unavailable right now, so these are typical winter values for this area, not a measurement.';
+  $('air-source', HTMLElement).textContent = sourceText(air);
   $('air-hours', HTMLElement).replaceChildren(
     ...air.hours.map((hour) => {
       const row = document.createElement('tr');

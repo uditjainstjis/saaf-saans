@@ -76,6 +76,7 @@ export const SMOG: AirReport = {
   dominant: 'pm2_5',
   hours: smogDay(),
   local: DELHI_DAY,
+  observedAt: '2026-11-20T15:45',
 };
 
 /** A report with every hour at one concentration. */

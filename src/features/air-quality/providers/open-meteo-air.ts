@@ -55,6 +55,7 @@ export function openMeteoAir(get: HttpGet, timeoutMs = UPSTREAM_TIMEOUT_MS): Air
         hours: hoursOf(hourly),
         // Times are local to the place (`timezone=auto`), so the first one names today's date there.
         local: { timeZone: timezone, date: hourly.time[0]?.slice(0, 10) },
+        observedAt: current.time,
       });
     },
   };

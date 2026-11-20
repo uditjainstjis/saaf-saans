@@ -1,6 +1,6 @@
 /**
  * Tests for the air card: the band in words and symbol, the readings, the
- * hourly table and the live or typical note.
+ * hourly table and the live or typical note with the time of a live reading.
  */
 import { afterEach, expect, it, vi } from 'vitest';
 import { FAMILY, SMOG } from '../support/fixtures';
@@ -26,7 +26,15 @@ it('states the AQI band in words and a symbol, with the readings and the outlook
   expect(byId('air-best').textContent).toBe('3 pm (30 µg/m³)');
   expect(byId('air-worst').textContent).toBe('10 pm (220 µg/m³)');
   expect(byId('air-advisory').textContent).toContain('Children, elders');
-  expect(byId('air-source').textContent).toContain('Live reading');
+  expect(byId('air-source').textContent).toBe(
+    'Live reading from the Open-Meteo Air Quality API, taken at 3:45 pm on 20 Nov, local time.',
+  );
+});
+
+it('names the source without a time when a live report does not carry one', async () => {
+  const view = planReply(FAMILY, { ...SMOG, observedAt: undefined });
+  await renderWith(okReply(view), okReply(await modelNarrative()));
+  expect(byId('air-source').textContent).toBe('Live reading from the Open-Meteo Air Quality API.');
 });
 
 it('lists all 24 forecast hours in a table with row headers', async () => {
@@ -41,7 +49,9 @@ it('says so in words when the figures are typical, not live', async () => {
   const view = planReply(FAMILY, { ...SMOG, source: 'typical' });
   view.place.region = '';
   await renderWith(okReply(view), okReply(await modelNarrative()));
-  expect(byId('air-source').textContent).toContain('typical winter values');
+  expect(byId('air-source').textContent).toBe(
+    'Live data is unavailable right now, so these are typical winter values for this area, not a measurement.',
+  );
   expect(byId('air-place').textContent).toBe('Delhi');
 });
 

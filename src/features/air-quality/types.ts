@@ -53,6 +53,8 @@ export interface AirReport {
   hours: readonly [HourReading, ...HourReading[]];
   /** The local day the hours start on. Live reports carry it; typical values do not. */
   local?: LocalDay;
+  /** When the current readings were taken, in the place's local time: "2026-11-20T15:45". Live reports only. */
+  observedAt?: string;
 }
 
 /** Turns a place name someone typed into coordinates; null when there is no match. */

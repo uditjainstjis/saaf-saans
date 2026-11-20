@@ -29,6 +29,8 @@ export const airReportSchema: z.ZodType<AirReport> = z.strictObject({
   dominant: z.enum(POLLUTANTS),
   hours: z.tuple([hourReading], hourReading).readonly(),
   local: localDay.optional().catch(undefined),
+  /** A real local date and time with no offset; anything else is dropped. */
+  observedAt: z.iso.datetime({ local: true }).optional().catch(undefined),
 });
 
 /** The shape of a Place. */
