@@ -18,6 +18,16 @@ export interface Cache {
 /** An HTTP GET: as much of `fetch` as the upstream adapters use. */
 export type HttpGet = (url: string, signal: AbortSignal) => Promise<Response>;
 
+/** What an {@link HttpPost} sends: headers, a JSON body already serialised, and the abort signal. */
+export interface PostInit {
+  headers: Readonly<Record<string, string>>;
+  body: string;
+  signal: AbortSignal;
+}
+
+/** An HTTP POST: as much of `fetch` as the Gemini adapter uses. */
+export type HttpPost = (url: string, init: PostInit) => Promise<Response>;
+
 /** Structured diagnostics: `info` for what happened, `warn` for what went wrong. */
 export interface Logger {
   info(event: string, detail: Readonly<Record<string, unknown>>): void;

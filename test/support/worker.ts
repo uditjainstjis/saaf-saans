@@ -27,9 +27,16 @@ export const AIR = {
   hourly: { time: ['2026-11-20T07:00', '2026-11-20T15:00'], pm2_5: [180, 30] },
 };
 
-/** Stand in for the network: Open-Meteo answers, or is down. */
-export function stubNetwork(up: boolean): ReturnType<typeof vi.fn> {
+/** The two forecast hours of {@link AIR}, as the Worker reads them. */
+export const AIR_HOURS = [
+  { hour: 7, pm25: 180 },
+  { hour: 15, pm25: 30 },
+] as const;
+
+/** Stand in for the network: Open-Meteo answers, or is down; Google answers with `google()` when given. */
+export function stubNetwork(up: boolean, google?: () => Response): ReturnType<typeof vi.fn> {
   const fetch = vi.fn(async (url: string) => {
+    if (url.includes('googleapis.com')) return google?.() ?? Response.error();
     if (!up) throw new Error('network down');
     return Response.json(url.includes('geocoding') ? GEO : AIR);
   });
@@ -37,11 +44,12 @@ export function stubNetwork(up: boolean): ReturnType<typeof vi.fn> {
   return fetch;
 }
 
-/** Bindings whose AI answers with `run`. */
-export function bindings(run: Bindings['AI']['run']): Bindings {
+/** Bindings whose AI answers with `run`, with the Gemini secret set when a key is given. */
+export function bindings(run: Bindings['AI']['run'], geminiKey?: string): Bindings {
   return {
     AI: { run },
     ASSETS: { fetch: async () => new Response('app shell') },
     RATE_LIMITER: { limit: async () => ({ success: true }) },
+    ...(geminiKey === undefined ? {} : { GEMINI_API_KEY: geminiKey }),
   };
 }

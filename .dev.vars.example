@@ -1,0 +1,7 @@
+# Local development only. Copy this file to .dev.vars (which git ignores) and
+# fill in a value to have `wrangler dev` ask Gemini first. Leave it empty, or
+# skip the copy, and the assistant runs on Workers AI alone.
+#
+# In production the same name is a Worker secret, set once with:
+#   npx wrangler secret put GEMINI_API_KEY
+GEMINI_API_KEY=

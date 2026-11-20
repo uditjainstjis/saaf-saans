@@ -1,10 +1,9 @@
 /**
  * Types of the assistant feature (the generative step): the wording of a
  * plan, the port that writes it, and the port for a language model host.
- * Implementations are ./service.ts, ./generators/ and ./workers-ai.ts.
+ * Implementations are ./service.ts, ./generators/, ./workers-ai.ts and ./gemini.ts.
  */
 
-import type { Model } from '../../config/runtime';
 import type { PlanBrief } from '../plan/types';
 
 /** The personalised wording of a plan. Numbers live in the Plan, not here. */
@@ -24,8 +23,8 @@ export interface PlanGenerator {
 
 /** One chat-style request to a language model. */
 export interface TextRequest {
-  /** Which model to ask. */
-  model: Model;
+  /** Which model to ask, by the name its host knows it by. */
+  model: string;
   system: string;
   prompt: string;
   /** JSON Schema the reply must match. */
@@ -36,4 +35,10 @@ export interface TextRequest {
 /** A language model host. Resolves to the host's raw reply, unchecked. */
 export interface TextGenerator {
   complete(request: TextRequest, signal: AbortSignal): Promise<unknown>;
+}
+
+/** A model that can be asked: its name, and the host that runs it. */
+export interface ModelSource {
+  model: string;
+  text: TextGenerator;
 }

@@ -14,12 +14,13 @@ import { typicalGeocoder } from './features/air-quality/providers/typical-geocod
 import { cachedPlanGenerator } from './features/assistant/generators/cached';
 import { fallbackPlanGenerator } from './features/assistant/generators/fallback';
 import { rulePlanGenerator } from './features/assistant/generators/rules';
-import { modelPlanGenerator } from './features/assistant/service';
+import { gemini } from './features/assistant/gemini';
+import { modelPlanGenerator, modelSources } from './features/assistant/service';
 import { type AiRunner, workersAi } from './features/assistant/workers-ai';
 import { edgeCache } from './lib/cache';
 import { systemClock } from './lib/clock';
 import { consoleLogger } from './lib/logger';
-import type { AssetServer, HttpGet } from './lib/ports';
+import type { AssetServer, HttpGet, HttpPost } from './lib/ports';
 import { type RateLimitBinding, bindingRateLimiter } from './middleware/rate-limit';
 
 /** The bindings this Worker uses, each as narrow as its adapter needs. */
@@ -27,10 +28,13 @@ export interface Bindings {
   AI: AiRunner;
   ASSETS: AssetServer;
   RATE_LIMITER: RateLimitBinding;
+  /** The one secret, and optional: when set, Gemini is asked first. */
+  GEMINI_API_KEY?: string;
 }
 
 const httpGet: HttpGet = (url, signal) =>
   fetch(url, { signal, headers: { accept: 'application/json' } });
+const httpPost: HttpPost = (url, init) => fetch(url, { method: 'POST', ...init });
 
 /** Wire production adapters to the ports: live sources first, fallbacks behind them. */
 export function compose(env: Bindings): AppDeps {
@@ -38,7 +42,9 @@ export function compose(env: Bindings): AppDeps {
   const logger = consoleLogger;
   const geocoder = cachedGeocoder(openMeteoGeocoder(httpGet), cache);
   const air = cachedAir(openMeteoAir(httpGet), cache);
-  const model = cachedPlanGenerator(modelPlanGenerator(workersAi(env.AI), logger), cache);
+  const key = env.GEMINI_API_KEY;
+  const sources = modelSources(workersAi(env.AI), key ? gemini(httpPost, key) : undefined);
+  const model = cachedPlanGenerator(modelPlanGenerator(sources, logger), cache);
   return {
     geocoder: fallbackGeocoder(geocoder, typicalGeocoder, logger),
     air: fallbackAir(air, typicalAir(systemClock), logger),

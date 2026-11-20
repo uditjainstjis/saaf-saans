@@ -1,17 +1,18 @@
 /**
- * The production TextGenerator: the Workers AI binding. It turns one request
- * into one `run` call on the model the request names and passes the abort
- * signal through. It adds no policy: which model, the deadline, checking and
- * fallback all live in ./service.ts, ./attempt.ts and ./generators/.
+ * The Workers AI TextGenerator: the binding, which needs no key. It turns one
+ * request into one `run` call on the model the request names and passes the
+ * abort signal through. It adds no policy: which model, the deadline, checking
+ * and fallback all live in ./service.ts, ./attempt.ts and ./generators/. The
+ * other host is ./gemini.ts.
  */
 
-import { type Model, MODEL_TEMPERATURE } from '../../config/runtime';
+import { MODEL_TEMPERATURE } from '../../config/runtime';
 import type { TextGenerator } from './types';
 
 /** As much of the Workers AI binding as this adapter calls. */
 export interface AiRunner {
   run(
-    model: Model,
+    model: string,
     input: {
       messages: { role: 'system' | 'user'; content: string }[];
       response_format: { type: 'json_schema'; json_schema: object };

@@ -1,6 +1,7 @@
 /**
- * Test doubles for the assistant's ports: a scripted language model, a reply
- * that passes every check, and fixed or broken plan generators.
+ * Test doubles for the assistant's ports: a scripted language model, a
+ * recording HTTP POST, a reply that passes every check, Gemini's envelope
+ * around one, and fixed or broken plan generators.
  */
 
 import type {
@@ -10,6 +11,7 @@ import type {
   TextRequest,
 } from '../../src/features/assistant/types';
 import type { PlanBrief } from '../../src/features/plan/types';
+import type { HttpPost, PostInit } from '../../src/lib/ports';
 
 /** A model that answers with the next queued reply, and records what it was asked. */
 export function scriptedText(...replies: unknown[]): TextGenerator & { requests: TextRequest[] } {
@@ -23,6 +25,20 @@ export function scriptedText(...replies: unknown[]): TextGenerator & { requests:
       return next;
     },
   };
+}
+
+/** An HTTP POST that answers with `reply`, or fails with it, and records what it was sent. */
+export function recordingPost(reply: Response | Error): {
+  post: HttpPost;
+  calls: { url: string; init: PostInit }[];
+} {
+  const calls: { url: string; init: PostInit }[] = [];
+  const post: HttpPost = async (url, init) => {
+    calls.push({ url, init });
+    if (reply instanceof Error) throw reply;
+    return reply;
+  };
+  return { post, calls };
 }
 
 /** A reply a model could give that passes every check for this brief. */
@@ -40,6 +56,15 @@ export function goodReply(brief: PlanBrief): {
     encouragement: 'You are doing well; keep going.',
   };
 }
+
+/** A Gemini interaction whose output is `value` as JSON text, after a thought step. */
+export const interaction = (value: unknown): object => ({
+  status: 'completed',
+  steps: [
+    { type: 'thought', signature: 'sig' },
+    { type: 'model_output', content: [{ type: 'text', text: JSON.stringify(value) }] },
+  ],
+});
 
 /** A narrative as a model would write it. */
 export const NARRATIVE: Narrative = {

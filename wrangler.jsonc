@@ -19,12 +19,17 @@
     "run_worker_first": ["/api/*"],
   },
 
-  // Inference. This is a binding, not an API key: there is no credential in
-  // this repository, in CI, or in the deployed bundle. Which models are asked,
-  // and in what order, is set by MODELS in src/config/runtime.ts.
+  // Inference on Workers AI. This is a binding, not an API key. Which models
+  // are asked, and in what order, is set in src/config/runtime.ts.
   "ai": {
     "binding": "AI",
   },
+
+  // The service has one secret, and it is optional: GEMINI_API_KEY. When it is
+  // set (`npx wrangler secret put GEMINI_API_KEY`), Gemini is asked first and
+  // Workers AI second; without it the assistant runs on Workers AI alone. It
+  // is a Worker secret, so it is in no file of this repository, not in CI and
+  // not in the deployed bundle. .dev.vars.example names it for local use.
 
   // Per-IP request cap on the API. Thirty a minute is far above a household
   // checking its air and far below a flood; static assets are unaffected.
