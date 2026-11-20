@@ -99,7 +99,7 @@ below are bytes on disk and after `gzip -9`.
 
 ## Worker bundle
 
-Bundled and minified with esbuild, the Worker is 168,538 bytes (55,417 gzipped).
+Bundled and minified with esbuild, the Worker is 169,117 bytes (55,656 gzipped).
 It was 514,644 bytes (116,503 gzipped) until zod was imported as a namespace
 (`import * as z from 'zod'`), which lets the bundler drop the locale files the
 code never uses. Hono and zod are the only runtime dependencies.

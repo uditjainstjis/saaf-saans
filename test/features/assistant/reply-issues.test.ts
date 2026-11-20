@@ -65,3 +65,8 @@ it('accepts two spaces after a full stop, which is a typing habit and not a gap'
   const spaced = { ...goodReply(brief), summary: 'The air is unhealthy today.  Start indoors.' };
   expect(issuesIn(spaced, brief)).toEqual([]);
 });
+
+it('rejects a claim that nobody is at risk when the air is unhealthy', () => {
+  const summary = 'The air is Very unhealthy, and no one in your family is at immediate risk.';
+  expect(issuesIn({ ...goodReply(brief), summary }, brief)).toHaveLength(1);
+});

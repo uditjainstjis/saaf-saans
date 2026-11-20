@@ -95,6 +95,12 @@ wrote "PM 2.5" with a space, which the number check took for an invented figure;
 the second model then answered, 17.0 s in all, and the check now reads spaced
 pollutant names as names.
 
+A third came from recording the demo on the faster model. For a household with
+no child, elder or illness it wrote that "no one in your family is at immediate
+risk" in Very unhealthy air. The instructions now take who is at risk from the
+health advice in the facts, and a reply that says nobody is at risk in air worse
+than moderate is rejected.
+
 Nine models were timed with the same request before choosing two. Two spent
 their whole token budget on reasoning and were rejected, two did not answer
 within 60 seconds, one small model passed but took longer, and two had been

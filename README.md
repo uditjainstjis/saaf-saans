@@ -85,7 +85,7 @@ The code is organised so each of these can change without touching the others:
 
 | Principle             | Where it shows                                                                                                                                                                                                                                                |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Single responsibility | 103 source modules, one job each (median 1.4 KB); one file per strategy, per factor family, per screening rule                                                                                                                                                |
+| Single responsibility | 104 source modules, one job each (median 1.4 KB); one file per strategy, per factor family, per screening rule                                                                                                                                                |
 | Open/closed           | [strategies/registry.ts](src/features/plan/strategies/registry.ts): a new strategy is a new file and one entry; the planner, the API and the page do not change                                                                                               |
 | Liskov substitution   | Every provider and generator is checked against one contract in [providers/substitutable.test.ts](test/features/air-quality/providers/substitutable.test.ts) and [generators/substitutable.test.ts](test/features/assistant/generators/substitutable.test.ts) |
 | Interface segregation | Narrow ports ([lib/ports.ts](src/lib/ports.ts), feature `types.ts`); routes receive only the sources and the gate they use                                                                                                                                    |
@@ -127,7 +127,7 @@ src/
     plan/             routes, service, schemas, types, situation, planner, view, calendar
       strategies/     the contract, the registry, one file per strategy
     assistant/        routes, service, attempt, schemas, types, prompt, facts, prompt-builder,
-                      reply-parser, reply-checks, reply-issues, number-firewall, workers-ai, nvidia
+                      reply-parser, reply-checks, reply-issues, risk-claims, number-firewall, workers-ai, nvidia
       generators/     rules, fallback, cached
 public/
   index.html          the page
@@ -210,19 +210,19 @@ path needs `wrangler login`.
 `npm run check` on the committed tree:
 
 ```text
- Test Files  97 passed (97)
-      Tests  460 passed (460)
+ Test Files  98 passed (98)
+      Tests  467 passed (467)
 
-Statements   : 100% ( 954/954 )
-Branches     : 100% ( 330/330 )
-Functions    : 100% ( 289/289 )
-Lines        : 100% ( 844/844 )
+Statements   : 100% ( 961/961 )
+Branches     : 100% ( 334/334 )
+Functions    : 100% ( 292/292 )
+Lines        : 100% ( 850/850 )
 ```
 
 | Measured over             | Statements | Branches | Functions | Lines |
 | ------------------------- | ---------- | -------- | --------- | ----- |
 | All files                 | 100        | 100      | 100       | 100   |
-| `src/` (103 modules)      | 100        | 100      | 100       | 100   |
+| `src/` (104 modules)      | 100        | 100      | 100       | 100   |
 | `public/js/` (12 modules) | 100        | 100      | 100       | 100   |
 
 Coverage is gated at 100% on all four measures in
@@ -239,7 +239,7 @@ and by hand.
 | JSON-only POST (the CSRF control), `Sec-Fetch-Site` and `Origin` checks, a 4 KB cap on the declared and on the actual body, 30 requests a minute per address   | [middleware/admission-rules.ts](src/middleware/admission-rules.ts), [middleware/validate.ts](src/middleware/validate.ts), [middleware/rate-limit.ts](src/middleware/rate-limit.ts), [wrangler.jsonc](wrangler.jsonc) |
 | Strict schema on every request: unknown keys rejected, numbers bounded, text trimmed and capped                                                                | [plan/schemas.ts](src/features/plan/schemas.ts), [middleware/validate.ts](src/middleware/validate.ts)                                                                                                                |
 | Prompt-injection screen: seven rules, flagged sentences removed, the rest fenced under a per-request random delimiter                                          | [lib/prompt-guard/](src/lib/prompt-guard/)                                                                                                                                                                           |
-| Model output is untrusted: schema, id, number, finished-sentence and dropped-word checks before anything is shown                                              | [assistant/reply-checks.ts](src/features/assistant/reply-checks.ts), [assistant/reply-issues.ts](src/features/assistant/reply-issues.ts)                                                                             |
+| Model output is untrusted: schema, id, number, finished-sentence, dropped-word and no-false-reassurance checks before anything is shown                        | [assistant/reply-checks.ts](src/features/assistant/reply-checks.ts), [assistant/reply-issues.ts](src/features/assistant/reply-issues.ts)                                                                             |
 | Content Security Policy with `script-src 'self'`, no inline code, Trusted Types required; HSTS, `nosniff`, frame denial, COOP, CORP, COEP, 22 features denied  | [config/security-policy.ts](src/config/security-policy.ts)                                                                                                                                                           |
 | The page writes text, never markup                                                                                                                             | [public/js/dom.js](public/js/dom.js)                                                                                                                                                                                 |
 | Upstream replies and cached values parsed against schemas                                                                                                      | [providers/open-meteo-schemas.ts](src/features/air-quality/providers/open-meteo-schemas.ts), [lib/remember.ts](src/lib/remember.ts)                                                                                  |
@@ -330,7 +330,8 @@ uses `aria-disabled` while a request is in flight, so it stays focusable.
   the reply must be one complete JSON object that matches the schema, explains
   every recommendation exactly once, contains no numeral outside the facts and
   the visitor's own notes, finishes every sentence and has no gap where a word
-  was dropped ([reply-checks.ts](src/features/assistant/reply-checks.ts),
+  was dropped, and never says that nobody is at risk when the air is worse than
+  moderate ([reply-checks.ts](src/features/assistant/reply-checks.ts),
   [reply-issues.ts](src/features/assistant/reply-issues.ts)). When a reply is
   rejected, the second model receives the same request with the reasons.
 - **Fallback.** When both attempts fail, a rule-based generator writes the same

@@ -64,7 +64,7 @@ fails unless:
   doc comment;
 - every source module is under 3.5 KB, every test file under 4 KB and every
   stylesheet under 4 KB (the largest source module today is 3,473 bytes, the
-  median 1,365).
+  median 1,360).
 
 ## One source of truth
 

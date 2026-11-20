@@ -1,12 +1,13 @@
 /**
  * The reasons a reply of the right shape is still rejected: an explanation
- * missing, unknown or repeated; a numeral the facts did not contain; a text
- * that stops mid-sentence or has a word missing. Each reason is worded so it
- * can be handed back to a model. Applied by ./reply-checks.ts.
+ * missing, unknown or repeated; a numeral the facts did not contain; a text cut
+ * mid-sentence or missing a word; a claim that nobody is at risk
+ * (./risk-claims.ts). Each is worded to hand back to a model. Used by ./reply-checks.ts.
  */
 import type { PlanBrief } from '../plan/types';
 import { factsOf } from './facts';
 import { numbersIn, unsupportedNumbers } from './number-firewall';
+import { riskIssues } from './risk-claims';
 import type { NarrativeReply } from './schemas';
 
 /** Ids that are missing, unknown or repeated among the explanations. */
@@ -69,5 +70,6 @@ export function issuesIn(reply: NarrativeReply, brief: PlanBrief): string[] {
     ...numberIssues(reply, brief),
     ...endingIssues(reply),
     ...gapIssues(reply),
+    ...riskIssues(namedTexts(reply), brief),
   ];
 }

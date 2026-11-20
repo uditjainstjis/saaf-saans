@@ -74,6 +74,9 @@ Text coming out
    bracket), so text cut off at a length limit is never shown.
 5. No text may have a gap where a word was dropped (two spaces inside a
    sentence), which is how a missing figure shows up in a model's reply.
+6. In air worse than moderate, no text may say that nobody is at risk or that
+   the air is safe: that contradicts the health advice in the facts
+   ([risk-claims.ts](src/features/assistant/risk-claims.ts)).
 
 The firewall reads numerals written in digits. It cannot tell whether a figure
 that is in the facts has been attached to the right thing, which is why the

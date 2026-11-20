@@ -6,13 +6,13 @@
 test with coverage. On the committed tree:
 
 ```text
- Test Files  97 passed (97)
-      Tests  460 passed (460)
+ Test Files  98 passed (98)
+      Tests  467 passed (467)
 
-Statements   : 100% ( 954/954 )
-Branches     : 100% ( 330/330 )
-Functions    : 100% ( 289/289 )
-Lines        : 100% ( 844/844 )
+Statements   : 100% ( 961/961 )
+Branches     : 100% ( 334/334 )
+Functions    : 100% ( 292/292 )
+Lines        : 100% ( 850/850 )
 ```
 
 | Directory                            | Statements | Branches | Functions | Lines |
@@ -76,9 +76,10 @@ is checked against published ratios before it is trusted.
 
 - Open-Meteo down, slow, answering an error, or answering a malformed body.
 - The first model down, hanging, replying with prose, with the wrong ids, with
-  an invented number, with a sentence cut short or with a word dropped; the
-  second model answering after a failure (given the original request) and after
-  a rejection (given the reasons); both failing, and never a third call.
+  an invented number, with a sentence cut short, with a word dropped or with a
+  claim that nobody is at risk in unhealthy air; the second model answering
+  after a failure (given the original request) and after a rejection (given the
+  reasons); both failing, and never a third call.
 - NVIDIA's API answering an HTTP error, or failing in transport: the status or
   the error is logged with the key removed, and the next model is asked. With no
   key configured, NVIDIA's API is never called.
