@@ -22,6 +22,10 @@ it('draws a 3px focus ring on everything focusable, and never removes an outline
   expect(sheet).not.toMatch(/outline:\s*(none|0)/);
 });
 
+it('has nothing sticky or fixed that could cover the focused element', () => {
+  expect(sheet).not.toMatch(/position:\s*(sticky|fixed)/);
+});
+
 it('sizes every target at 44px or more', () => {
   expect(tokenPx('target')).toBeGreaterThanOrEqual(44);
   for (const selector of [

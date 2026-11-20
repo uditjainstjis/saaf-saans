@@ -1,0 +1,123 @@
+# Security
+
+What the service protects, what it assumes, and where each control lives.
+
+## Threat model
+
+Saaf Saans has no accounts, no secrets and no database. What an attacker can
+reach is: the two POST routes, the text they carry to a language model, the
+replies of two upstream APIs, and the page that renders the result. The assets
+worth protecting are a visitor's profile (family make-up, health, location), the
+integrity of the advice and its numbers, and the Workers AI quota.
+
+## 1. The request gate
+
+Every POST passes four rules in order, cheapest first
+([middleware/admission-rules.ts](src/middleware/admission-rules.ts),
+[middleware/rate-limit.ts](src/middleware/rate-limit.ts), listed in
+[app.ts](src/app.ts)):
+
+| Rule                                                     | Refusal | Why                                                                                                                           |
+| -------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `content-type` must be `application/json`                | 415     | The CSRF control: a cross-origin page cannot send JSON without a preflight, and no CORS policy exists for a preflight to pass |
+| `Sec-Fetch-Site` must be `same-origin`, `none` or absent | 403     | Browsers set it and page script cannot forge it                                                                               |
+| Body at most 4 KB, by declared and by actual size        | 413     | A profile is under 1 KB                                                                                                       |
+| 30 requests a minute per connecting address              | 429     | Protects the model quota; runs last so a refused request never spends the budget                                              |
+
+## 2. Validation
+
+[plan/schemas.ts](src/features/plan/schemas.ts) is the only way a profile enters
+the system. It is a strict zod schema: unknown keys are rejected, every number
+has a range, every choice is an enum, text is trimmed and capped (place 80
+characters, notes 300). [middleware/validate.ts](src/middleware/validate.ts)
+reports every issue against its field. Replies from Open-Meteo and values read
+back from the cache are parsed against schemas too
+([open-meteo-schemas.ts](src/features/air-quality/providers/open-meteo-schemas.ts),
+[air-quality/schemas.ts](src/features/air-quality/schemas.ts),
+[lib/remember.ts](src/lib/remember.ts)).
+
+## 3. The model boundary
+
+Text going in ([lib/prompt-guard/](src/lib/prompt-guard/)):
+
+1. **Screen.** Seven rules look for text aimed at a machine: instruction
+   overrides, role hijacks, steering about the air, suppression, prompt
+   exfiltration, control tokens and hidden characters. Findings are shown to the
+   visitor. The screen is plain code, because a screen implemented by a model
+   can itself be argued with. Its patterns use bounded quantifiers, and a test
+   feeds it adversarial input under a time limit.
+2. **Strip.** Every sentence holding a match is removed before the prompt is
+   built.
+3. **Fence.** What is left, and the place name returned by the geocoder (also
+   third-party text), is wrapped in a delimiter made from a fresh random UUID,
+   with chat control tokens defanged. The system prompt says fenced text is
+   data.
+
+Text coming out
+([assistant/reply-checks.ts](src/features/assistant/reply-checks.ts)):
+
+1. The reply must be one JSON object matching a strict schema.
+2. It must explain every recommendation exactly once and nothing else.
+3. **Number firewall**: every numeral in it must appear in the computed facts or
+   the visitor's own notes. A reply that invents a statistic is rejected.
+
+A rejected reply gets one repair attempt; after that the rule-based generator
+answers. The client never tells the model what the air or the numbers are: the
+brief is rebuilt server-side from the validated profile on every request.
+
+## 4. The page
+
+- **Content Security Policy**
+  ([config/security-policy.ts](src/config/security-policy.ts)):
+  `default-src 'self'`, `script-src 'self'`, `style-src 'self'`,
+  `connect-src 'self'`, `object-src 'none'`, `base-uri 'none'`,
+  `form-action 'none'`, `frame-ancestors 'none'`. No nonce or hash is needed,
+  because the page has no inline script or style at all (a test asserts this).
+- **Trusted Types**: `require-trusted-types-for 'script'` with
+  `trusted-types 'none'` makes the browser refuse assignments to markup-parsing
+  sinks such as `innerHTML`. The front end only ever sets text
+  ([public/js/dom.js](public/js/dom.js)); a test renders a model reply
+  containing markup and checks that it stays text.
+- **Other headers**: HSTS with preload, `nosniff`, `X-Frame-Options: DENY`,
+  `Referrer-Policy: no-referrer`, COOP, CORP and COEP, and a
+  `Permissions-Policy` denying 25 features.
+- Static assets are served at the edge without the Worker, so the same policy is
+  written to `public/_headers` from the same data at build time, and a test
+  checks the two are identical.
+
+## 5. Privacy
+
+- Profiles are not stored. API replies carry `cache-control: no-store`.
+- The narrative cache is keyed by a SHA-256 hash of the brief
+  ([lib/content-key.ts](src/lib/content-key.ts)), so a key reveals nothing and
+  one household cannot read another's narrative.
+- Open-Meteo receives a place name and coordinates rounded to three decimals,
+  nothing else.
+- Logs carry an event name and an error reason, never a profile.
+- An unexpected fault is answered with a generic 500 and no detail.
+
+## 6. Supply chain and CI
+
+- No API keys or secrets exist: inference is a Workers AI binding and the air
+  data API is keyless. A CI job fails if a credential-shaped string is
+  committed.
+- `npm audit` reports 0 vulnerabilities, and CI fails on any advisory at any
+  severity, dev dependencies included.
+- Every GitHub Action is pinned to a commit SHA; Dependabot keeps the pins and
+  the packages current; CodeQL runs the `security-extended` queries; pull
+  requests get a dependency review.
+
+## 7. Reporting
+
+Please report a vulnerability through
+<https://github.com/uditjainstjis/saaf-saans/security/advisories/new>. Do not
+include real personal details in a report.
+[/.well-known/security.txt](public/.well-known/security.txt) carries the same
+contact.
+
+## What this service deliberately does not do
+
+- It does not authenticate anyone, so it holds no session to steal.
+- It does not render model output as HTML.
+- It does not send a visitor's notes anywhere except, screened and fenced, to
+  the model.
