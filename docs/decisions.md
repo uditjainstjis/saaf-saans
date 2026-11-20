@@ -12,8 +12,9 @@ rejects any reply with a numeral that is not in those facts.
 product could have, and a prompt asking a model not to invent numbers is a
 request, not a guarantee.
 
-**Cost.** The model sometimes fails the check and is replaced by rule-written
-text, which is plainer.
+**Cost.** A reply sometimes fails the check. A second model is then asked (see
+record 10), and when that fails too the text is written by rules, which is
+plainer.
 
 ## 2. Two routes, split by cost
 
