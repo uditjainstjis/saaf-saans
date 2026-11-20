@@ -32,16 +32,17 @@ they describe one household.
 
 ## Payload
 
-No framework, no web font, no image and no third-party request. Sizes below are
-bytes on disk and after `gzip -9`.
+No framework, no web font, no raster image and no third-party request. Sizes
+below are bytes on disk and after `gzip -9`.
 
 | Asset                                     | Files  | Raw         | Gzip        |
 | ----------------------------------------- | ------ | ----------- | ----------- |
-| `index.html`                              | 1      | 13.8 KB     | 3.4 KB      |
+| `index.html`                              | 1      | 13.9 KB     | 3.4 KB      |
+| `favicon.svg`                             | 1      | 0.2 KB      | 0.2 KB      |
 | Stylesheets                               | 4      | 10.6 KB     | 3.7 KB      |
 | Front-end modules                         | 11     | 23.1 KB     | 9.9 KB      |
 | Shared modules compiled from `src/config` | 3      | 4.1 KB      | 2.2 KB      |
-| **Total**                                 | **19** | **51.6 KB** | **19.1 KB** |
+| **Total**                                 | **20** | **51.9 KB** | **19.4 KB** |
 
 An `/api/plan` reply was 8.7 KB for a family and 10.4 KB for a community in the
 end-to-end run, uncompressed; an `/api/assistant` reply was about 2 KB.
