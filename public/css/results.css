@@ -1,4 +1,30 @@
-/* Results: the air card with its AQI band, the totals, and recommendations. */
+/* Results: the jump navigation, the air card with its AQI band, the totals,
+   and recommendations. */
+
+/* A compact, wrapping row of links to each part of a long page. */
+.jump ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+.jump a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  padding: 0 0.9rem;
+  background: var(--surface-1);
+  border: 2px solid var(--field-border);
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.jump a:hover {
+  border-color: var(--field-border-hover);
+}
+
 .air__place {
   font-weight: 700;
   font-size: 1.25rem;
@@ -144,7 +170,8 @@ td {
 @media print {
   .site-header button,
   form,
-  .skip-link {
+  .skip-link,
+  .jump {
     display: none;
   }
 }

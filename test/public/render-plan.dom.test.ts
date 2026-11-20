@@ -61,3 +61,16 @@ it('lists community recommendations for a community', async () => {
   await renderWith(okReply(planReply(COMMUNITY)), okReply(await modelNarrative(COMMUNITY)));
   expect(cards('alternative').map((c) => c.id.slice(4))).toContain('stop-waste-burning');
 });
+
+it('names each "How this was calculated" disclosure after its card, starting with the visible text', async () => {
+  await renderWith(okReply(planReply()), okReply(await modelNarrative()));
+  const summaries = [...byId('results').querySelectorAll<HTMLElement>('.rec summary')];
+  expect(summaries).toHaveLength(6);
+  for (const summary of summaries) {
+    const title = partText(summary.closest<HTMLElement>('.rec') ?? undefined, 'title');
+    expect(summary.getAttribute('aria-label')).toBe(`How this was calculated: ${title}`);
+    expect(summary.getAttribute('aria-label')?.startsWith(summary.textContent)).toBe(true);
+  }
+  const names = summaries.map((summary) => summary.getAttribute('aria-label'));
+  expect(new Set(names).size).toBe(names.length);
+});

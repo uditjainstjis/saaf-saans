@@ -34,6 +34,7 @@ it('sizes every target at 44px or more', () => {
     '.choice',
     'details > summary',
     '.error-summary a',
+    '.jump a',
   ]) {
     expect(rule(selector), selector).toContain('min-height: var(--target)');
   }

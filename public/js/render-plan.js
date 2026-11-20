@@ -9,7 +9,8 @@ import { CATEGORIES } from './shared/options.js';
 
 /**
  * One recommendation card. Its element id carries the recommendation id, so
- * the assistant's explanation can be added to it when it arrives.
+ * the assistant's explanation can be added to it when it arrives, and its
+ * disclosure is named after it, so no two controls on the page share a name.
  * @param {RecommendationView} rec
  * @returns {HTMLElement}
  */
@@ -21,6 +22,9 @@ function card(rec) {
   part(el, '.rec__action', HTMLElement).textContent = rec.action;
   part(el, '.rec__impact', HTMLElement).textContent = rec.impactText;
   part(el, '.rec__calc', HTMLElement).textContent = rec.calculation;
+  // Every card has this disclosure, so its name adds the title after the visible text (SC 2.5.3).
+  const summary = part(el, 'summary', HTMLElement);
+  summary.setAttribute('aria-label', `${summary.textContent}: ${rec.title}`);
   part(el, '.rec__factors', HTMLElement).replaceChildren(
     ...rec.factors.map((f) =>
       textEl(
