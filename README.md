@@ -199,10 +199,10 @@ path needs `wrangler login`.
  Test Files  86 passed (86)
       Tests  378 passed (378)
 
-Statements   : 100% ( 855/855 )
+Statements   : 100% ( 854/854 )
 Branches     : 100% ( 295/295 )
 Functions    : 100% ( 260/260 )
-Lines        : 100% ( 751/751 )
+Lines        : 100% ( 750/750 )
 ```
 
 | Measured over             | Statements | Branches | Functions | Lines |
