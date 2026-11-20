@@ -1,8 +1,10 @@
 /**
- * Run `call` with a signal that aborts after `ms`, and reject at that moment.
- * A call that honours the signal is cancelled; one that ignores it is still
- * abandoned on time, so no caller ever waits on a hung dependency.
+ * A deadline for any asynchronous call. A call that honours the abort signal
+ * is cancelled; one that ignores it is still abandoned on time, so no caller
+ * ever waits on a hung dependency. Used by ./fetch-json.ts and the assistant.
  */
+
+/** Run `call` with a signal that aborts after `ms`, rejecting with a TimeoutError then. */
 export async function withTimeout<T>(
   call: (signal: AbortSignal) => Promise<T>,
   ms: number,

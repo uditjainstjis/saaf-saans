@@ -1,4 +1,9 @@
-import type { AirReport, HourReading } from '../plan/types';
+/**
+ * Reading the 24-hour forecast: the cleanest and dirtiest hours, the reading
+ * at a given hour, and clock times for people. The report type is ./types.ts.
+ */
+
+import type { AirReport, HourReading } from './types';
 
 /** The cleanest and the dirtiest hour of the next day. */
 export interface Outlook {

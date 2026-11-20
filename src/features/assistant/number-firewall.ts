@@ -1,9 +1,8 @@
 /**
  * The number firewall: a model may repeat a figure it was given, and nothing
- * else. Every numeral in generated text must appear among the facts in the
- * prompt, which come from the impact engine; text that carries any other
- * numeral is rejected. This is what makes "the model explains, the engine
- * computes" a property of the code rather than a request in a prompt.
+ * else. Any numeral in generated text that is not among the facts is reported,
+ * which makes "the model explains, the engine computes" a property of the
+ * code rather than a request in a prompt. Applied by ./reply-checks.ts.
  */
 
 /** Names that contain digits without being quantities. */

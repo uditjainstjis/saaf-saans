@@ -2,7 +2,8 @@
 /** The profile form: filled from shared constants, switched by mode, read into a request. */
 import { $ } from './dom.js';
 import { CHOICE_FIELDS, FLAG_FIELDS, NUMBER_FIELDS, forMode } from './fields.js';
-import { LIMITS, MODES, rangeMessage } from './shared/constants.js';
+import { LIMITS, rangeMessage } from './shared/limits.js';
+import { MODES } from './shared/options.js';
 
 /** @typedef {import('./fields.js').Mode} Mode */
 /** @typedef {{ field: string, message: string }} Issue */

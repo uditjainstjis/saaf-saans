@@ -3,19 +3,26 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 /**
- * Lint rules are chosen to catch the mistakes that matter in a Worker
- * (floating promises, unchecked `any` crossing a trust boundary, dead code)
- * and to hold the structural limits the README states: no type assertions, no
- * file over 200 lines, no function over 40 lines, cyclomatic complexity of at
- * most 8, and no suppression comments. Style is Prettier's job.
+ * Lint rules catch the mistakes that matter in a Worker (floating promises,
+ * unchecked `any` crossing a trust boundary, dead code) and hold the size
+ * limits CODE_QUALITY.md states, for source, front end and tests alike.
  */
+const SIZE_LIMITS = {
+  'max-lines': ['error', { max: 110, skipBlankLines: true, skipComments: true }],
+  'max-lines-per-function': ['error', { max: 30, skipBlankLines: true, skipComments: true }],
+  complexity: ['error', { max: 8 }],
+  'max-depth': ['error', 3],
+  'max-params': ['error', 3],
+};
+
 export default tseslint.config(
   {
     ignores: [
       'node_modules/**',
       'coverage/**',
       'worker-configuration.d.ts',
-      '.wrangler/**',
+      // Dot-directories hold tooling state, not source.
+      '.*/**',
       // Compiled from src/config/, which is linted.
       'public/js/shared/**',
     ],
@@ -38,17 +45,8 @@ export default tseslint.config(
       'no-warning-comments': ['error', { terms: ['todo', 'fixme', 'xxx', 'hack'] }],
       eqeqeq: ['error', 'always'],
       'prefer-const': 'error',
-      complexity: ['error', { max: 8 }],
-      'max-lines': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
-      'max-depth': ['error', 3],
-      'max-params': ['error', 4],
+      ...SIZE_LIMITS,
     },
-  },
-  {
-    // Shipped code keeps every function to a screen. Tests are exempt, since a
-    // describe block is a list of cases, not a unit of logic.
-    files: ['src/**/*.ts', 'public/**/*.js', 'scripts/**/*.mjs'],
-    rules: { 'max-lines-per-function': ['error', { max: 40 }] },
   },
   {
     // The one module allowed to write to the console: the Logger adapter.

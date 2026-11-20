@@ -1,5 +1,10 @@
-import { profileSchema, type Profile } from '../features/plan/schemas';
-import { MAX_BODY_BYTES } from './admission';
+/**
+ * Request body validation: reads a JSON body under the size limit and parses
+ * it with the schema a route supplies. Every schema issue is reported against
+ * its field, so the form can show them all at once. Schemas live in each feature.
+ */
+import type { z } from 'zod';
+import { MAX_BODY_BYTES } from '../config/runtime';
 import { refuse, RequestError } from '../lib/app-error';
 
 /** JSON.parse, with a refusal a person can act on when the body is not JSON. */
@@ -11,24 +16,15 @@ function parseJson(text: string): unknown {
   }
 }
 
-/**
- * The request body as a validated profile.
- *
- * The size is checked again on the bytes actually read, since a
- * `content-length` header is a claim, not a measurement. Every schema issue
- * is reported, each against its field, so the form can show them all at once.
- */
-export async function readProfile(request: Request): Promise<Profile> {
+/** The request body, validated. The size is re-checked on the bytes read, not the header's claim. */
+export async function readValidated<T>(request: Request, schema: z.ZodType<T>): Promise<T> {
   const text = await request.text();
   if (text.length > MAX_BODY_BYTES) throw refuse(413, 'too_large', 'That request is too large.');
-  const parsed = profileSchema.safeParse(parseJson(text));
+  const parsed = schema.safeParse(parseJson(text));
   if (parsed.success) return parsed.data;
-  throw new RequestError(
-    400,
-    'invalid_input',
-    parsed.error.issues.map((issue) => ({
-      field: String(issue.path[0] ?? 'mode'),
-      message: issue.message,
-    })),
-  );
+  const issues = parsed.error.issues.map((issue) => ({
+    field: String(issue.path[0] ?? 'form'),
+    message: issue.message,
+  }));
+  throw new RequestError(400, 'invalid_input', issues);
 }

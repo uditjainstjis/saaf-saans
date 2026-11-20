@@ -1,7 +1,7 @@
 // @ts-check
 /** Renders the air card: the AQI band in words and symbol, readings, and the hourly table. */
 import { $, textEl } from './dom.js';
-import { formatNumber } from './shared/constants.js';
+import { formatNumber } from './shared/limits.js';
 
 /** @typedef {import('../../src/features/plan/view').PlanView} PlanView */
 

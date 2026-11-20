@@ -1,12 +1,10 @@
-import { formatNumber as n } from '../../config/constants';
-import type { Impact, Recommendation } from '../plan/types';
-
 /**
- * The direct impact of a choice, in a sentence: deterministic wording around
- * the impact engine's figures. The page shows this line under every
- * recommendation whether or not a model wrote anything, so the numbers a
- * person reads never depend on generative AI.
+ * The direct impact of a choice, in a sentence: fixed wording around the
+ * engine's figures. The page shows this line under every recommendation
+ * whether or not a model wrote anything, so no number depends on generative AI.
  */
+import { formatNumber as n } from '../../config/limits';
+import type { Impact, ImpactStatus } from './types';
 
 /** One clause per non-zero figure of an impact. */
 function clauses(impact: Impact): string[] {
@@ -31,7 +29,10 @@ function clauses(impact: Impact): string[] {
 export function impactSentence({
   impact,
   status,
-}: Pick<Recommendation, 'impact' | 'status'>): string {
+}: {
+  impact: Impact;
+  status: ImpactStatus;
+}): string {
   const parts = clauses(impact);
   if (parts.length === 0) return 'Too small to measure in today’s air; worth keeping as a habit.';
   const lead = status === 'keep' ? 'Already saving' : 'Direct impact';

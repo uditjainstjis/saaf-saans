@@ -1,11 +1,14 @@
+/**
+ * Profiles, a place and air reports shared by the suite, and the two helpers
+ * that turn them into a situation or a brief exactly as production code does.
+ */
+
 import { adviceFor, bandFor } from '../../src/features/air-quality/aqi';
+import type { AirReport, HourReading, Place } from '../../src/features/air-quality/types';
 import { buildPlan } from '../../src/features/plan/planner';
 import type { CommunityProfile, FamilyProfile, Profile } from '../../src/features/plan/schemas';
-import { situationOf, type Situation } from '../../src/features/plan/situation';
-import type { AirReport, HourReading, Place } from '../../src/features/plan/types';
-import type { PlanBrief } from '../../src/lib/ports';
-
-/** Profiles, places and air reports shared by the suite. */
+import { situationOf } from '../../src/features/plan/situation';
+import type { PlanBrief, Situation } from '../../src/features/plan/types';
 
 export const DELHI: Place = {
   name: 'Delhi',
@@ -46,11 +49,14 @@ export const COMMUNITY: CommunityProfile = {
   wasteBurning: true,
 };
 
-/** Twenty-four hours from midnight: dirty at night and at 7 am, cleanest at 3 pm. */
+/** PM2.5 by hour on the fixture day: dirty at night and at 7 am, cleanest at 3 pm. */
+const SMOG_BY_HOUR: Readonly<Record<number, number>> = { 7: 180, 15: 30, 22: 220 };
+
+/** Twenty-four hours from midnight, optionally scaled. */
 export function smogDay(scale = 1): AirReport['hours'] {
   const at = (hour: number): HourReading => ({
     hour,
-    pm25: Math.round(scale * (hour === 15 ? 30 : hour === 7 ? 180 : hour === 22 ? 220 : 120)),
+    pm25: Math.round(scale * (SMOG_BY_HOUR[hour] ?? 120)),
   });
   return [at(0), ...Array.from({ length: 23 }, (_, i) => at(i + 1))];
 }

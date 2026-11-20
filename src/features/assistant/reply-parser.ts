@@ -1,10 +1,7 @@
 /**
- * Reading a JSON object out of a model reply, whatever wraps it.
- *
- * Schema-constrained decoding is requested, but a model under load can still
- * wrap its output in prose or a fenced code block, and Workers AI wraps
- * replies in an envelope that differs by model. Recovering here costs nothing
- * and avoids discarding an otherwise good answer.
+ * Reads a JSON object out of a model reply, whatever wraps it: the Workers AI
+ * envelope, OpenAI-style choices, a fenced code block or surrounding prose.
+ * Recovering here avoids discarding a good answer. Checked by ./reply-checks.ts.
  */
 
 /** True for a plain JSON object. */

@@ -1,22 +1,22 @@
-import type { Category } from '../../../config/constants';
-import { round1 } from '../../impact/service';
+/**
+ * The strategy contract: the unit of extension. A strategy looks at a
+ * situation and either has advice for it or does not. The planner runs
+ * whatever list it is given, so new advice is a new file here and one entry
+ * in ./registry.ts.
+ */
+
+import type { Category } from '../../../config/options';
 import type { FactorId } from '../../impact/factors';
-import type { Situation } from '../situation';
-import type { Impact, Recommendation } from '../types';
+import { round1 } from '../../impact/service';
+import type { Impact } from '../../impact/types';
+import type { Recommendation, Situation } from '../types';
 
 /** What a strategy returns: a recommendation without the identity its strategy supplies. */
 export interface Advice extends Omit<Recommendation, 'id' | 'category' | 'factorIds'> {
   factorIds: readonly FactorId[];
 }
 
-/**
- * One way of improving a household's or group's air: the unit of extension.
- *
- * A strategy looks at a situation and either has advice for it or does not.
- * The planner (src/features/plan/planner.ts) runs whatever list it is given, so a new
- * kind of advice is a new Strategy added to the registry; nothing that calls
- * the planner changes.
- */
+/** One way of improving a household's or a group's air. */
 export interface Strategy {
   readonly id: string;
   readonly category: Category;

@@ -1,19 +1,17 @@
+/**
+ * The request schema of the plan feature: the lifestyle profile a plan is
+ * tailored to. Everything a visitor sends is parsed here before any other code
+ * sees it: unknown keys rejected, numbers bounded, text trimmed and capped.
+ */
 import { z } from 'zod';
+import { LIMITS, rangeMessage } from '../../config/limits';
 import {
   COMMUTE_MODES,
   COOKING_FUELS,
   GROUP_TYPES,
   HOME_TYPES,
-  LIMITS,
   OUTDOOR_TIMES,
-  rangeMessage,
-} from '../../config/constants';
-
-/**
- * The lifestyle profile a plan is tailored to, and the one schema that admits
- * it. Everything a visitor sends is parsed here before any other code sees it:
- * unknown keys are rejected, numbers are bounded, text is trimmed and capped.
- */
+} from '../../config/options';
 
 /** A whole number within a range, with the shared wording when it is not. */
 const count = (label: string, range: { min: number; max: number }): z.ZodNumber =>

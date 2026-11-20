@@ -1,35 +1,10 @@
 /**
- * Response hardening, for API responses and static assets alike.
- *
- * The Worker applies {@link SECURITY_HEADERS} to what it answers through
- * {@link harden}. Static assets are served at the edge without invoking the
- * Worker, so scripts/build-assets.mjs writes {@link headersFile} to
- * public/_headers, and the same policy reaches them from this one definition.
- *
- * The policy is strict by construction rather than by exception: all scripts
- * and styles live in their own files, so `script-src 'self'` needs no
- * `unsafe-inline` or `unsafe-eval` escape hatch, and the app has no third-party
- * origins to allow.
- *
- * Three directives deserve a note.
- *
- * `require-trusted-types-for 'script'` with `trusted-types 'none'` makes the
- * browser refuse every assignment to a DOM sink that parses markup —
- * `innerHTML`, `outerHTML`, `document.write`, `insertAdjacentHTML`. The front
- * end writes every string as text, through `textContent` or `append()` of a
- * string (which makes a text node), so a model reply, or a visitor's notes
- * echoed back in one, cannot smuggle markup into the page; the browser
- * enforces that, and code that reaches for `innerHTML` fails loudly.
- *
- * `cross-origin-embedder-policy: require-corp` completes the COOP/COEP/CORP
- * trio. It costs nothing, because the page loads no cross-origin subresources,
- * and it forecloses a class of side channel that would otherwise stay open.
- *
- * `permissions-policy` denies, by name, the 25 policy-controlled features
- * below. An air quality form needs none of them. The header can only deny what it
- * names: a feature a browser adds later keeps its default until it is listed.
+ * The response policy as data: security headers for every reply and cache
+ * rules for static paths. It imports nothing, because scripts/build-assets.mjs
+ * evaluates it to write public/_headers. Applied by middleware/security-headers.ts.
  */
 
+/** Scripts and styles come only from this origin; DOM sinks that parse markup are closed. */
 const CSP = [
   "default-src 'self'",
   "script-src 'self'",
@@ -51,46 +26,25 @@ const CSP = [
   'upgrade-insecure-requests',
 ].join('; ');
 
-/** The features denied, each set to an empty allowlist. */
-const PERMISSIONS_POLICY = [
-  'accelerometer',
-  'ambient-light-sensor',
-  'autoplay',
-  'battery',
-  'bluetooth',
-  'browsing-topics',
-  'camera',
-  'display-capture',
-  'encrypted-media',
-  'gamepad',
-  'geolocation',
-  'gyroscope',
-  'hid',
-  'idle-detection',
-  'local-fonts',
-  'magnetometer',
-  'microphone',
-  'midi',
-  'payment',
-  'picture-in-picture',
-  'publickey-credentials-get',
-  'screen-wake-lock',
-  'serial',
-  'usb',
-  'xr-spatial-tracking',
-]
-  .map((feature) => `${feature}=()`)
-  .join(', ');
+/** Browser features the page never uses; each is denied with an empty allowlist. */
+const DENIED_FEATURES =
+  'accelerometer ambient-light-sensor autoplay battery bluetooth browsing-topics camera ' +
+  'display-capture encrypted-media gamepad geolocation gyroscope hid idle-detection local-fonts ' +
+  'magnetometer microphone midi payment picture-in-picture publickey-credentials-get ' +
+  'screen-wake-lock serial usb xr-spatial-tracking';
 
 type HeaderMap = Readonly<Record<string, string>>;
 
-const SECURITY_HEADERS: HeaderMap = {
+/** The headers set on every response, API and static alike. */
+export const SECURITY_HEADERS: HeaderMap = {
   'content-security-policy': CSP,
   'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
   'x-content-type-options': 'nosniff',
   'x-frame-options': 'DENY',
   'referrer-policy': 'no-referrer',
-  'permissions-policy': PERMISSIONS_POLICY,
+  'permissions-policy': DENIED_FEATURES.split(' ')
+    .map((feature) => `${feature}=()`)
+    .join(', '),
   'cross-origin-opener-policy': 'same-origin',
   'cross-origin-resource-policy': 'same-origin',
   'cross-origin-embedder-policy': 'require-corp',
@@ -98,28 +52,20 @@ const SECURITY_HEADERS: HeaderMap = {
   'origin-agent-cluster': '?1',
 };
 
-/** Headers for static paths beyond the policy every path gets. */
+/** Fresh for ten minutes, then served stale while the edge revalidates. */
+const ASSET_CACHE = 'public, max-age=600, stale-while-revalidate=86400';
+
+/** Extra headers for static paths: short caching for assets, plain text for security.txt. */
 const STATIC_RULES: Readonly<Record<string, HeaderMap>> = {
-  // Styles and scripts are small and change only on deploy: ten minutes fresh,
-  // then served stale while the edge revalidates, so repeat visits skip the wait.
-  '/css/*': { 'cache-control': 'public, max-age=600, stale-while-revalidate=86400' },
-  '/js/*': { 'cache-control': 'public, max-age=600, stale-while-revalidate=86400' },
-  // RFC 9116: plain text, so it is machine-readable, and cached for an hour
-  // only, so the contact details a reporter reads are current.
+  '/css/*': { 'cache-control': ASSET_CACHE },
+  '/js/*': { 'cache-control': ASSET_CACHE },
   '/.well-known/*': {
     'content-type': 'text/plain; charset=utf-8',
     'cache-control': 'public, max-age=3600',
   },
 };
 
-/** Apply {@link SECURITY_HEADERS} to a response without altering its body. */
-export function harden(res: Response): Response {
-  const out = new Response(res.body, res);
-  for (const [k, v] of Object.entries(SECURITY_HEADERS)) out.headers.set(k, v);
-  return out;
-}
-
-/** The text of public/_headers: the policy on every path, then {@link STATIC_RULES}. */
+/** The text of public/_headers: the policy on every path, then the static rules. */
 export function headersFile(): string {
   const rules = { '/*': SECURITY_HEADERS, ...STATIC_RULES };
   const block = ([path, headers]: [string, HeaderMap]): string =>

@@ -1,12 +1,17 @@
+/**
+ * Runtime shapes of the air-quality feature's own types, used wherever a
+ * value arrives from outside the type system: the cache and adapter output.
+ * The shapes of Open-Meteo's replies are in ./providers/open-meteo-schemas.ts.
+ */
 import { z } from 'zod';
-import { POLLUTANTS, type AirReport, type Place } from '../plan/types';
+import { type AirReport, POLLUTANTS, type Place } from './types';
 
 /** A concentration or index: a finite number that is not negative. */
 const amount = z.number().min(0).max(100_000);
 
 const hourReading = z.strictObject({ hour: z.number().int().min(0).max(23), pm25: amount });
 
-/** The shape of an {@link AirReport}, for values read back from the cache. */
+/** The shape of an AirReport. */
 export const airReportSchema: z.ZodType<AirReport> = z.strictObject({
   source: z.enum(['live', 'typical']),
   aqi: amount,
@@ -16,7 +21,7 @@ export const airReportSchema: z.ZodType<AirReport> = z.strictObject({
   hours: z.tuple([hourReading], hourReading).readonly(),
 });
 
-/** The shape of a {@link Place}. */
+/** The shape of a Place. */
 export const placeSchema: z.ZodType<Place> = z.strictObject({
   name: z.string().min(1).max(120),
   region: z.string().max(200),

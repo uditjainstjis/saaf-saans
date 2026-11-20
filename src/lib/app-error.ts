@@ -1,6 +1,11 @@
-/** One thing wrong with a request, tied to the form field it concerns. */
+/**
+ * The one error type the API answers with: a refusal that carries everything
+ * the page needs to explain itself. Raised by middleware and services, turned
+ * into a response by middleware/error-handler.ts.
+ */
+
+/** One thing wrong with a request, tied to the form field it concerns (`form` for none). */
 export interface Issue {
-  /** The request field, which is also the id of its form control. `form` when it is no single field. */
   field: string;
   message: string;
 }
@@ -8,10 +13,7 @@ export interface Issue {
 /** HTTP statuses this API uses for a refused request. */
 export type RefusalStatus = 400 | 403 | 404 | 413 | 415 | 429;
 
-/**
- * A request the API refuses, with everything the page needs to say why: a
- * status, a stable code, and the issues to list in the error summary.
- */
+/** A request the API refuses: a status, a stable code, and the issues to show. */
 export class RequestError extends Error {
   constructor(
     readonly status: RefusalStatus,

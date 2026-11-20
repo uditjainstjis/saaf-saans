@@ -1,7 +1,8 @@
 // @ts-check
 /** Renders the totals and the three lists of recommendations, with how each was calculated. */
 import { $, cloneTemplate, part, textEl } from './dom.js';
-import { CATEGORIES, formatNumber } from './shared/constants.js';
+import { formatNumber } from './shared/limits.js';
+import { CATEGORIES } from './shared/options.js';
 
 /** @typedef {import('../../src/features/plan/view').PlanView} PlanView */
 /** @typedef {import('../../src/features/plan/view').RecommendationView} RecommendationView */

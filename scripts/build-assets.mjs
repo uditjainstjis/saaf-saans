@@ -2,9 +2,9 @@
  * Writes the files in public/ that are generated from TypeScript in src/, so
  * the page, the edge and the Worker share one definition of each:
  *
- *   public/js/shared/constants.js    src/config/constants.ts, compiled
- *   public/js/shared/constants.d.ts  its declarations, which type the front end
- *   public/_headers                  headersFile() from src/config/security-policy.ts
+ *   public/js/shared/{options,limits,labels}.js   src/config/*.ts, compiled
+ *   public/js/shared/*.d.ts                       their declarations, which type the front end
+ *   public/_headers                               headersFile() from src/config/security-policy.ts
  *
  * Generated files are gitignored. `npm run generate` runs this script, and
  * wrangler runs it as build.command before `dev` and `deploy`.
@@ -22,8 +22,8 @@ function text(source, { outputText, diagnostics = [] }) {
   throw new Error(`${source}: ${why.join('; ')}`);
 }
 
-/** Write `body` to `path` under a `comment`-style line naming its source. */
-function emit(path, source, body, comment = '//') {
+/** Write `body` to `path` under a line (in `comment` syntax) naming its source. */
+function emit({ path, source, body, comment = '//' }) {
   const banner = `${comment} Generated from ${source} by scripts/build-assets.mjs. Edit that file, not this one.\n`;
   writeFileSync(new URL(path, root), banner + body);
 }
@@ -32,15 +32,15 @@ const read = (path) => readFileSync(new URL(path, root), 'utf8');
 const compile = (path) => text(path, ts.transpileModule(read(path), { compilerOptions }));
 const declare = (path) => text(path, ts.transpileDeclaration(read(path), { compilerOptions }));
 
-// constants.ts imports nothing, so its compiled copy stands alone in the page.
-const CONSTANTS = 'src/config/constants.ts';
+// Each of these imports nothing, so its compiled copy stands alone in the page.
 mkdirSync(new URL('public/js/shared/', root), { recursive: true });
-emit('public/js/shared/constants.js', CONSTANTS, compile(CONSTANTS));
-emit('public/js/shared/constants.d.ts', CONSTANTS, declare(CONSTANTS));
+for (const name of ['options', 'limits', 'labels']) {
+  const source = `src/config/${name}.ts`;
+  emit({ path: `public/js/shared/${name}.js`, source, body: compile(source) });
+  emit({ path: `public/js/shared/${name}.d.ts`, source, body: declare(source) });
+}
 
-// headers.ts imports nothing, so its compiled text runs as a module on its own.
-const HEADERS = 'src/config/security-policy.ts';
-const { headersFile } = await import(
-  `data:text/javascript,${encodeURIComponent(compile(HEADERS))}`
-);
-emit('public/_headers', HEADERS, headersFile(), '#');
+// security-policy.ts imports nothing, so its compiled text runs as a module on its own.
+const POLICY = 'src/config/security-policy.ts';
+const { headersFile } = await import(`data:text/javascript,${encodeURIComponent(compile(POLICY))}`);
+emit({ path: 'public/_headers', source: POLICY, body: headersFile(), comment: '#' });

@@ -5,7 +5,7 @@
  */
 
 /** @typedef {import('../../src/features/plan/view').PlanView} PlanView */
-/** @typedef {import('../../src/lib/ports').Narrative} Narrative */
+/** @typedef {import('../../src/features/assistant/types').Narrative} Narrative */
 
 /**
  * @param {unknown} value

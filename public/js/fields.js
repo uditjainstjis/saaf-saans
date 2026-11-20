@@ -4,15 +4,15 @@
  * range, which are choices with shared options, and which belong to one mode.
  * Options and ranges come from the constants the Worker validates against.
  */
+import { LABELS } from './shared/labels.js';
+import { LIMITS } from './shared/limits.js';
 import {
   COMMUTE_MODES,
   COOKING_FUELS,
   GROUP_TYPES,
   HOME_TYPES,
-  LABELS,
-  LIMITS,
   OUTDOOR_TIMES,
-} from './shared/constants.js';
+} from './shared/options.js';
 
 /** @typedef {'family' | 'community'} Mode */
 

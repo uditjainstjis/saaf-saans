@@ -1,3 +1,8 @@
+/**
+ * Read-through caching over the Cache port: serve the cached value while it
+ * still matches its schema, else load, store and return. A cached value is
+ * untrusted until parsed, so a stale shape is simply a miss.
+ */
 import type { z } from 'zod';
 import type { Cache } from './ports';
 
@@ -8,11 +13,7 @@ export interface CacheEntry<T> {
   schema: z.ZodType<T>;
 }
 
-/**
- * Read-through caching: the cached value when there is one and it still
- * matches the schema, else the loaded value, stored for next time. A cached
- * value is untrusted until parsed, so a stale shape is simply a miss.
- */
+/** The cached value for `entry`, or the loaded one, stored for next time. */
 export async function remember<T>(
   cache: Cache,
   { key, ttlSeconds, schema }: CacheEntry<T>,

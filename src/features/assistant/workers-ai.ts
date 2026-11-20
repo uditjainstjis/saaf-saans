@@ -1,7 +1,11 @@
-import type { TextGenerator } from '../../lib/ports';
+/**
+ * The production TextGenerator: the Workers AI binding. It turns one request
+ * into one `run` call and passes the abort signal through. It adds no policy:
+ * timeouts, retries, checking and fallback all live in ./service.ts and ./generators/.
+ */
 
-/** The model asked. Chosen for schema-constrained JSON output at low latency on Workers AI. */
-export const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+import { MODEL, MODEL_TEMPERATURE } from '../../config/runtime';
+import type { TextGenerator } from './types';
 
 /** As much of the Workers AI binding as this adapter calls. */
 export interface AiRunner {
@@ -17,13 +21,7 @@ export interface AiRunner {
   ): Promise<unknown>;
 }
 
-/**
- * The production {@link TextGenerator}: the Workers AI binding.
- *
- * It translates one request into one `run` call and passes the abort signal
- * through, so a call given up on is cancelled. It adds no policy: timeouts,
- * retries, checking and fallback all live in src/features/assistant/service.ts.
- */
+/** A TextGenerator over the Workers AI binding. */
 export function workersAi(ai: AiRunner): TextGenerator {
   return {
     complete: ({ system, prompt, schema, maxTokens }, signal) =>
@@ -36,8 +34,7 @@ export function workersAi(ai: AiRunner): TextGenerator {
           ],
           response_format: { type: 'json_schema', json_schema: schema },
           max_tokens: maxTokens,
-          // Low, so wording stays close to the facts; not zero, so two households do not read identical prose.
-          temperature: 0.3,
+          temperature: MODEL_TEMPERATURE,
         },
         { signal },
       ),

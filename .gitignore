@@ -1,6 +1,5 @@
 node_modules/
 .wrangler/
-dist/
 coverage/
 .dev.vars
 .env
@@ -12,7 +11,3 @@ worker-configuration.d.ts
 # cannot drift from their source.
 public/js/shared/
 public/_headers
-
-# Local working notes, never part of the project.
-.claude/
-CLAUDE.md
