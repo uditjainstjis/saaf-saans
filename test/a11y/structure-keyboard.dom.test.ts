@@ -35,7 +35,17 @@ it('sizes every target at 44px or more', () => {
     'details > summary',
     '.error-summary a',
     '.jump a',
+    '.rec__remind',
   ]) {
     expect(rule(selector), selector).toContain('min-height: var(--target)');
+  }
+});
+
+it('opens a new tab only from links that say where they go and keep the opener to themselves', () => {
+  const leaving = html.match(/<a\b[^>]*target="_blank"[^>]*>[^<]*/g) ?? [];
+  expect(leaving).toHaveLength(1);
+  for (const link of leaving) {
+    expect(link).toContain('rel="noopener noreferrer"');
+    expect(link).toContain('Add a reminder to Google Calendar');
   }
 });

@@ -45,7 +45,7 @@ export function openMeteoAir(get: HttpGet, timeoutMs = UPSTREAM_TIMEOUT_MS): Air
         timezone: 'auto',
       });
       const reply = await fetchJson(get, `${AIR_URL}?${query.toString()}`, timeoutMs);
-      const { current, hourly } = openMeteoAirReply.parse(reply);
+      const { timezone, current, hourly } = openMeteoAirReply.parse(reply);
       return airReportSchema.parse({
         source: 'live',
         aqi: current.us_aqi,
@@ -53,6 +53,8 @@ export function openMeteoAir(get: HttpGet, timeoutMs = UPSTREAM_TIMEOUT_MS): Air
         pm10: current.pm10,
         dominant: dominantOf(current),
         hours: hoursOf(hourly),
+        // Times are local to the place (`timezone=auto`), so the first one names today's date there.
+        local: { timeZone: timezone, date: hourly.time[0]?.slice(0, 10) },
       });
     },
   };

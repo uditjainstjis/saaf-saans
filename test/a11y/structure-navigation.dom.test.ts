@@ -58,5 +58,5 @@ it('gives every link a name of its own that says where it goes', () => {
 it('lays the links out as a wrapping row of full-size targets, hidden in print', () => {
   expect(rule('.jump ul')).toContain('flex-wrap: wrap');
   expect(rule('.jump a')).toContain('min-height: var(--target)');
-  expect(rule('.skip-link,\n  .jump')).toContain('display: none');
+  expect(rule('.skip-link,\n  .jump,\n  .rec__remind')).toContain('display: none');
 });

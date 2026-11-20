@@ -7,8 +7,9 @@ import * as z from 'zod';
 
 const reading = z.number().nullable();
 
-/** The air quality reply: current readings with per-pollutant sub-indices, and hourly PM2.5. */
+/** The air quality reply: the place's time zone, current readings with per-pollutant sub-indices, and hourly PM2.5. */
 export const openMeteoAirReply = z.object({
+  timezone: z.string().optional(),
   current: z.object({
     us_aqi: z.number(),
     pm2_5: z.number(),

@@ -14,3 +14,7 @@ it('close-at-peak: worst hour × share kept out × resting breathing × three ho
   expect(inhaled('close-at-peak', COMMUNITY)).toBe(13_200);
   expect(advice('close-at-peak', FAMILY, flatAir(12))).toBeUndefined();
 });
+
+it('close-at-peak: is for the three hours that start one before the worst, 10 pm on the fixture day', () => {
+  expect(advice('close-at-peak', FAMILY)?.when).toEqual({ hour: 21, minutes: 180 });
+});

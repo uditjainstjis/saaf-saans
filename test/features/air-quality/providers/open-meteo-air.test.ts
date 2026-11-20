@@ -43,7 +43,23 @@ it('reads AQI, PM2.5, PM10, the dominant pollutant and the hourly forecast', asy
       { hour: 3, pm25: 149 },
       { hour: 15, pm25: 59.8 },
     ],
+    local: { timeZone: 'Asia/Kolkata', date: '2026-11-20' },
   });
+});
+
+it('keeps the report and drops the local day when the zone or the date cannot be trusted', async () => {
+  const hourly = { ...AIR_REPLY.hourly, time: ['2026-02-30T03:00', '', '2026-02-30T15:00'] };
+  const untrusted = [
+    { ...AIR_REPLY, timezone: undefined },
+    { ...AIR_REPLY, timezone: 'Asia/Kolkata&add=x@example.com' },
+    { ...AIR_REPLY, timezone: 'A'.repeat(65) },
+    { ...AIR_REPLY, hourly },
+  ];
+  for (const reply of untrusted) {
+    const report = await openMeteoAir(jsonGet(reply)).read(DELHI);
+    expect(report.aqi).toBe(186);
+    expect(report.local).toBeUndefined();
+  }
 });
 
 it('asks for the place, 24 forecast hours and local time, and nothing identifying', async () => {

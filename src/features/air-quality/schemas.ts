@@ -11,6 +11,15 @@ const amount = z.number().min(0).max(100_000);
 
 const hourReading = z.strictObject({ hour: z.number().int().min(0).max(23), pm25: amount });
 
+/** A time zone name and a real calendar date. Anything else is dropped, never trusted. */
+const localDay = z.strictObject({
+  timeZone: z
+    .string()
+    .max(64)
+    .regex(/^[A-Za-z]+(?:\/[A-Za-z0-9_+-]+)*$/),
+  date: z.iso.date(),
+});
+
 /** The shape of an AirReport. */
 export const airReportSchema: z.ZodType<AirReport> = z.strictObject({
   source: z.enum(['live', 'typical']),
@@ -19,6 +28,7 @@ export const airReportSchema: z.ZodType<AirReport> = z.strictObject({
   pm10: amount,
   dominant: z.enum(POLLUTANTS),
   hours: z.tuple([hourReading], hourReading).readonly(),
+  local: localDay.optional().catch(undefined),
 });
 
 /** The shape of a Place. */

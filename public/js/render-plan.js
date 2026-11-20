@@ -1,6 +1,7 @@
 // @ts-check
 /** Renders the totals and the three lists of recommendations, with how each was calculated. */
 import { $, cloneTemplate, part, textEl } from './dom.js';
+import { showReminder } from './reminder.js';
 import { formatNumber } from './shared/limits.js';
 import { CATEGORIES } from './shared/options.js';
 
@@ -25,6 +26,7 @@ function card(rec) {
   // Every card has this disclosure, so its name adds the title after the visible text (SC 2.5.3).
   const summary = part(el, 'summary', HTMLElement);
   summary.setAttribute('aria-label', `${summary.textContent}: ${rec.title}`);
+  showReminder(el, rec);
   part(el, '.rec__factors', HTMLElement).replaceChildren(
     ...rec.factors.map((f) =>
       textEl(

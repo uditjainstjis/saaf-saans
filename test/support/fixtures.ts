@@ -64,6 +64,9 @@ export function smogDay(scale = 1): AirReport['hours'] {
   return [at(0), ...Array.from({ length: 23 }, (_, i) => at(i + 1))];
 }
 
+/** The day the fixture report was read on, in Delhi. */
+export const DELHI_DAY = { timeZone: 'Asia/Kolkata', date: '2026-11-20' } as const;
+
 /** A live report for an unhealthy winter day. */
 export const SMOG: AirReport = {
   source: 'live',
@@ -72,6 +75,7 @@ export const SMOG: AirReport = {
   pm10: 210,
   dominant: 'pm2_5',
   hours: smogDay(),
+  local: DELHI_DAY,
 };
 
 /** A report with every hour at one concentration. */

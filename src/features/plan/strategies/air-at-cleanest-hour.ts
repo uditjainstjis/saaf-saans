@@ -28,6 +28,7 @@ export const airAtCleanestHour: Strategy = {
       impact: impact({ inhaledAvoidedUg: saved }),
       calculation: `(${n(usual.pm25)} − ${n(best.pm25)} µg/m³) × ${n(rate)} m³/h × ${n(hours)} h × ${n(s.people)} people`,
       factorIds: ['breathingRest', 'airingHours'],
+      when: { hour: best.hour, minutes: hours * 60 },
     };
   },
 };

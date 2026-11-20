@@ -166,12 +166,20 @@ td {
 .rec__empty {
   color: var(--ink-soft);
 }
+/* The Calendar reminder: a text link with a full-height target. */
+.rec__remind {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  font-weight: 600;
+}
 
 @media print {
   .site-header button,
   form,
   .skip-link,
-  .jump {
+  .jump,
+  .rec__remind {
     display: none;
   }
 }

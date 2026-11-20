@@ -5,7 +5,7 @@ import { $, part } from './dom.js';
 /** @typedef {import('../../src/features/assistant/types').Narrative} Narrative */
 
 const SOURCE_LABEL = {
-  model: 'Written by generative AI (Workers AI)',
+  model: 'Written by generative AI',
   rules: 'Written by built-in rules (AI unavailable)',
 };
 

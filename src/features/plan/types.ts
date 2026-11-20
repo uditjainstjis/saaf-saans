@@ -26,6 +26,13 @@ export interface Situation {
   infiltrationId: FactorId;
 }
 
+/** A time of day advice is for: the local hour it starts at, and how long it lasts. */
+export interface When {
+  /** A local hour of day; values outside 0 to 23 wrap, as on a clock. */
+  hour: number;
+  minutes: number;
+}
+
 /** One piece of advice, with the numbers behind it. */
 export interface Recommendation {
   id: string;
@@ -39,6 +46,8 @@ export interface Recommendation {
   calculation: string;
   /** Ids of the factors in features/impact/factors the arithmetic used. */
   factorIds: readonly string[];
+  /** Set by advice that names a clock time, so a reminder can be offered for it. */
+  when?: When;
 }
 
 /** The deterministic plan: every recommendation, and what the new ones add up to. */

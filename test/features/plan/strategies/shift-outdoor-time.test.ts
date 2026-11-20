@@ -14,6 +14,11 @@ it('shift-outdoor-time: (usual − best) × moderate breathing × hours × peopl
   expect(inhaled('shift-outdoor-time', COMMUNITY)).toBe(15_600);
 });
 
+it('shift-outdoor-time: is for the cleanest hour, for as long as the session lasts', () => {
+  expect(advice('shift-outdoor-time', FAMILY)?.when).toEqual({ hour: 15, minutes: 30 });
+  expect(advice('shift-outdoor-time', COMMUNITY)?.when).toEqual({ hour: 15, minutes: 20 });
+});
+
 it('shift-outdoor-time: uses the evening hour for an evening habit', () => {
   // 7 pm is 120 µg/m³ on the fixture day: (120 − 30) × 1.56 × 0.5 × 4
   expect(inhaled('shift-outdoor-time', { ...FAMILY, outdoorTime: 'evening' })).toBe(280.8);

@@ -1,7 +1,7 @@
 /**
  * axe-core over the rendered results in both themes: a family's plan with AI
- * explanations and every disclosure open, and a community's plan with the
- * injection notice shown.
+ * explanations, three Calendar reminder links and every disclosure open, and
+ * a community's plan with the injection notice shown.
  */
 import { afterEach, expect, it, vi } from 'vitest';
 import { openIn, violations } from '../support/axe.dom';
@@ -22,6 +22,7 @@ it.each(THEMES)('finds nothing in a family’s results (%s theme)', async (theme
   await settled();
   for (const details of document.querySelectorAll('details')) details.open = true;
   expect(document.querySelectorAll('.rec').length).toBeGreaterThan(4);
+  expect(document.querySelectorAll('a.rec__remind[href]:not([hidden])')).toHaveLength(3);
   expect(await violations()).toBe('');
 });
 

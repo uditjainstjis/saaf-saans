@@ -11,3 +11,7 @@ it('air-at-cleanest-hour: (7 am − best) × resting breathing × half an hour �
   expect(inhaled('air-at-cleanest-hour', FAMILY)).toBe(75);
   expect(advice('air-at-cleanest-hour', FAMILY, flatAir(40))).toBeUndefined();
 });
+
+it('air-at-cleanest-hour: is for the cleanest hour, 3 pm on the fixture day, for half an hour', () => {
+  expect(advice('air-at-cleanest-hour', FAMILY)?.when).toEqual({ hour: 15, minutes: 30 });
+});

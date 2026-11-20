@@ -26,6 +26,7 @@ export const closeAtPeak: Strategy = {
       impact: impact({ inhaledAvoidedUg: inhaledDose({ pm25, rate, hours, people: s.people }) }),
       calculation: `${n(worst.pm25)} µg/m³ × (1 − ${n(indoorShare)} reaching indoors) × ${n(rate)} m³/h × ${n(hours)} h × ${n(s.people)} people`,
       factorIds: ['breathingRest', 'peakHours', s.infiltrationId, 'whoDaily'],
+      when: { hour: worst.hour - 1, minutes: hours * 60 },
     };
   },
 };

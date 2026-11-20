@@ -30,6 +30,14 @@ export interface HourReading {
   pm25: number;
 }
 
+/** The day a report was read on, as the place counts it. */
+export interface LocalDay {
+  /** The place's IANA time zone, "Asia/Kolkata". */
+  timeZone: string;
+  /** The date there, "2026-11-20". */
+  date: string;
+}
+
 /** Air quality at a place: now, and hour by hour for the next day. */
 export interface AirReport {
   /** `live` from Open-Meteo, or `typical` winter values when it cannot be reached. */
@@ -43,6 +51,8 @@ export interface AirReport {
   dominant: Pollutant;
   /** The next 24 hours, in order, starting with the current hour. */
   hours: readonly [HourReading, ...HourReading[]];
+  /** The local day the hours start on. Live reports carry it; typical values do not. */
+  local?: LocalDay;
 }
 
 /** Turns a place name someone typed into coordinates; null when there is no match. */
