@@ -272,7 +272,7 @@ and by hand.
 - **Small payloads.** The page is 55.0 KB uncompressed and 20.7 KB gzipped for
   all twenty-one files; no framework and no third-party request.
 - **Small bundle.** Importing zod as a namespace lets the bundler drop unused
-  locales: 169 KB minified (55 KB gzipped) when bundled with esbuild, down from
+  locales: 169 KB minified (56 KB gzipped) when bundled with esbuild, down from
   515 KB.
 
 [EFFICIENCY.md](EFFICIENCY.md) has the measurements.
