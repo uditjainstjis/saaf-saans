@@ -95,17 +95,19 @@ separately. Each check below states its conditions.
 
 ### On Cloudflare
 
-8 calls, 20 Nov 2026, measured with curl from India, against a deployment of
-this code with the shipped deadlines.
+20 Nov 2026, measured with curl from India against the deployed service, with
+the shipped deadlines. The six profiles are families in Delhi, Mumbai, Kanpur
+and Patna, a school in Lucknow and a residents' association in Gurugram.
 
-| Call                                                                                              | Result                                                                                                                         |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `POST /api/assistant` for a family in Delhi (six recommendations) and a school in Lucknow (seven) | `source: model` on all 8 calls, each written by the first model on its first attempt; 6.7 to 11.3 s including the plan rebuild |
-| `POST /api/plan`                                                                                  | 1.0 s                                                                                                                          |
+| Call                                                                            | Result                                                                                                                                           |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `POST /api/plan` for the six profiles                                           | 200 with live air on all six; 0.8 to 0.9 s                                                                                                       |
+| `POST /api/assistant` for the six profiles                                      | `source: model` on all six, each written by the first model on its first attempt; 8.2 to 11.4 s including the plan rebuild                       |
+| The same six on the build before the last fix                                   | Five written by the first model; for one, its reply was rejected by the number check and the second model answered, `source: model` after 17.0 s |
+| A valid body with a foreign `Origin`, with `Origin: null`, and with no `Origin` | 403, 403 and 200                                                                                                                                 |
+| Lighthouse 13.6.0, Chrome 158, on the live page                                 | Desktop: 100 in all four categories. Mobile: 100 for accessibility, best practices and SEO; performance 97, 100 and 100 over three runs          |
 
-Five of the 8 calls used the prompt as committed and three an earlier wording of
-its second rule. Neither the second model nor the rule-written fallback was
-needed in these calls.
+The rule-written fallback was not needed in any of these calls.
 
 ### By hand, on the development machine
 

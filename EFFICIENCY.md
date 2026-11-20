@@ -17,19 +17,24 @@ under the conditions stated beside the figures.
 
 ## Model latency
 
-Measured on Cloudflare with the shipped deadlines: 8 calls, 20 Nov 2026,
-measured with curl from India, for a family in Delhi (six recommendations) and a
-school in Lucknow (seven recommendations).
+Measured on Cloudflare with the shipped deadlines on 20 Nov 2026, with curl from
+India, for six profiles: families in Delhi, Mumbai, Kanpur and Patna, a school
+in Lucknow and a residents' association in Gurugram, with six to eight
+recommendations each.
 
 | Route                                             | Wall time     |
 | ------------------------------------------------- | ------------- |
-| `POST /api/plan`                                  | 1.0 s         |
-| `POST /api/assistant`, including the plan rebuild | 6.7 to 11.3 s |
+| `POST /api/plan`                                  | 0.8 to 0.9 s  |
+| `POST /api/assistant`, including the plan rebuild | 8.2 to 11.4 s |
 
-All 8 assistant calls returned `source: model`, each written by the first model
-on its first attempt. Five were made with the prompt as committed (6.7, 7.2,
-8.9, 10.2 and 10.9 s) and three with an earlier wording of its second rule (7.0,
-7.8 and 11.3 s).
+All six assistant calls returned `source: model`, each written by the first
+model on its first attempt; the Worker's log names the model that answered.
+
+On the build before the last fix, five of the same six profiles took 8.5 to 10.6
+s and one took 17.0 s: the first model wrote "PM 2.5" with a space, the number
+check rejected the reply as carrying an invented figure, and the second model
+answered with that reason in hand. Spaced pollutant names are now read as names
+([number-firewall.ts](src/features/assistant/number-firewall.ts)).
 
 Before these changes the route asked one model,
 `@cf/meta/llama-3.3-70b-instruct-fp8-fast`, for up to 900 tokens, and the
@@ -106,3 +111,17 @@ characters of text.
 - A request body is read through a byte counter that stops at 4,096 bytes,
   whether or not a length was declared
   ([validate.test.ts](test/middleware/validate.test.ts)).
+
+## In the browser
+
+Lighthouse 13.6.0 against the live page, Chrome 158, 20 Nov 2026. These are
+manual runs, not part of `npm run check`.
+
+| Run                                    | Performance     | Accessibility | Best practices | SEO |
+| -------------------------------------- | --------------- | ------------- | -------------- | --- |
+| Desktop preset                         | 100             | 100           | 100            | 100 |
+| Mobile (simulated slow 4G, 4x CPU), x3 | 97, 100 and 100 | 100           | 100            | 100 |
+
+On desktop the largest contentful paint was 0.4 s with no blocking time. On
+mobile it was 1.0 to 1.5 s, with 0 to 150 ms of blocking time and no layout
+shift. The page weighed 42 KiB over the wire.

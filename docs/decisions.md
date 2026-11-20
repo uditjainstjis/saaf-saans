@@ -132,9 +132,9 @@ usage the binding reported:
 
 Two things follow. Schema mode is not the cost, output length is: the same model
 took 14.0 s with it and 15.8 s without. And models are withdrawn, so a single
-model with no second choice is an outage waiting for a date. After the change, 8
-calls on Cloudflare took 6.7 to 11.3 s, each written by the first model on its
-first attempt (see [EFFICIENCY.md](../EFFICIENCY.md)).
+model with no second choice is an outage waiting for a date. After the change,
+six profiles on Cloudflare took 8.2 to 11.4 s, each written by the first model
+on its first attempt (see [EFFICIENCY.md](../EFFICIENCY.md)).
 
 **Cost.** A request can now make two model calls, so the slowest path to the
 rule-written text is two deadlines rather than one, and the page allows 45 s for

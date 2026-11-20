@@ -249,9 +249,13 @@ and by hand.
   call, each cancelled through an abort signal, each with a fallback.
 - **Short replies.** Output length is what a model call costs, so the model is
   asked for one sentence per recommendation inside a 600-token budget. Measured
-  on Cloudflare (8 calls, 20 Nov 2026, measured with curl from India):
-  `POST /api/assistant` answered in 6.7 to 11.3 s, every call written by the
-  first model on its first attempt, and `POST /api/plan` in 1.0 s.
+  on Cloudflare (six profiles, 20 Nov 2026, with curl from India):
+  `POST /api/assistant` answered in 8.2 to 11.4 s, every reply written by the
+  first model on its first attempt, and `POST /api/plan` in 0.8 to 0.9 s.
+- **Checked in a browser.** Lighthouse 13.6.0 on the live page (Chrome 158, 20
+  Nov 2026) gives 100 for performance, accessibility, best practices and SEO on
+  desktop; on mobile it gives 100 for the last three, and 97, 100 and 100 for
+  performance over three runs.
 - **Small payloads.** The page is 53.4 KB uncompressed and 19.8 KB gzipped for
   all twenty files; no framework and no third-party request.
 - **Small bundle.** Importing zod as a namespace lets the bundler drop unused

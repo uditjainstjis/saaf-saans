@@ -49,7 +49,7 @@ complexity 8), and set a rule for the documentation:
 > copied from real command output. Do NOT write self-awarded scores.
 
 **3. Fixes from production.** The third brief was written from measurements on
-the deployed site, not from a guess:
+the deployed site instead of from a guess:
 
 > `POST /api/assistant`: `source: rules` after 15.9 s; log
 > `plan_generator_failed … TimeoutError: call exceeded 15000ms`.
@@ -69,19 +69,30 @@ the deployed site, not from a guess:
 4. The reply is checked
    ([reply-checks.ts](../src/features/assistant/reply-checks.ts)): shape, one
    explanation per recommendation, no numeral outside the facts, every sentence
-   finished.
+   finished and no word dropped.
 5. A failed or rejected reply gets one more attempt on the second model. If that
    fails too, a rule-based generator writes the same structure and the page says
    so.
 
 ## How the prompts changed
 
-| Version | What the model was asked for                                                                          | What was measured on Cloudflare                                                                                                                                 | Change that followed                                                         |
-| ------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 1       | "one or two sentences" per recommendation, a 2–3 sentence summary                                     | 490 tokens, 14.0 s on the 70B model; the 15 s deadline was missed live                                                                                          | Ask for less, and ask a faster model first                                   |
-| 1       | Length limited only by `maxLength` in the JSON Schema                                                 | A summary cut off mid-sentence: constrained decoding stops at the limit                                                                                         | State the limits in words; reject a reply whose text does not end a sentence |
-| 2       | ONE sentence of at most 30 words per recommendation, a two-sentence summary                           | Answered by the first model in 7.0 to 11.3 s (3 calls), but thin and repetitive: "The whole family will breathe cleaner air if you ..." five times in one reply | Ask for the reason, tied to one fact about these people or today's air       |
-| 3       | The same limits, "written to these people as friendly advice", one fact per sentence, varied openings | 6.7 to 10.9 s (5 calls); specific lines such as "... since even the cleanest hour is above safe limits"                                                         | Kept                                                                         |
+Each row is one wording of the instruction for the per-recommendation
+explanations, with what was measured on Cloudflare and what changed next.
+
+| Version | What the model was asked for                                                              | What was measured                                                                                                                                             | Change that followed                                                  |
+| ------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| 1       | "one or two sentences" per recommendation and a two-to-three sentence summary             | 490 tokens in 14.0 s on the 70B model; the 15 s deadline was missed on the live site                                                                          | Ask for less, and ask a faster model first                            |
+| 1       | Length limited only by `maxLength` in the JSON Schema                                     | A summary cut off mid-sentence: constrained decoding stops at the limit                                                                                       | State the limits in words; reject a text that does not end a sentence |
+| 2       | ONE sentence of at most 30 words; "start from these people, not from the action"          | 7.0 to 11.3 s over three calls, but thin: "The whole family will breathe cleaner air if you ..." five times in one reply                                      | Ask for the reason, tied to a fact                                    |
+| 3       | "Name who among these people gains most from this step and the fact that makes it matter" | 8.9 and 10.2 s; the model echoed the instruction: "Grandmother gains most from this, because ..."                                                             | Ask for advice, not a description                                     |
+| 4       | "written to these people as friendly advice", one fact per sentence, varied openings      | 8.2 to 11.4 s over six profiles on the final build; lines such as "The cleanest hour is still above safe limits, so switch your morning exercise indoors ..." | Kept                                                                  |
+
+Two more fixes came from reading live replies rather than from timing them. One
+reply read "Keep windows shut from 10 pm to am": the model had dropped the hour
+and left two spaces, so a sentence with such a gap is now rejected. Another
+wrote "PM 2.5" with a space, which the number check took for an invented figure;
+the second model then answered, 17.0 s in all, and the check now reads spaced
+pollutant names as names.
 
 Nine models were timed with the same request before choosing two. Two spent
 their whole token budget on reasoning and were rejected, two did not answer

@@ -20,6 +20,9 @@ every run of `npm run check` rather than asserted once.
   ([test/a11y/structure-\*.dom.test.ts](test/a11y/))
 - **Behaviour** (focus moves, live regions, error links) is checked in the page
   tests. ([test/public/](test/public/))
+- **Lighthouse** 13.6.0 (Chrome 158) scored the deployed page 100 for
+  accessibility on mobile and on desktop on 20 Nov 2026. That is a manual run
+  against the live page, not part of the gate.
 
 ## Success criteria
 
