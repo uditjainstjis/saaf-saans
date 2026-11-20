@@ -4,6 +4,7 @@
  * Implementations are ./service.ts, ./generators/ and ./workers-ai.ts.
  */
 
+import type { Model } from '../../config/runtime';
 import type { PlanBrief } from '../plan/types';
 
 /** The personalised wording of a plan. Numbers live in the Plan, not here. */
@@ -23,6 +24,8 @@ export interface PlanGenerator {
 
 /** One chat-style request to a language model. */
 export interface TextRequest {
+  /** Which model to ask. */
+  model: Model;
   system: string;
   prompt: string;
   /** JSON Schema the reply must match. */

@@ -28,10 +28,26 @@ export function memoryCache(): Cache & {
 /** A clock stopped at one instant. */
 export const fixedClock = (iso: string): Clock => ({ now: () => new Date(iso) });
 
-/** A logger that keeps what it was told. */
-export function recordingLogger(): Logger & { events: string[] } {
+/** One thing a recording logger was told. */
+export interface LogEntry {
+  level: 'info' | 'warn';
+  event: string;
+  detail: Readonly<Record<string, unknown>>;
+}
+
+/** A logger that keeps what it was told: the names of its warnings, and every entry in full. */
+export function recordingLogger(): Logger & { events: string[]; entries: LogEntry[] } {
   const events: string[] = [];
-  return { events, warn: (event) => void events.push(event) };
+  const entries: LogEntry[] = [];
+  return {
+    events,
+    entries,
+    info: (event, detail) => void entries.push({ level: 'info', event, detail }),
+    warn: (event, detail) => {
+      events.push(event);
+      entries.push({ level: 'warn', event, detail });
+    },
+  };
 }
 
 /** A geocoder that finds Delhi for any name. */

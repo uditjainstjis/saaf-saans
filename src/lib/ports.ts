@@ -18,8 +18,9 @@ export interface Cache {
 /** An HTTP GET: as much of `fetch` as the upstream adapters use. */
 export type HttpGet = (url: string, signal: AbortSignal) => Promise<Response>;
 
-/** Structured diagnostics. */
+/** Structured diagnostics: `info` for what happened, `warn` for what went wrong. */
 export interface Logger {
+  info(event: string, detail: Readonly<Record<string, unknown>>): void;
   warn(event: string, detail: Readonly<Record<string, unknown>>): void;
 }
 

@@ -1,11 +1,12 @@
 /**
- * Tests for the Workers AI adapter: one request becomes one run call.
+ * Tests for the Workers AI adapter: one request becomes one run call on the
+ * model the request names.
  */
 import { expect, it } from 'vitest';
-import { MODEL } from '../../../src/config/runtime';
+import { MODELS } from '../../../src/config/runtime';
 import { workersAi } from '../../../src/features/assistant/workers-ai';
 
-it('turns one request into one run call, passing the schema and the abort signal', async () => {
+it('turns one request into one run call, passing the model, the schema and the abort signal', async () => {
   const calls: unknown[][] = [];
   const generator = workersAi({
     run: async (...args) => {
@@ -14,11 +15,12 @@ it('turns one request into one run call, passing the schema and the abort signal
     },
   });
   const signal = new AbortController().signal;
-  const request = { system: 'S', prompt: 'P', schema: { type: 'object' }, maxTokens: 50 };
+  const [, model] = MODELS;
+  const request = { model, system: 'S', prompt: 'P', schema: { type: 'object' }, maxTokens: 50 };
   expect(await generator.complete(request, signal)).toEqual({ response: '{}' });
   expect(calls).toEqual([
     [
-      MODEL,
+      model,
       {
         messages: [
           { role: 'system', content: 'S' },

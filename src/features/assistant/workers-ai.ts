@@ -1,16 +1,17 @@
 /**
  * The production TextGenerator: the Workers AI binding. It turns one request
- * into one `run` call and passes the abort signal through. It adds no policy:
- * timeouts, retries, checking and fallback all live in ./service.ts and ./generators/.
+ * into one `run` call on the model the request names and passes the abort
+ * signal through. It adds no policy: which model, the deadline, checking and
+ * fallback all live in ./service.ts, ./attempt.ts and ./generators/.
  */
 
-import { MODEL, MODEL_TEMPERATURE } from '../../config/runtime';
+import { type Model, MODEL_TEMPERATURE } from '../../config/runtime';
 import type { TextGenerator } from './types';
 
 /** As much of the Workers AI binding as this adapter calls. */
 export interface AiRunner {
   run(
-    model: typeof MODEL,
+    model: Model,
     input: {
       messages: { role: 'system' | 'user'; content: string }[];
       response_format: { type: 'json_schema'; json_schema: object };
@@ -24,9 +25,9 @@ export interface AiRunner {
 /** A TextGenerator over the Workers AI binding. */
 export function workersAi(ai: AiRunner): TextGenerator {
   return {
-    complete: ({ system, prompt, schema, maxTokens }, signal) =>
+    complete: ({ model, system, prompt, schema, maxTokens }, signal) =>
       ai.run(
-        MODEL,
+        model,
         {
           messages: [
             { role: 'system', content: system },

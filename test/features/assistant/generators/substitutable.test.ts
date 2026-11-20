@@ -16,7 +16,7 @@ const brief = briefFor();
 
 const generators: [string, PlanGenerator][] = [
   ['rules', rulePlanGenerator],
-  ['model', modelPlanGenerator(scriptedText({ response: goodReply(brief) }))],
+  ['model', modelPlanGenerator(scriptedText({ response: goodReply(brief) }), recordingLogger())],
   ['fallback', fallbackPlanGenerator(brokenGenerator, rulePlanGenerator, recordingLogger())],
   ['cached', cachedPlanGenerator(rulePlanGenerator, memoryCache())],
 ];

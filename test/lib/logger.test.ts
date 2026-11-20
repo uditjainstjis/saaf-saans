@@ -12,3 +12,11 @@ it('consoleLogger writes one structured warning', () => {
   consoleLogger.warn('thing_failed', { reason: 'x' });
   expect(warn).toHaveBeenCalledWith({ event: 'thing_failed', reason: 'x' });
 });
+
+it('consoleLogger writes what happened at the info level, not as a warning', () => {
+  const info = vi.spyOn(console, 'info').mockImplementation(() => undefined);
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  consoleLogger.info('thing_done', { by: 'x' });
+  expect(info).toHaveBeenCalledWith({ event: 'thing_done', by: 'x' });
+  expect(warn).not.toHaveBeenCalled();
+});

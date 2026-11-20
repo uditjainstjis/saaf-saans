@@ -4,6 +4,7 @@
  * replaced (test/support/worker.ts).
  */
 import { afterEach, expect, it, vi } from 'vitest';
+import { MODELS } from '../src/config/runtime';
 import worker, { compose, handle } from '../src/index';
 import { goodReply } from './support/assistant-fakes';
 import { FAMILY, briefFor } from './support/fixtures';
@@ -46,9 +47,11 @@ it('lets Workers AI explain the plan when the model answers well', async () => {
     { hour: 15, pm25: 30 },
   ] as const;
   const reply = goodReply(briefFor(brief.profile, { ...brief.air, hours }));
+  const info = vi.spyOn(console, 'info').mockImplementation(() => undefined);
   const env = bindings(async () => ({ response: reply }));
   const res = await handle(post('/api/assistant', 'Delhi Two'), env);
   expect((await res.json<{ source: string }>()).source).toBe('model');
+  expect(info).toHaveBeenCalledWith({ event: 'model_answered', model: MODELS[0] });
 });
 
 it('falls back to typical air and rule-written advice when everything upstream is down', async () => {

@@ -1,42 +1,38 @@
 /**
- * The generative service: asks a language model to word a plan, checks the
- * reply, and asks once more with the reasons when the first reply is
- * rejected. Checks: ./reply-checks.ts. Fallback and caching: ./generators/.
+ * The generative service: asks a language model to word a plan and, when that
+ * attempt fails or its reply is rejected, asks a second model once. Models and
+ * deadline: config/runtime.ts. One attempt: ./attempt.ts. Rules fallback and
+ * caching: ./generators/.
  */
-
-import { MODEL_MAX_TOKENS, MODEL_TIMEOUT_MS } from '../../config/runtime';
+import { MODELS, MODEL_TIMEOUT_MS } from '../../config/runtime';
+import type { Logger } from '../../lib/ports';
 import { makeNonce } from '../../lib/prompt-guard/fence';
-import { withTimeout } from '../../lib/timeout';
-import type { PlanBrief } from '../plan/types';
-import { SYSTEM_PROMPT } from './prompt';
+import { type Outcome, attempt } from './attempt';
 import { buildPrompt, repairPrompt } from './prompt-builder';
-import { type Verdict, checkReply } from './reply-checks';
-import { NARRATIVE_JSON_SCHEMA } from './schemas';
 import type { PlanGenerator, TextGenerator } from './types';
 
-/** A PlanGenerator that asks `text`, with one repair retry; rejects when both replies fail. */
+/** Why an attempt did not answer, in a few words. */
+const describe = (outcome: Exclude<Outcome, { kind: 'answered' }>): string =>
+  outcome.kind === 'rejected' ? `reply rejected (${outcome.issues.join(' ')})` : outcome.reason;
+
+/** A PlanGenerator that asks the two models in order; rejects when neither attempt answers. */
 export function modelPlanGenerator(
   text: TextGenerator,
+  logger: Logger,
   timeoutMs = MODEL_TIMEOUT_MS,
 ): PlanGenerator {
-  const ask = async (prompt: string, brief: PlanBrief): Promise<Verdict> => {
-    const request = {
-      system: SYSTEM_PROMPT,
-      prompt,
-      schema: NARRATIVE_JSON_SCHEMA,
-      maxTokens: MODEL_MAX_TOKENS,
-    };
-    const reply = await withTimeout((signal) => text.complete(request, signal), timeoutMs);
-    return checkReply(reply, brief);
-  };
+  const deps = { text, logger, timeoutMs };
+  const [firstModel, secondModel] = MODELS;
   return {
     async generate(brief) {
       const prompt = buildPrompt(brief, makeNonce());
-      const first = await ask(prompt, brief);
-      if (first.ok) return first.narrative;
-      const second = await ask(repairPrompt(prompt, first.issues), brief);
-      if (second.ok) return second.narrative;
-      throw new Error(`model reply rejected twice: ${second.issues.join(' ')}`);
+      const first = await attempt(deps, { model: firstModel, prompt, brief });
+      if (first.kind === 'answered') return first.narrative;
+      // A rejected reply is told what was wrong; a call that failed is simply asked again.
+      const again = first.kind === 'rejected' ? repairPrompt(prompt, first.issues) : prompt;
+      const second = await attempt(deps, { model: secondModel, prompt: again, brief });
+      if (second.kind === 'answered') return second.narrative;
+      throw new Error(`no model answered: ${describe(first)}; ${describe(second)}`);
     },
   };
 }

@@ -1,6 +1,6 @@
 /**
  * Runtime settings of the Worker in one place: deadlines, cache lifetimes,
- * request limits and the model asked. Request field bounds shared with the
+ * request limits and the models asked. Request field bounds shared with the
  * page are in ./limits.ts.
  */
 
@@ -12,10 +12,18 @@ export const UPSTREAM_TIMEOUT_MS = 4000;
 /** Upper bound on one model call; a call still running after this is abandoned. */
 export const MODEL_TIMEOUT_MS = 15_000;
 
-/** The Workers AI model asked: schema-constrained JSON at low latency. */
-export const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
-/** Enough output for a summary and a dozen short explanations. */
-export const MODEL_MAX_TOKENS = 900;
+/**
+ * The Workers AI models asked, in order: the first writes the plan, and the
+ * second is asked only when the first fails or its reply is rejected.
+ */
+export const MODELS = [
+  '@cf/mistralai/mistral-small-3.1-24b-instruct',
+  '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+] as const;
+/** One of {@link MODELS}. */
+export type Model = (typeof MODELS)[number];
+/** The output budget of one call: enough for a two-sentence summary and one sentence per recommendation. */
+export const MODEL_MAX_TOKENS = 600;
 /** Low, so wording stays close to the facts; not zero, so households do not read identical prose. */
 export const MODEL_TEMPERATURE = 0.3;
 

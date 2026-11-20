@@ -38,7 +38,7 @@ export function compose(env: Bindings): AppDeps {
   const logger = consoleLogger;
   const geocoder = cachedGeocoder(openMeteoGeocoder(httpGet), cache);
   const air = cachedAir(openMeteoAir(httpGet), cache);
-  const model = cachedPlanGenerator(modelPlanGenerator(workersAi(env.AI)), cache);
+  const model = cachedPlanGenerator(modelPlanGenerator(workersAi(env.AI), logger), cache);
   return {
     geocoder: fallbackGeocoder(geocoder, typicalGeocoder, logger),
     air: fallbackAir(air, typicalAir(systemClock), logger),

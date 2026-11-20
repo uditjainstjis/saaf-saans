@@ -29,5 +29,7 @@ it('marks empty notes as none', () => {
 it('repeats the prompt and lists what was wrong', () => {
   const repaired = repairPrompt('PROMPT', ['first problem', 'second problem']);
   expect(repaired.startsWith('PROMPT\n\n')).toBe(true);
-  expect(repaired).toContain('- first problem\n- second problem\n');
+  expect(repaired).toContain(
+    'was rejected for these reasons:\n- first problem\n- second problem\n',
+  );
 });

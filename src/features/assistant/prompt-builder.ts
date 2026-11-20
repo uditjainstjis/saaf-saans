@@ -27,7 +27,8 @@ export function buildPrompt(brief: PlanBrief, nonce: string): string {
   ].join('\n');
 }
 
-/** The follow-up when a reply was rejected: the same prompt, and what was wrong. */
+/** The follow-up when a reply was rejected: the same prompt, and what was wrong with that reply. */
 export function repairPrompt(prompt: string, issues: readonly string[]): string {
-  return `${prompt}\n\nYour previous reply was rejected for these reasons:\n${issues.map((issue) => `- ${issue}`).join('\n')}\nReply again with the corrected JSON object only.`;
+  const reasons = issues.map((issue) => `- ${issue}`).join('\n');
+  return `${prompt}\n\nAn earlier reply to this request was rejected for these reasons:\n${reasons}\nWrite the JSON object again without these problems.`;
 }

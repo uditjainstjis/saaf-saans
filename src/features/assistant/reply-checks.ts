@@ -1,52 +1,33 @@
 /**
  * What a model reply must be before any of it is shown: one JSON object of
- * the agreed shape, one explanation for every recommendation and for nothing
- * else, and no numeral the facts did not contain. Shape: ./schemas.ts.
+ * the agreed shape that passes every check in ./reply-issues.ts (one
+ * explanation per recommendation, no numeral outside the facts, no text cut
+ * mid-sentence). Shape: ./schemas.ts; unwrapping: ./reply-parser.ts.
  */
-
 import type { PlanBrief } from '../plan/types';
-import { factsOf } from './facts';
-import { numbersIn, unsupportedNumbers } from './number-firewall';
+import { issuesIn } from './reply-issues';
 import { extractJson } from './reply-parser';
-import { type NarrativeReply, narrativeReply } from './schemas';
+import { narrativeReply } from './schemas';
 import type { Narrative } from './types';
 
 /** A checked narrative, or every reason the reply was rejected. */
 export type Verdict = { ok: true; narrative: Narrative } | { ok: false; issues: string[] };
 
-/** Ids that are missing, unknown or repeated among the explanations. */
-function idIssues(reply: NarrativeReply, expected: readonly string[]): string[] {
-  const given = reply.explanations.map((e) => e.id);
-  const missing = expected.filter((id) => !given.includes(id));
-  const unknown = given.filter((id) => !expected.includes(id));
-  const repeated = given.filter((id, i) => given.indexOf(id) !== i);
-  return [
-    ...missing.map((id) => `No explanation for recommendation id "${id}".`),
-    ...unknown.map((id) => `"${id}" is not a recommendation id in the FACTS.`),
-    ...repeated.map((id) => `More than one explanation for id "${id}".`),
-  ];
-}
-
-/** Numerals in the reply that the facts and the visitor's notes do not contain. */
-function numberIssues(reply: NarrativeReply, brief: PlanBrief): string[] {
-  const allowed = new Set(numbersIn(`${factsOf(brief)}\n${brief.profile.notes}`));
-  const text = [reply.summary, reply.encouragement, ...reply.explanations.map((e) => e.text)];
-  const stray = [...new Set(text.flatMap((t) => unsupportedNumbers(t, allowed)))];
-  return stray.map((numeral) => `The number ${numeral} is not in the FACTS; remove it.`);
-}
+/** The reason given for a reply with no whole JSON object in it, which is how a cut-off reply arrives. */
+const NOT_JSON =
+  'The reply was not one complete JSON object; write the whole object and keep every sentence short.';
 
 /** Check a raw model reply against a brief. */
 export function checkReply(raw: unknown, brief: PlanBrief): Verdict {
-  const parsed = narrativeReply.safeParse(extractJson(raw));
+  const json = extractJson(raw);
+  if (!json) return { ok: false, issues: [NOT_JSON] };
+  const parsed = narrativeReply.safeParse(json);
   if (!parsed.success) {
-    return {
-      ok: false,
-      issues: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
-    };
+    const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`);
+    return { ok: false, issues };
   }
   const reply = parsed.data;
-  const expected = brief.plan.recommendations.map((r) => r.id);
-  const issues = [...idIssues(reply, expected), ...numberIssues(reply, brief)];
+  const issues = issuesIn(reply, brief);
   if (issues.length > 0) return { ok: false, issues };
   return {
     ok: true,

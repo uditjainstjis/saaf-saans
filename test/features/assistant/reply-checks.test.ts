@@ -1,6 +1,6 @@
 /**
- * Tests for the checks on a model reply: shape, one explanation per
- * recommendation, and the number firewall.
+ * Tests for the checks on a model reply: one whole JSON object of the agreed
+ * shape, one explanation per recommendation, and the number firewall.
  */
 import { expect, it } from 'vitest';
 import { checkReply } from '../../../src/features/assistant/reply-checks';
@@ -34,8 +34,17 @@ it('accepts figures that are in the facts or in the visitor’s own notes', () =
   expect(checkReply(walk, withNotes).ok).toBe(true);
 });
 
+it('gives a plain reason for a reply with no whole JSON object, as one cut off mid-way has', () => {
+  const reason =
+    'The reply was not one complete JSON object; write the whole object and keep every sentence short.';
+  expect(issuesOf('I cannot help with that.')).toEqual([reason]);
+  expect(issuesOf('{"summary": "Air in Delhi is unhealthy", "explanations": [{"id": "a')).toEqual([
+    reason,
+  ]);
+  expect(issuesOf(null)).toEqual([reason]);
+});
+
 it('rejects a reply that is not a JSON object of the agreed shape', () => {
-  expect(issuesOf('I cannot help with that.')).not.toEqual([]);
   expect(issuesOf({ summary: 'too short' })).not.toEqual([]);
   expect(issuesOf({ ...goodReply(brief), extra: 'field' })[0]).toContain('Unrecognized key');
   expect(issuesOf({ ...goodReply(brief), summary: 'short' })[0]).toMatch(/^summary: /);

@@ -6,7 +6,7 @@ import { expect, it } from 'vitest';
 import { cachedPlanGenerator } from '../../../../src/features/assistant/generators/cached';
 import { modelPlanGenerator } from '../../../../src/features/assistant/service';
 import { brokenGenerator, goodReply, scriptedText } from '../../../support/assistant-fakes';
-import { memoryCache } from '../../../support/fakes';
+import { memoryCache, recordingLogger } from '../../../support/fakes';
 import { briefFor, COMMUNITY } from '../../../support/fixtures';
 
 const brief = briefFor();
@@ -14,7 +14,7 @@ const brief = briefFor();
 it('generates once per distinct brief', async () => {
   const text = scriptedText({ response: goodReply(brief) });
   const cache = memoryCache();
-  const generator = cachedPlanGenerator(modelPlanGenerator(text), cache);
+  const generator = cachedPlanGenerator(modelPlanGenerator(text, recordingLogger()), cache);
   const first = await generator.generate(brief);
   expect(await generator.generate(brief)).toEqual(first);
   expect(text.requests).toHaveLength(1);
@@ -26,7 +26,7 @@ it('generates once per distinct brief', async () => {
 it('does not serve one household’s narrative to another', async () => {
   const other = briefFor(COMMUNITY);
   const text = scriptedText({ response: goodReply(brief) }, { response: goodReply(other) });
-  const generator = cachedPlanGenerator(modelPlanGenerator(text), memoryCache());
+  const generator = cachedPlanGenerator(modelPlanGenerator(text, recordingLogger()), memoryCache());
   await generator.generate(brief);
   await generator.generate(other);
   expect(text.requests).toHaveLength(2);
