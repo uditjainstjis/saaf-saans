@@ -5,12 +5,14 @@
 import { vi } from 'vitest';
 import type { Bindings } from '../../src';
 
+/** A geocoding reply that finds Delhi. */
 export const GEO = {
   results: [
     { name: 'Delhi', latitude: 28.65, longitude: 77.23, country: 'India', admin1: 'Delhi' },
   ],
 };
 
+/** An air quality reply for an unhealthy day, two forecast hours long. */
 export const AIR = {
   current: {
     us_aqi: 186,

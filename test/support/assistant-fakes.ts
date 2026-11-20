@@ -41,6 +41,7 @@ export function goodReply(brief: PlanBrief): {
   };
 }
 
+/** A narrative as a model would write it. */
 export const NARRATIVE: Narrative = {
   source: 'model',
   summary: 'A summary written by a model for this household.',
@@ -48,9 +49,11 @@ export const NARRATIVE: Narrative = {
   encouragement: 'Keep going.',
 };
 
+/** A generator that always answers with one narrative. */
 export const fixedGenerator = (narrative: Narrative = NARRATIVE): PlanGenerator => ({
   generate: async () => narrative,
 });
+/** A generator whose model is down. */
 export const brokenGenerator: PlanGenerator = {
   generate: async () => Promise.reject(new Error('model down')),
 };

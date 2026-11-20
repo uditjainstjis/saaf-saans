@@ -10,6 +10,7 @@ import type { CommunityProfile, FamilyProfile, Profile } from '../../src/feature
 import { situationOf } from '../../src/features/plan/situation';
 import type { PlanBrief, Situation } from '../../src/features/plan/types';
 
+/** The place every fixture is in. */
 export const DELHI: Place = {
   name: 'Delhi',
   region: 'National Capital Territory of Delhi, India',
@@ -17,6 +18,7 @@ export const DELHI: Place = {
   longitude: 77.23,
 };
 
+/** A household of four: two adults who drive, a child and an elder. */
 export const FAMILY: FamilyProfile = {
   mode: 'family',
   place: 'Delhi',
@@ -34,6 +36,7 @@ export const FAMILY: FamilyProfile = {
   homeType: 'apartment',
 };
 
+/** A residents’ association of 200 that burns waste nearby. */
 export const COMMUNITY: CommunityProfile = {
   mode: 'community',
   place: 'Delhi',
@@ -61,6 +64,7 @@ export function smogDay(scale = 1): AirReport['hours'] {
   return [at(0), ...Array.from({ length: 23 }, (_, i) => at(i + 1))];
 }
 
+/** A live report for an unhealthy winter day. */
 export const SMOG: AirReport = {
   source: 'live',
   aqi: 186,
@@ -80,9 +84,11 @@ export const flatAir = (pm25: number): AirReport => ({
   hours: [{ hour: 0, pm25 }, ...Array.from({ length: 23 }, (_, i) => ({ hour: i + 1, pm25 }))],
 });
 
+/** The situation of a profile in some air, as production derives it. */
 export const situation = (profile: Profile = FAMILY, air: AirReport = SMOG): Situation =>
   situationOf(profile, air);
 
+/** The brief for a profile in some air, built by the real planner. */
 export function briefFor(profile: Profile = FAMILY, air: AirReport = SMOG): PlanBrief {
   const s = situationOf(profile, air);
   return {

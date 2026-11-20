@@ -8,8 +8,14 @@ import type { Cache } from './ports';
 const ORIGIN = 'https://cache.saaf-saans.internal';
 const requestFor = (key: string): Request => new Request(`${ORIGIN}/${key}`);
 
-/** A Cache port over a Cache API store (`caches.default` in production). */
-export function edgeCache(store: Pick<typeof caches.default, 'match' | 'put'>): Cache {
+/** As much of a Cache API store as the adapter calls. */
+export interface EdgeStore {
+  match(request: Request): Promise<Response | undefined>;
+  put(request: Request, response: Response): Promise<void>;
+}
+
+/** A Cache port over a Cache API store: the default edge cache in production. */
+export function edgeCache(store: EdgeStore): Cache {
   return {
     async get(key) {
       try {

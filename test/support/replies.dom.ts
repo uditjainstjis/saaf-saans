@@ -32,6 +32,7 @@ export interface Reply {
   status: number;
   body: unknown;
 }
+/** A successful reply with this body. */
 export const okReply = (body: unknown): Reply => ({ status: 200, body });
 
 /** Answer each fetch with the next reply in order, and record what was asked. */

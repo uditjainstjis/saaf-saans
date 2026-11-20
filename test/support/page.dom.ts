@@ -8,7 +8,9 @@ import { css, shipped } from './shipped.dom';
 
 const ENTRY = resolve(process.cwd(), 'public', 'js', 'main.js');
 
+/** The element with this id, checked to be a `type`. */
 export function byId<T extends HTMLElement>(id: string, type: new () => T): T;
+/** The element with this id. */
 export function byId(id: string): HTMLElement;
 /** The element with this id, checked to be the expected kind. */
 export function byId(id: string, type: new () => HTMLElement = HTMLElement): HTMLElement {
@@ -17,7 +19,9 @@ export function byId(id: string, type: new () => HTMLElement = HTMLElement): HTM
   return el;
 }
 
+/** The input with this id. */
 export const inputEl = (id: string): HTMLInputElement => byId(id, HTMLInputElement);
+/** The select with this id. */
 export const selectEl = (id: string): HTMLSelectElement => byId(id, HTMLSelectElement);
 
 /** Choose community mode, as a click on the radio would. */
@@ -26,6 +30,7 @@ export function chooseCommunity(): void {
   inputEl('mode-community').dispatchEvent(new Event('change'));
 }
 
+/** Submit the profile form, as pressing the button would. */
 export function submit(): void {
   byId('profile-form', HTMLFormElement).dispatchEvent(new Event('submit', { cancelable: true }));
 }

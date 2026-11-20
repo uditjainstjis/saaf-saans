@@ -25,6 +25,7 @@ export function memoryCache(): Cache & {
   };
 }
 
+/** A clock stopped at one instant. */
 export const fixedClock = (iso: string): Clock => ({ now: () => new Date(iso) });
 
 /** A logger that keeps what it was told. */
@@ -33,11 +34,16 @@ export function recordingLogger(): Logger & { events: string[] } {
   return { events, warn: (event) => void events.push(event) };
 }
 
+/** A geocoder that finds Delhi for any name. */
 export const foundGeocoder: Geocoder = { find: async () => DELHI };
+/** A geocoder that finds nothing. */
 export const emptyGeocoder: Geocoder = { find: async () => null };
+/** A geocoder whose upstream is down. */
 export const brokenGeocoder: Geocoder = { find: async () => Promise.reject(new Error('geo down')) };
 
+/** A provider that reads the fixture smog day. */
 export const smogAir: AirQualityProvider = { read: async () => SMOG };
+/** A provider whose upstream is down. */
 export const brokenAir: AirQualityProvider = {
   read: async () => Promise.reject(new Error('air down')),
 };
