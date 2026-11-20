@@ -28,10 +28,9 @@ const CSP = [
 
 /** Browser features the page never uses; each is denied with an empty allowlist. */
 const DENIED_FEATURES =
-  'accelerometer autoplay bluetooth browsing-topics camera display-capture encrypted-media ' +
-  'gamepad geolocation gyroscope hid idle-detection local-fonts magnetometer microphone midi ' +
-  'payment picture-in-picture publickey-credentials-get screen-wake-lock serial usb ' +
-  'xr-spatial-tracking';
+  'accelerometer autoplay bluetooth camera display-capture encrypted-media gamepad geolocation ' +
+  'gyroscope hid idle-detection local-fonts magnetometer microphone midi payment ' +
+  'picture-in-picture publickey-credentials-get screen-wake-lock serial usb xr-spatial-tracking';
 
 type HeaderMap = Readonly<Record<string, string>>;
 
