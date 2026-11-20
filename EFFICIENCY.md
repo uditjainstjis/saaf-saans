@@ -30,7 +30,7 @@ recommendations each.
 All six assistant calls returned `source: model`, each written by the first
 model on its first attempt; the Worker's log names the model that answered.
 
-On the build before the last fix, five of the same six profiles took 8.5 to 10.6
+On the build before the last fix, five of the same six profiles took 8.2 to 10.6
 s and one took 17.0 s: the first model wrote "PM 2.5" with a space, the number
 check rejected the reply as carrying an invented figure, and the second model
 answered with that reason in hand. Spaced pollutant names are now read as names

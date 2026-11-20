@@ -46,7 +46,7 @@ feature folders with lint-enforced limits (110 lines a file, 30 a function,
 complexity 8), and set a rule for the documentation:
 
 > Honesty rule for all docs: only statements that are true of the code, numbers
-> copied from real command output. Do NOT write self-awarded scores.
+> copied from real command output. Do NOT write self-awarded scores …
 
 **3. Fixes from production.** The third brief was written from measurements on
 the deployed site instead of from a guess:
