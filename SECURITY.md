@@ -8,8 +8,8 @@ Saaf Saans has no accounts and no database, and one optional secret. What an
 attacker can reach is: the two POST routes, the text they carry to a language
 model, the replies of two upstream APIs, and the page that renders the result.
 The assets worth protecting are a visitor's profile (family make-up, health,
-location), the integrity of the advice and its numbers, and the Workers AI
-quota.
+location), the integrity of the advice and its numbers, the Workers AI quota
+and, when it is configured, the NVIDIA key.
 
 ## 1. The request gate
 
@@ -120,25 +120,24 @@ server-side from the validated profile on every request.
   key or a numeral the model wrote). No log call is given the profile, the notes
   or the prompt.
 - An unexpected fault is answered with a generic 500 and no detail.
-
-- When the Gemini key is configured, the request that would have gone to Workers
-  AI (the computed facts and the screened, fenced notes) goes to Google's Gemini
-  API first, with `store: false`, so Google keeps no copy for later retrieval.
-  Nothing else is sent to Google: the Calendar reminder is a link the visitor
-  chooses to open, and the page loads nothing from Google.
+- When the NVIDIA key is configured, the request that would have gone to Workers
+  AI (the same computed facts and the same screened, fenced notes) goes to
+  NVIDIA's API at `integrate.api.nvidia.com` first. Nothing else is sent to
+  NVIDIA. The Calendar reminder is a link the visitor chooses to open, and the
+  page loads nothing from Google.
 
 ## 6. Supply chain and CI
 
-- One secret can exist, and it is optional: `GEMINI_API_KEY`, set with
+- One secret can exist, and it is optional: `NVIDIA_API_KEY`, set with
   `wrangler secret put`. It lives only in the Worker's secret store: in no file
   of this repository, not in CI and not in the bundle. It is sent only in the
-  `x-goog-api-key` header to `generativelanguage.googleapis.com`, never in a
-  URL, a log line or a reply; a failed call logs the HTTP status, or the
-  transport error with the key removed
-  ([gemini.ts](src/features/assistant/gemini.ts),
-  [gemini-key.test.ts](test/features/assistant/gemini-key.test.ts)). Without it
+  `Authorization` header to `integrate.api.nvidia.com`, never in a URL, a log
+  line or a reply; a failed call logs the HTTP status, or the transport error
+  with the key removed ([nvidia.ts](src/features/assistant/nvidia.ts),
+  [nvidia-key.test.ts](test/features/assistant/nvidia-key.test.ts)). Without it
   nothing here needs a key: inference is a Workers AI binding and the air data
-  API is keyless. A CI job fails if a credential-shaped string is committed.
+  API is keyless. A CI job fails if a credential-shaped string is committed,
+  including one shaped like an NVIDIA key.
 - `npm audit` reports 0 vulnerabilities, and CI fails on any advisory at any
   severity, dev dependencies included.
 - Every GitHub Action is pinned to a commit SHA; Dependabot keeps the pins and

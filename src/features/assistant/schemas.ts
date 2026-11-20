@@ -1,7 +1,7 @@
 /**
- * Shapes of the assistant's wording: what the model is asked for and held to
- * (also given to the model host as JSON Schema), and what a cached narrative
- * must still look like. The checks beyond shape are ./reply-checks.ts.
+ * Shapes of the assistant's wording: what every model is asked for and held to
+ * (also given to Workers AI as JSON Schema), and what a cached narrative must
+ * still look like. The checks beyond shape are ./reply-checks.ts.
  */
 import * as z from 'zod';
 import type { Narrative } from './types';
@@ -18,7 +18,7 @@ export const narrativeReply = z.strictObject({
 /** A reply that matched the shape. */
 export type NarrativeReply = z.infer<typeof narrativeReply>;
 
-/** The same shape as JSON Schema, for the model host's constrained decoding. */
+/** The same shape as JSON Schema, for constrained decoding on Workers AI. */
 export const NARRATIVE_JSON_SCHEMA: object = z.toJSONSchema(narrativeReply);
 
 /** The shape of a {@link Narrative}, for values read back from the cache. */

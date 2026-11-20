@@ -17,7 +17,9 @@ under the conditions stated beside the figures.
 
 ## Model latency
 
-The figures below are for the Workers AI models. GEMINI-FIGURES
+NVIDIA-FIGURES
+
+The figures below are for the Workers AI models.
 
 Measured on Cloudflare with the shipped deadlines on 20 Nov 2026, with curl from
 India, for six profiles: families in Delhi, Mumbai, Kanpur and Patna, a school
@@ -77,13 +79,13 @@ below are bytes on disk and after `gzip -9`.
 | `index.html`                              | 1      | 14,559     | 3,609      |
 | `favicon.svg`                             | 1      | 215        | 198        |
 | Stylesheets                               | 4      | 11,312     | 3,885      |
-| Front-end modules                         | 12     | 24,525     | 10,633     |
+| Front-end modules                         | 12     | 24,802     | 10,756     |
 | Shared modules compiled from `src/config` | 3      | 4,103      | 2,203      |
-| **Total**                                 | **21** | **54,714** | **20,528** |
+| **Total**                                 | **21** | **54,991** | **20,651** |
 
 ## Worker bundle
 
-Bundled and minified with esbuild, the Worker is 168,547 bytes (55,406 gzipped).
+Bundled and minified with esbuild, the Worker is 168,538 bytes (55,417 gzipped).
 It was 514,644 bytes (116,503 gzipped) until zod was imported as a namespace
 (`import * as z from 'zod'`), which lets the bundler drop the locale files the
 code never uses. Hono and zod are the only runtime dependencies.

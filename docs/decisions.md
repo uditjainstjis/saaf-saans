@@ -97,10 +97,10 @@ figures would make the whole calculation look more certain than it is.
 
 ## 9. No framework
 
-**Decision.** The page is static HTML, four stylesheets and eleven small ES
+**Decision.** The page is static HTML, four stylesheets and twelve small ES
 modules.
 
-**Why.** One form and one result view do not need a runtime, and 20 KB gzipped
+**Why.** One form and one result view do not need a runtime, and 21 KB gzipped
 matters on a phone in the cities this is for.
 
 **Cost.** Rendering code is written by hand.
@@ -143,38 +143,49 @@ matters, and the figures stay with the engine's impact line beside it. The first
 model's timed call cost 61 neurons and the second's 134, against a free
 allowance of 10,000 a day.
 
-## 11. Gemini first, when a key is configured
+## 11. A second provider, asked first when a key is configured
 
-**Decision.** When the Worker has a `GEMINI_API_KEY` secret, the assistant asks
-Google's `gemini-3.8-flash` first and the Mistral model on Workers AI second.
-Without the secret nothing changes: Mistral first, Llama second. Either way a
-request makes at most two model calls, each under the same 15 s deadline, and
-every reply passes the same checks.
+**Decision.** When the Worker has an `NVIDIA_API_KEY` secret, the assistant asks
+NVIDIA's `nvidia/nemotron-3.5-bolt-e4b` first and the Mistral model on Workers
+AI second. Without the secret nothing changes: Mistral first, Llama second.
+Either way a request makes at most two model calls, each under the same 15 s
+deadline, and every reply passes the same checks.
 
 **How.** One more adapter behind the same port
-([gemini.ts](../src/features/assistant/gemini.ts)), chosen at the composition
-root ([src/index.ts](../src/index.ts)). It makes one stateless call to Google's
-Interactions API,
-`POST https://generativelanguage.googleapis.com/v1/interactions`, with
-`system_instruction`, `input`, a JSON Schema under `response_format`,
-`store: false` so that Google keeps no copy for later retrieval, and the key in
-the `x-goog-api-key` header. The model id, the endpoint and the field names were
-read on 20 Nov 2026 from Google's reference:
-`ai.google.dev/gemini-api/docs/models`,
-`ai.google.dev/gemini-api/docs/structured-output`,
-`ai.google.dev/gemini-api/docs/interactions-breaking-changes-may-2026` and
-`ai.google.dev/api/interactions.openapi.json`. Two things in that reference
-shape the request: this model takes no sampling parameters, so none is sent, and
-its thinking cannot be switched off, so the request asks for the lowest
-`thinking_level` and adds 2,048 tokens to the output cap, which counts thought
-tokens.
+([nvidia.ts](../src/features/assistant/nvidia.ts)), chosen at the composition
+root ([src/index.ts](../src/index.ts)). It makes one call to NVIDIA's
+OpenAI-compatible API,
+`POST https://integrate.api.nvidia.com/v1/chat/completions`, with the key in the
+`Authorization: Bearer` header and a body of `model`, `messages` (the system
+prompt, then the computed facts and fenced notes), `max_tokens` (600) and
+`temperature` (0.3). It sends no `response_format` or schema field: the system
+prompt already asks for the JSON object, and the reply was measured without one.
+The answer arrives in `choices[0].message.content`, which the reply parser
+already read for Workers AI models.
 
 **Why.** Two models at one host share that host's bad days: on 20 Nov 2026 two
 Workers AI models had been withdrawn and two others did not answer within 60 s.
-A model at a second provider does not depend on that host. GEMINI-FIGURES
+A model at a second provider does not depend on that host. The measurements
+behind the choice: on 20 Nov 2026, from the development machine, with the app's
+real system prompt, a six-recommendation plan and a 600-token budget,
+`nemotron-3.5-bolt-e4b` answered with HTTP 200 in 3.5 s, wrote 291 completion
+tokens and no reasoning tokens, and its reply passed every one of the app's
+checks. The Workers AI path measured 8.2 to 11.4 s the same day, for the whole
+`POST /api/assistant` route on Cloudflare, plan rebuild included (see
+[EFFICIENCY.md](../EFFICIENCY.md)); the two figures were taken under different
+conditions.
+
+NVIDIA-FIGURES
 
 **Cost.** One optional secret to hold, and a second host that receives the
-computed facts and the fenced notes.
+computed facts and the fenced notes. Not every model NVIDIA hosts was usable on
+20 Nov 2026: `google/gemma-4-31b-it`, `mistralai/mistral-large-4-1t-a52b`,
+`moonshotai/kimi-k3.1-pro`, `meta/muse-glimmer-30b` and
+`nvidia/nemotron-3-ultra-550b-a55b` gave no reply in 40 s;
+`nvidia/nemotron-3.5-lightning-30b-a3b`,
+`nvidia/nemotron-3.5-super-vl-120b-a12b` and `stepfun-ai/step-5-preview` spent
+their whole token budget on reasoning and returned no text; `z-ai/glm-5.3-flash`
+returned 502 and `minimaxai/minimax-m3.1-flash` 529.
 
 ## 12. A reminder is a link, not an integration
 

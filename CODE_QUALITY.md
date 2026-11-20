@@ -63,8 +63,8 @@ fails unless:
 - every export of the Worker, the front end and the test support modules has a
   doc comment;
 - every source module is under 3.5 KB, every test file under 4 KB and every
-  stylesheet under 4 KB (the largest source module today is 3.1 KB, the median
-  1.3 KB).
+  stylesheet under 4 KB (the largest source module today is 3,473 bytes, the
+  median 1,365).
 
 ## One source of truth
 
@@ -78,7 +78,7 @@ applies. [form-setup.dom.test.ts](test/public/form-setup.dom.test.ts) and
 
 ## Front end
 
-Eleven ES modules in [public/js/](public/js/), one responsibility each, held to
+Twelve ES modules in [public/js/](public/js/), one responsibility each, held to
 the same lint limits and type-checked through JSDoc
 ([tsconfig.app.json](tsconfig.app.json)). Data from the server is narrowed by
 runtime guards ([guards.js](public/js/guards.js)), never asserted.

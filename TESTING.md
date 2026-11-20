@@ -6,12 +6,12 @@
 test with coverage. On the committed tree:
 
 ```text
- Test Files  96 passed (96)
-      Tests  458 passed (458)
+ Test Files  97 passed (97)
+      Tests  460 passed (460)
 
-Statements   : 100% ( 956/956 )
+Statements   : 100% ( 954/954 )
 Branches     : 100% ( 330/330 )
-Functions    : 100% ( 292/292 )
+Functions    : 100% ( 289/289 )
 Lines        : 100% ( 844/844 )
 ```
 
@@ -79,9 +79,11 @@ is checked against published ratios before it is trusted.
   an invented number, with a sentence cut short or with a word dropped; the
   second model answering after a failure (given the original request) and after
   a rejection (given the reasons); both failing, and never a third call.
-- Gemini answering an HTTP error, or failing in transport: the status or the
-  error is logged with the key removed, and the next model is asked. With no key
-  configured, Gemini is never called.
+- NVIDIA's API answering an HTTP error, or failing in transport: the status or
+  the error is logged with the key removed, and the next model is asked. With no
+  key configured, NVIDIA's API is never called.
+- An air reading whose time is missing or not a real local time: the report is
+  kept and the card names its source without a time.
 - A cache that throws on read and on write, and a cached value of a stale shape.
 - Every refusal the API can give (400, 403, 404, 413, 415, 429) and an
   unexpected fault (500 without detail).
@@ -112,7 +114,7 @@ and Patna, a school in Lucknow and a residents' association in Gurugram.
 
 The rule-written fallback was not needed in any of these calls.
 
-GEMINI-FIGURES
+NVIDIA-FIGURES
 
 ### By hand, on the development machine
 

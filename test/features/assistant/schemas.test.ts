@@ -1,6 +1,6 @@
 /**
- * Tests for the assistant schemas: the JSON Schema given to the model host and
- * the shape a cached narrative must keep.
+ * Tests for the assistant schemas: the JSON Schema given to Workers AI and the
+ * shape a cached narrative must keep.
  */
 import { expect, it } from 'vitest';
 import { NARRATIVE_JSON_SCHEMA, narrativeSchema } from '../../../src/features/assistant/schemas';
