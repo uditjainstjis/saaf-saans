@@ -80,7 +80,7 @@ brief is rebuilt server-side from the validated profile on every request.
   containing markup and checks that it stays text.
 - **Other headers**: HSTS with preload, `nosniff`, `X-Frame-Options: DENY`,
   `Referrer-Policy: no-referrer`, COOP, CORP and COEP, and a
-  `Permissions-Policy` denying 25 features.
+  `Permissions-Policy` denying 23 features.
 - Static assets are served at the edge without the Worker, so the same policy is
   written to `public/_headers` from the same data at build time, and a test
   checks the two are identical.

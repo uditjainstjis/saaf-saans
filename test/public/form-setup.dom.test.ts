@@ -24,7 +24,7 @@ it('fills every select from the options the Worker validates against', () => {
   expect(optionValues('homeType')).toEqual([...options.HOME_TYPES]);
   expect(optionValues('outdoorTime')).toEqual([...options.OUTDOOR_TIMES]);
   expect(optionValues('groupType')).toEqual([...options.GROUP_TYPES]);
-  expect(selectEl('commute').options[3]?.textContent).toBe(labels.LABELS.commute.car);
+  expect(selectEl('commute').options[0]?.textContent).toBe(labels.LABELS.commute.car);
 });
 
 it('takes ranges and length caps from the shared limits, not from the markup', () => {

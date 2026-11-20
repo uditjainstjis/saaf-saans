@@ -173,7 +173,7 @@ a:hover {
   display: inline-block;
   padding: 0.1rem 0.6rem;
   border: 1px solid var(--field-border);
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--surface-2);
   color: var(--ink);
   font-size: 1.0625rem;

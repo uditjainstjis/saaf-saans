@@ -7,7 +7,7 @@ import type { Factor } from '../types';
 import { assumed, assumedFrom } from './factor';
 
 const infiltration = assumedFrom(
-  'Assumed within the range reviewed by Chen & Zhao (2011), Atmospheric Environment 45, 275–288',
+  'Chosen within the range reviewed by Chen & Zhao (2011), Atmospheric Environment 45, 275–288',
 );
 
 /** Infiltration by building type, and the hours a day spent in each setting. */

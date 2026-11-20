@@ -40,8 +40,9 @@ function renderTotals(totals) {
   $('total-inhaled', HTMLElement).textContent = `${formatNumber(totals.inhaledAvoidedUg)} µg a day`;
   $('total-emitted', HTMLElement).textContent = `${formatNumber(totals.notEmittedG)} g a week`;
   $('total-co2e', HTMLElement).textContent = `${formatNumber(totals.co2eSavedKg)} kg CO2e a week`;
+  const hours = Math.round(totals.outdoorMinutes / 6) / 10;
   $('total-equivalent', HTMLElement).textContent =
-    `Per person, that is as much PM2.5 as ${formatNumber(totals.outdoorMinutes)} minutes of breathing today’s outdoor air at rest.`;
+    `Per person, that is as much PM2.5 as ${formatNumber(totals.outdoorMinutes)} minutes (${formatNumber(hours)} hours) of breathing today’s outdoor air at rest.`;
 }
 
 /**

@@ -9,14 +9,14 @@ export const MODES = ['family', 'community'] as const;
 /** One of {@link MODES}. */
 export type Mode = (typeof MODES)[number];
 
-/** How the household, or most of the group, travels on a normal day. */
+/** How the household, or most of the group, travels on a normal day. The first is the form's default. */
 export const COMMUTE_MODES = [
-  'walk',
-  'cycle',
-  'two_wheeler',
   'car',
+  'two_wheeler',
   'bus',
   'metro',
+  'cycle',
+  'walk',
   'none',
 ] as const;
 /** One of {@link COMMUTE_MODES}. */
@@ -33,7 +33,7 @@ export const HOME_TYPES = ['apartment', 'house', 'roadside'] as const;
 export type HomeType = (typeof HOME_TYPES)[number];
 
 /** When outdoor exercise, play, assembly or sport usually happens. */
-export const OUTDOOR_TIMES = ['none', 'morning', 'evening'] as const;
+export const OUTDOOR_TIMES = ['morning', 'evening', 'none'] as const;
 /** One of {@link OUTDOOR_TIMES}. */
 export type OutdoorTime = (typeof OUTDOOR_TIMES)[number];
 

@@ -28,10 +28,10 @@ const CSP = [
 
 /** Browser features the page never uses; each is denied with an empty allowlist. */
 const DENIED_FEATURES =
-  'accelerometer ambient-light-sensor autoplay battery bluetooth browsing-topics camera ' +
-  'display-capture encrypted-media gamepad geolocation gyroscope hid idle-detection local-fonts ' +
-  'magnetometer microphone midi payment picture-in-picture publickey-credentials-get ' +
-  'screen-wake-lock serial usb xr-spatial-tracking';
+  'accelerometer autoplay bluetooth browsing-topics camera display-capture encrypted-media ' +
+  'gamepad geolocation gyroscope hid idle-detection local-fonts magnetometer microphone midi ' +
+  'payment picture-in-picture publickey-credentials-get screen-wake-lock serial usb ' +
+  'xr-spatial-tracking';
 
 type HeaderMap = Readonly<Record<string, string>>;
 
@@ -55,10 +55,11 @@ export const SECURITY_HEADERS: HeaderMap = {
 /** Fresh for ten minutes, then served stale while the edge revalidates. */
 const ASSET_CACHE = 'public, max-age=600, stale-while-revalidate=86400';
 
-/** Extra headers for static paths: short caching for assets, plain text for security.txt. */
+/** Extra headers for static paths: caching for assets and the icon, plain text for security.txt. */
 const STATIC_RULES: Readonly<Record<string, HeaderMap>> = {
   '/css/*': { 'cache-control': ASSET_CACHE },
   '/js/*': { 'cache-control': ASSET_CACHE },
+  '/favicon.svg': { 'cache-control': 'public, max-age=86400' },
   '/.well-known/*': {
     'content-type': 'text/plain; charset=utf-8',
     'cache-control': 'public, max-age=3600',

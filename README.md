@@ -199,10 +199,10 @@ path needs `wrangler login`.
  Test Files  86 passed (86)
       Tests  378 passed (378)
 
-Statements   : 100% ( 854/854 )
+Statements   : 100% ( 855/855 )
 Branches     : 100% ( 295/295 )
 Functions    : 100% ( 260/260 )
-Lines        : 100% ( 750/750 )
+Lines        : 100% ( 751/751 )
 ```
 
 | Measured over             | Statements | Branches | Functions | Lines |
@@ -225,7 +225,7 @@ security, conventions) and the end-to-end run against the live services.
 | Strict schema on every request: unknown keys rejected, numbers bounded, text trimmed and capped                                                               | [plan/schemas.ts](src/features/plan/schemas.ts), [middleware/validate.ts](src/middleware/validate.ts)                                                          |
 | Prompt-injection screen: seven rules, flagged sentences removed, the rest fenced under a per-request random delimiter                                         | [lib/prompt-guard/](src/lib/prompt-guard/)                                                                                                                     |
 | Model output is untrusted: schema, id and number checks before anything is shown                                                                              | [assistant/reply-checks.ts](src/features/assistant/reply-checks.ts)                                                                                            |
-| Content Security Policy with `script-src 'self'`, no inline code, Trusted Types required; HSTS, `nosniff`, frame denial, COOP, CORP, COEP, 25 features denied | [config/security-policy.ts](src/config/security-policy.ts)                                                                                                     |
+| Content Security Policy with `script-src 'self'`, no inline code, Trusted Types required; HSTS, `nosniff`, frame denial, COOP, CORP, COEP, 23 features denied | [config/security-policy.ts](src/config/security-policy.ts)                                                                                                     |
 | The page writes text, never markup                                                                                                                            | [public/js/dom.js](public/js/dom.js)                                                                                                                           |
 | Upstream replies and cached values parsed against schemas                                                                                                     | [providers/open-meteo-schemas.ts](src/features/air-quality/providers/open-meteo-schemas.ts), [lib/remember.ts](src/lib/remember.ts)                            |
 | No secrets, no storage of profiles, API replies `no-store`, cache keys hashed                                                                                 | [src/index.ts](src/index.ts), [lib/content-key.ts](src/lib/content-key.ts)                                                                                     |
@@ -243,8 +243,8 @@ security, conventions) and the end-to-end run against the live services.
   ten minutes, narratives for ten minutes keyed by a hash of the brief.
 - **Bounded waits.** Four seconds for an upstream call and fifteen for a model
   call, each cancelled through an abort signal, each with a fallback.
-- **Small payloads.** The page is 51.6 KB uncompressed and 19.1 KB gzipped for
-  all nineteen files; no framework and no third-party request.
+- **Small payloads.** The page is 51.9 KB uncompressed and 19.4 KB gzipped for
+  all twenty files; no framework and no third-party request.
 - **Small bundle.** Importing zod as a namespace lets the bundler drop unused
   locales: 160 KB minified (53.5 KB gzipped) when bundled with esbuild, down
   from 503 KB.

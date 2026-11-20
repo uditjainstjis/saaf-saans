@@ -16,7 +16,7 @@ it('shows the engine’s totals', async () => {
   expect(byId('total-inhaled').textContent).toBe('1,593.2 µg a day');
   expect(byId('total-emitted').textContent).toBe('0 g a week');
   expect(byId('total-co2e').textContent).toBe('32.6 kg CO2e a week');
-  expect(byId('total-equivalent').textContent).toContain('642 minutes of breathing');
+  expect(byId('total-equivalent').textContent).toContain('642 minutes (10.7 hours) of breathing');
 });
 
 it('files each recommendation under its heading from the brief, with its impact and working', async () => {

@@ -5,8 +5,8 @@ import { $, part } from './dom.js';
 /** @typedef {import('../../src/features/assistant/types').Narrative} Narrative */
 
 const SOURCE_LABEL = {
-  model: 'Written by generative AI (Workers AI) from your computed plan',
-  rules: 'Written by built-in rules: the AI model is unavailable right now',
+  model: 'Written by generative AI (Workers AI)',
+  rules: 'Written by built-in rules (AI unavailable)',
 };
 
 /** Show that the assistant is still writing. */

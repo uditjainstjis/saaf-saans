@@ -25,7 +25,7 @@ it('reaches static assets as exactly the headers the Worker sets', () => {
 });
 
 it('adds caching rules for styles, scripts and security.txt only', () => {
-  expect([...rules().keys()]).toEqual(['/*', '/css/*', '/js/*', '/.well-known/*']);
+  expect([...rules().keys()]).toEqual(['/*', '/css/*', '/js/*', '/favicon.svg', '/.well-known/*']);
   expect(rules().get('/js/*')?.get('cache-control')).toContain('stale-while-revalidate');
   expect(rules().get('/.well-known/*')?.get('content-type')).toMatch(/^text\/plain/);
 });
