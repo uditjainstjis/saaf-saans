@@ -3,7 +3,7 @@
  * still matches its schema, else load, store and return. A cached value is
  * untrusted until parsed, so a stale shape is simply a miss.
  */
-import type { z } from 'zod';
+import type * as z from 'zod';
 import type { Cache } from './ports';
 
 /** Where a value is cached, for how long, and the shape a cached copy must still have. */

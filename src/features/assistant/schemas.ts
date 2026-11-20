@@ -3,7 +3,7 @@
  * (also given to the model host as JSON Schema), and what a cached narrative
  * must still look like. The checks beyond shape are ./reply-checks.ts.
  */
-import { z } from 'zod';
+import * as z from 'zod';
 import type { Narrative } from './types';
 
 /** The reply shape the model is asked for, and held to. */

@@ -3,7 +3,7 @@
  * tailored to. Everything a visitor sends is parsed here before any other code
  * sees it: unknown keys rejected, numbers bounded, text trimmed and capped.
  */
-import { z } from 'zod';
+import * as z from 'zod';
 import { LIMITS, rangeMessage } from '../../config/limits';
 import {
   COMMUTE_MODES,

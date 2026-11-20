@@ -3,7 +3,7 @@
  * reply is parsed against these before any value is used. Adapters:
  * ./open-meteo-air.ts and ./open-meteo-geocoder.ts.
  */
-import { z } from 'zod';
+import * as z from 'zod';
 
 const reading = z.number().nullable();
 

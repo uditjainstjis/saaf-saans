@@ -3,7 +3,7 @@
  * it with the schema a route supplies. Every schema issue is reported against
  * its field, so the form can show them all at once. Schemas live in each feature.
  */
-import type { z } from 'zod';
+import type * as z from 'zod';
 import { MAX_BODY_BYTES } from '../config/runtime';
 import { refuse, RequestError } from '../lib/app-error';
 

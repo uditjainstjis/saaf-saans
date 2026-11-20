@@ -3,7 +3,7 @@
  * value arrives from outside the type system: the cache and adapter output.
  * The shapes of Open-Meteo's replies are in ./providers/open-meteo-schemas.ts.
  */
-import { z } from 'zod';
+import * as z from 'zod';
 import { type AirReport, POLLUTANTS, type Place } from './types';
 
 /** A concentration or index: a finite number that is not negative. */
