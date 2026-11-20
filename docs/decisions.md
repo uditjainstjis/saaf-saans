@@ -142,3 +142,54 @@ it. One sentence says less than a paragraph: the model gives the reason a step
 matters, and the figures stay with the engine's impact line beside it. The first
 model's timed call cost 61 neurons and the second's 134, against a free
 allowance of 10,000 a day.
+
+## 11. Gemini first, when a key is configured
+
+**Decision.** When the Worker has a `GEMINI_API_KEY` secret, the assistant asks
+Google's `gemini-3.8-flash` first and the Mistral model on Workers AI second.
+Without the secret nothing changes: Mistral first, Llama second. Either way a
+request makes at most two model calls, each under the same 15 s deadline, and
+every reply passes the same checks.
+
+**How.** One more adapter behind the same port
+([gemini.ts](../src/features/assistant/gemini.ts)), chosen at the composition
+root ([src/index.ts](../src/index.ts)). It makes one stateless call to Google's
+Interactions API,
+`POST https://generativelanguage.googleapis.com/v1/interactions`, with
+`system_instruction`, `input`, a JSON Schema under `response_format`,
+`store: false` so that Google keeps no copy for later retrieval, and the key in
+the `x-goog-api-key` header. The model id, the endpoint and the field names were
+read on 20 Nov 2026 from Google's reference:
+`ai.google.dev/gemini-api/docs/models`,
+`ai.google.dev/gemini-api/docs/structured-output`,
+`ai.google.dev/gemini-api/docs/interactions-breaking-changes-may-2026` and
+`ai.google.dev/api/interactions.openapi.json`. Two things in that reference
+shape the request: this model takes no sampling parameters, so none is sent, and
+its thinking cannot be switched off, so the request asks for the lowest
+`thinking_level` and adds 2,048 tokens to the output cap, which counts thought
+tokens.
+
+**Why.** Two models at one host share that host's bad days: on 20 Nov 2026 two
+Workers AI models had been withdrawn and two others did not answer within 60 s.
+A model at a second provider does not depend on that host. GEMINI-FIGURES
+
+**Cost.** One optional secret to hold, and a second host that receives the
+computed facts and the fenced notes.
+
+## 12. A reminder is a link, not an integration
+
+**Decision.** Advice that names an hour (airing at the cleanest hour, shutting
+windows through the peak, moving outdoor time) carries an "Add a reminder to
+Google Calendar" link. A pure function
+([calendar.ts](../src/features/plan/calendar.ts)) builds Calendar's
+`render?action=TEMPLATE` address from the advice, the next day's date at the
+place and the place's time zone.
+
+**Why.** A routine changes when something reminds you at the hour. A link needs
+no key, no script and no request: nothing is loaded from Google, the Content
+Security Policy is unchanged, and the visitor chooses whether to open it. The
+page makes a link only of an address that begins with Calendar's own
+([reminder.js](../public/js/reminder.js)).
+
+**Cost.** The hour comes from today's forecast and is carried to tomorrow. The
+event's note says so and asks the visitor to check again.

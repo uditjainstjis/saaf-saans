@@ -6,13 +6,13 @@
 test with coverage. On the committed tree:
 
 ```text
- Test Files  89 passed (89)
-      Tests  415 passed (415)
+ Test Files  96 passed (96)
+      Tests  458 passed (458)
 
-Statements   : 100% ( 901/901 )
-Branches     : 100% ( 308/308 )
-Functions    : 100% ( 274/274 )
-Lines        : 100% ( 794/794 )
+Statements   : 100% ( 956/956 )
+Branches     : 100% ( 330/330 )
+Functions    : 100% ( 292/292 )
+Lines        : 100% ( 844/844 )
 ```
 
 | Directory                            | Statements | Branches | Functions | Lines |
@@ -79,6 +79,9 @@ is checked against published ratios before it is trusted.
   an invented number, with a sentence cut short or with a word dropped; the
   second model answering after a failure (given the original request) and after
   a rejection (given the reasons); both failing, and never a third call.
+- Gemini answering an HTTP error, or failing in transport: the status or the
+  error is logged with the key removed, and the next model is asked. With no key
+  configured, Gemini is never called.
 - A cache that throws on read and on write, and a cached value of a stale shape.
 - Every refusal the API can give (400, 403, 404, 413, 415, 429) and an
   unexpected fault (500 without detail).
@@ -108,6 +111,8 @@ and Patna, a school in Lucknow and a residents' association in Gurugram.
 | Lighthouse 13.6.0, Chrome 158, on the live page                                 | Desktop: 100 in all four categories. Mobile: 100 for accessibility, best practices and SEO; performance 97, 100 and 100 over three runs          |
 
 The rule-written fallback was not needed in any of these calls.
+
+GEMINI-FIGURES
 
 ### By hand, on the development machine
 

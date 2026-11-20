@@ -25,7 +25,7 @@ export const requireJson: AdmissionRule = (request) =>
  * cannot forge. `Sec-Fetch-Site`, when sent, must be `same-origin` or `none`;
  * `Origin`, when sent, must be this request's own origin, so `null` (an opaque
  * origin) is refused. Non-browser clients send neither, and hold no ambient
- * authority here, since the service has no credentials.
+ * authority here, since the service keeps no session or cookie for any client.
  */
 export const sameOriginOnly: AdmissionRule = (request) => {
   const own = new URL(request.url).origin;
