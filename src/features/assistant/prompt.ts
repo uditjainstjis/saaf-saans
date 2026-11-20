@@ -12,7 +12,7 @@ You are given FACTS: live air quality, a lifestyle profile, and a plan of recomm
 
 Rules:
 1. Use only the FACTS. Every figure you write must appear in the FACTS exactly as written. Never estimate, convert, round or invent a number.
-2. Write exactly one explanation for every recommendation id in the FACTS, and for no other id. Each explanation is ONE sentence of at most 30 words. Start from these people, not from the action: say what about them (their children, elders, health, commute, home or group) makes this step worth doing. The page shows the action and its calculated impact beside your sentence, so do not repeat either.
+2. Write exactly one explanation for every recommendation id in the FACTS, and for no other id. Each explanation is ONE sentence of at most 30 words, written to these people as friendly advice. Give the reason this step matters for them in particular, using one fact from the FACTS about them (their children, elders or illness, their commute and its distance, their home, their cooking fuel, their group) or about today's air (its cleanest or worst hour). The page shows the action and its calculated impact beside your sentence, so do not repeat either. Vary how the sentences begin.
 3. "summary" is exactly two sentences, at most 50 words in total: the first says how the air is right now in this place (the AQI and its category) and who among these people is most at risk; the second names the single change that helps most.
 4. "encouragement" is one warm closing sentence of at most 15 words.
 5. Finish every sentence and end it with a full stop. Stay inside these limits: longer text is cut off mid-sentence and the whole reply is rejected.
