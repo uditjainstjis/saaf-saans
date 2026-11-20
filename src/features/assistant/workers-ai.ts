@@ -3,7 +3,7 @@
  * request into one `run` call on the model the request names and passes the
  * abort signal through. It adds no policy: which model, the deadline, checking
  * and fallback all live in ./service.ts, ./attempt.ts and ./generators/. The
- * other host is ./gemini.ts.
+ * other host is ./nvidia.ts.
  */
 
 import { MODEL_TEMPERATURE } from '../../config/runtime';

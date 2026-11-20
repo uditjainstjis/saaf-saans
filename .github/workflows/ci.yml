@@ -70,12 +70,12 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
-      # The service has one secret, and it is optional: GEMINI_API_KEY, held as
+      # The service has one secret, and it is optional: NVIDIA_API_KEY, held as
       # a Worker secret outside this repository. Workers AI is a binding and the
       # air data API is keyless. This job fails if a key is ever committed.
       - name: Assert no credentials are committed
         run: |
-          if grep -rEn "(sk-[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}|(CLOUDFLARE_API_TOKEN|GEMINI_API_KEY)\s*=\s*[A-Za-z0-9._-]{20,})" \
+          if grep -rEn "(sk-[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_-]{30,}|nvapi-[A-Za-z0-9_-]{20,}|(CLOUDFLARE_API_TOKEN|NVIDIA_API_KEY)\s*=\s*[A-Za-z0-9._-]{20,})" \
                --include="*.ts" --include="*.js" --include="*.mjs" --include="*.json" \
                --include="*.jsonc" --include="*.yml" --include="*.md" --include=".dev.vars*" . ; then
             echo "::error::A credential-shaped string was found in the repository."

@@ -1,7 +1,7 @@
 /**
  * Types of the assistant feature (the generative step): the wording of a
  * plan, the port that writes it, and the port for a language model host.
- * Implementations are ./service.ts, ./generators/, ./workers-ai.ts and ./gemini.ts.
+ * Implementations are ./service.ts, ./generators/, ./workers-ai.ts and ./nvidia.ts.
  */
 
 import type { PlanBrief } from '../plan/types';

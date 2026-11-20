@@ -33,10 +33,10 @@ export const AIR_HOURS = [
   { hour: 15, pm25: 30 },
 ] as const;
 
-/** Stand in for the network: Open-Meteo answers, or is down; Google answers with `google()` when given. */
-export function stubNetwork(up: boolean, google?: () => Response): ReturnType<typeof vi.fn> {
+/** Stand in for the network: Open-Meteo answers, or is down; NVIDIA answers with `nvidia()` when given. */
+export function stubNetwork(up: boolean, nvidia?: () => Response): ReturnType<typeof vi.fn> {
   const fetch = vi.fn(async (url: string) => {
-    if (url.includes('googleapis.com')) return google?.() ?? Response.error();
+    if (url.includes('integrate.api.nvidia.com')) return nvidia?.() ?? Response.error();
     if (!up) throw new Error('network down');
     return Response.json(url.includes('geocoding') ? GEO : AIR);
   });
@@ -44,12 +44,12 @@ export function stubNetwork(up: boolean, google?: () => Response): ReturnType<ty
   return fetch;
 }
 
-/** Bindings whose AI answers with `run`, with the Gemini secret set when a key is given. */
-export function bindings(run: Bindings['AI']['run'], geminiKey?: string): Bindings {
+/** Bindings whose AI answers with `run`, with the NVIDIA secret set when a key is given. */
+export function bindings(run: Bindings['AI']['run'], nvidiaKey?: string): Bindings {
   return {
     AI: { run },
     ASSETS: { fetch: async () => new Response('app shell') },
     RATE_LIMITER: { limit: async () => ({ success: true }) },
-    ...(geminiKey === undefined ? {} : { GEMINI_API_KEY: geminiKey }),
+    ...(nvidiaKey === undefined ? {} : { NVIDIA_API_KEY: nvidiaKey }),
   };
 }

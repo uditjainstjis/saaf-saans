@@ -66,5 +66,5 @@ it('names each platform service in exactly one module, behind a port', () => {
   expect(naming(/\bcaches\./)).toEqual(['src/index.ts']);
   expect(naming(/\bconsole\./)).toEqual(['src/lib/logger.ts']);
   expect(naming(/\bnew Date\(|\bDate\.now\(/)).toEqual(['src/lib/clock.ts']);
-  expect(naming(/\benv\.(AI|ASSETS|RATE_LIMITER|GEMINI_API_KEY)\b/)).toEqual(['src/index.ts']);
+  expect(naming(/\benv\.(AI|ASSETS|RATE_LIMITER|NVIDIA_API_KEY)\b/)).toEqual(['src/index.ts']);
 });

@@ -1,7 +1,7 @@
 /**
  * Test doubles for the assistant's ports: a scripted language model, a
- * recording HTTP POST, a reply that passes every check, Gemini's envelope
- * around one, and fixed or broken plan generators.
+ * recording HTTP POST, a reply that passes every check, an OpenAI-style
+ * envelope around one, and fixed or broken plan generators.
  */
 
 import type {
@@ -57,12 +57,15 @@ export function goodReply(brief: PlanBrief): {
   };
 }
 
-/** A Gemini interaction whose output is `value` as JSON text, after a thought step. */
-export const interaction = (value: unknown): object => ({
-  status: 'completed',
-  steps: [
-    { type: 'thought', signature: 'sig' },
-    { type: 'model_output', content: [{ type: 'text', text: JSON.stringify(value) }] },
+/** A chat completion, as NVIDIA's API returns one, whose message is `value` as JSON text. */
+export const completion = (value: unknown): object => ({
+  object: 'chat.completion',
+  choices: [
+    {
+      index: 0,
+      message: { role: 'assistant', content: JSON.stringify(value) },
+      finish_reason: 'stop',
+    },
   ],
 });
 

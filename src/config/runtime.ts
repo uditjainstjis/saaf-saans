@@ -21,18 +21,13 @@ export const MODELS = [
   '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
 ] as const;
 /**
- * Google's model, asked first when the GEMINI_API_KEY secret is set; the first
+ * NVIDIA's model, asked first when the NVIDIA_API_KEY secret is set; the first
  * of {@link MODELS} is then the second choice. See docs/decisions.md, record 11.
  */
-export const GEMINI_MODEL = 'gemini-3.8-flash';
+export const NVIDIA_MODEL = 'nvidia/nemotron-3.5-bolt-e4b';
 /** The output budget of one call: enough for a two-sentence summary and one sentence per recommendation. */
 export const MODEL_MAX_TOKENS = 600;
-/**
- * Added to the budget sent to Gemini, whose cap counts the tokens it spends
- * thinking and whose thinking cannot be switched off. Not yet measured.
- */
-export const GEMINI_THINKING_TOKENS = 2048;
-/** For Workers AI. Low, so wording stays close to the facts; not zero, so households do not read identical prose. */
+/** Low, so wording stays close to the facts; not zero, so households do not read identical prose. */
 export const MODEL_TEMPERATURE = 0.3;
 
 /** Air changes hour by hour; ten minutes keeps a busy neighbourhood to one upstream call. */

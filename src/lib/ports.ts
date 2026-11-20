@@ -25,7 +25,7 @@ export interface PostInit {
   signal: AbortSignal;
 }
 
-/** An HTTP POST: as much of `fetch` as the Gemini adapter uses. */
+/** An HTTP POST: as much of `fetch` as the NVIDIA adapter uses. */
 export type HttpPost = (url: string, init: PostInit) => Promise<Response>;
 
 /** Structured diagnostics: `info` for what happened, `warn` for what went wrong. */

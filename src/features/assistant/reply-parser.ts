@@ -1,8 +1,7 @@
 /**
  * Reads a JSON object out of a model reply, whatever wraps it: the Workers AI
- * envelope, OpenAI-style choices, the steps of a Gemini interaction, a fenced
- * code block or surrounding prose. Recovering here avoids discarding a good
- * answer. Checked by ./reply-checks.ts.
+ * envelope, OpenAI-style choices, a fenced code block or surrounding prose.
+ * Recovering here avoids discarding a good answer. Checked by ./reply-checks.ts.
  */
 
 /** True for a plain JSON object. */
@@ -18,29 +17,11 @@ function firstChoice(choices: unknown): unknown {
 }
 
 /**
- * The text of a Gemini interaction: the text blocks of its last `model_output`
- * step, joined. `thought` steps, which come first, are skipped; a reply cut
- * off while thinking has no output step and reads as empty.
- */
-function outputText(steps: unknown): string {
-  const outputs = (Array.isArray(steps) ? steps : [])
-    .filter(isRecord)
-    .filter((step) => step.type === 'model_output');
-  const content = outputs.at(-1)?.content;
-  return (Array.isArray(content) ? content : [])
-    .filter(isRecord)
-    .map((block) => (typeof block.text === 'string' ? block.text : ''))
-    .join('');
-}
-
-/**
- * Hosts wrap replies differently. Gemini returns `steps`. Workers AI returns a
- * `response` field or an OpenAI-style `choices[0].message.content`, depending
- * on the model; some return both with `response` empty, so the choices are
- * tried first.
+ * Workers AI wraps replies two ways depending on the model: a `response`
+ * field, or an OpenAI-style `choices[0].message.content`. Some models return
+ * both with `response` empty, so the choices are tried first.
  */
 function fromEnvelope(obj: Record<string, unknown>): Record<string, unknown> | null {
-  if ('steps' in obj) return extractJson(outputText(obj.steps));
   const inner = extractJson(firstChoice(obj.choices));
   if (inner) return inner;
   return 'response' in obj ? extractJson(obj.response) : obj;

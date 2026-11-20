@@ -25,11 +25,12 @@
     "binding": "AI",
   },
 
-  // The service has one secret, and it is optional: GEMINI_API_KEY. When it is
-  // set (`npx wrangler secret put GEMINI_API_KEY`), Gemini is asked first and
-  // Workers AI second; without it the assistant runs on Workers AI alone. It
-  // is a Worker secret, so it is in no file of this repository, not in CI and
-  // not in the deployed bundle. .dev.vars.example names it for local use.
+  // The service has one secret, and it is optional: NVIDIA_API_KEY. When it is
+  // set (`npx wrangler secret put NVIDIA_API_KEY`), NVIDIA's hosted API is
+  // asked first and Workers AI second; without it the assistant runs on Workers
+  // AI alone. It is a Worker secret, so it is in no file of this repository,
+  // not in CI and not in the deployed bundle. .dev.vars.example names it for
+  // local use.
 
   // Per-IP request cap on the API. Thirty a minute is far above a household
   // checking its air and far below a flood; static assets are unaffected.

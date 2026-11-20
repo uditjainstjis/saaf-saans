@@ -14,7 +14,7 @@ import { typicalGeocoder } from './features/air-quality/providers/typical-geocod
 import { cachedPlanGenerator } from './features/assistant/generators/cached';
 import { fallbackPlanGenerator } from './features/assistant/generators/fallback';
 import { rulePlanGenerator } from './features/assistant/generators/rules';
-import { gemini } from './features/assistant/gemini';
+import { nvidia } from './features/assistant/nvidia';
 import { modelPlanGenerator, modelSources } from './features/assistant/service';
 import { type AiRunner, workersAi } from './features/assistant/workers-ai';
 import { edgeCache } from './lib/cache';
@@ -28,8 +28,8 @@ export interface Bindings {
   AI: AiRunner;
   ASSETS: AssetServer;
   RATE_LIMITER: RateLimitBinding;
-  /** The one secret, and optional: when set, Gemini is asked first. */
-  GEMINI_API_KEY?: string;
+  /** The one secret, and optional: when set, NVIDIA is asked first. */
+  NVIDIA_API_KEY?: string;
 }
 
 const httpGet: HttpGet = (url, signal) =>
@@ -42,8 +42,8 @@ export function compose(env: Bindings): AppDeps {
   const logger = consoleLogger;
   const geocoder = cachedGeocoder(openMeteoGeocoder(httpGet), cache);
   const air = cachedAir(openMeteoAir(httpGet), cache);
-  const key = env.GEMINI_API_KEY;
-  const sources = modelSources(workersAi(env.AI), key ? gemini(httpPost, key) : undefined);
+  const key = env.NVIDIA_API_KEY;
+  const sources = modelSources(workersAi(env.AI), key ? nvidia(httpPost, key) : undefined);
   const model = cachedPlanGenerator(modelPlanGenerator(sources, logger), cache);
   return {
     geocoder: fallbackGeocoder(geocoder, typicalGeocoder, logger),

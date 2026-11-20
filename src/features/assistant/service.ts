@@ -5,7 +5,7 @@
  * are in config/runtime.ts. One attempt: ./attempt.ts. Rules fallback and
  * caching: ./generators/.
  */
-import { GEMINI_MODEL, MODELS, MODEL_TIMEOUT_MS } from '../../config/runtime';
+import { MODELS, MODEL_TIMEOUT_MS, NVIDIA_MODEL } from '../../config/runtime';
 import type { Logger } from '../../lib/ports';
 import { makeNonce } from '../../lib/prompt-guard/fence';
 import { type Outcome, attempt } from './attempt';
@@ -16,14 +16,14 @@ import type { ModelSource, PlanGenerator, TextGenerator } from './types';
 export type ModelSources = readonly [ModelSource, ModelSource];
 
 /**
- * With a Gemini host, Gemini first and Workers AI's first model second;
- * without one, Workers AI's two models. Never more than two.
+ * With an NVIDIA host, NVIDIA's model first and Workers AI's first model
+ * second; without one, Workers AI's two models. Never more than two.
  */
-export function modelSources(workersAi: TextGenerator, gemini?: TextGenerator): ModelSources {
+export function modelSources(workersAi: TextGenerator, nvidia?: TextGenerator): ModelSources {
   const [first, second] = MODELS;
   const primary = { model: first, text: workersAi };
-  return gemini
-    ? [{ model: GEMINI_MODEL, text: gemini }, primary]
+  return nvidia
+    ? [{ model: NVIDIA_MODEL, text: nvidia }, primary]
     : [primary, { model: second, text: workersAi }];
 }
 
