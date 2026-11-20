@@ -24,9 +24,9 @@ it('reaches static assets as exactly the headers the Worker sets', () => {
   expect(policy().size).toBe(11);
 });
 
-it('adds caching rules for styles, scripts and security.txt only', () => {
-  expect([...rules().keys()]).toEqual(['/*', '/css/*', '/js/*', '/favicon.svg', '/.well-known/*']);
-  expect(rules().get('/js/*')?.get('cache-control')).toContain('stale-while-revalidate');
+it('adds rules for the icon and security.txt only, leaving scripts and styles to revalidate', () => {
+  expect([...rules().keys()]).toEqual(['/*', '/favicon.svg', '/.well-known/*']);
+  expect(rules().get('/favicon.svg')?.get('cache-control')).toBe('public, max-age=86400');
   expect(rules().get('/.well-known/*')?.get('content-type')).toMatch(/^text\/plain/);
 });
 

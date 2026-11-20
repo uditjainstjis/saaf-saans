@@ -52,13 +52,12 @@ export const SECURITY_HEADERS: HeaderMap = {
   'origin-agent-cluster': '?1',
 };
 
-/** Fresh for ten minutes, then served stale while the edge revalidates. */
-const ASSET_CACHE = 'public, max-age=600, stale-while-revalidate=86400';
-
-/** Extra headers for static paths: caching for assets and the icon, plain text for security.txt. */
+/**
+ * Extra headers for static paths. Styles and scripts keep the platform default
+ * (revalidated with an ETag on every load), so a deploy is never mixed with
+ * stale code; the icon is cached for a day and security.txt is plain text.
+ */
 const STATIC_RULES: Readonly<Record<string, HeaderMap>> = {
-  '/css/*': { 'cache-control': ASSET_CACHE },
-  '/js/*': { 'cache-control': ASSET_CACHE },
   '/favicon.svg': { 'cache-control': 'public, max-age=86400' },
   '/.well-known/*': {
     'content-type': 'text/plain; charset=utf-8',

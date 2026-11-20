@@ -15,16 +15,19 @@ the committed tree; none is an estimate.
 
 ## Caching
 
-All three caches use the Workers Cache API, which needs no binding and expires
-entries itself ([lib/cache.ts](src/lib/cache.ts),
+The three caches below use the Workers Cache API, which needs no binding and
+expires entries itself ([lib/cache.ts](src/lib/cache.ts),
 [lib/remember.ts](src/lib/remember.ts)).
 
-| What                           | Key                                                     | Lifetime                                                |
-| ------------------------------ | ------------------------------------------------------- | ------------------------------------------------------- |
-| Place lookups, misses included | the lower-cased query                                   | 24 hours                                                |
-| Air reports                    | coordinates rounded to two decimals (about a kilometre) | 10 minutes                                              |
-| Model narratives               | SHA-256 of the brief                                    | 10 minutes                                              |
-| Stylesheets and scripts        | path                                                    | 10 minutes fresh, then stale-while-revalidate for a day |
+| What                           | Key                                                     | Lifetime   |
+| ------------------------------ | ------------------------------------------------------- | ---------- |
+| Place lookups, misses included | the lower-cased query                                   | 24 hours   |
+| Air reports                    | coordinates rounded to two decimals (about a kilometre) | 10 minutes |
+| Model narratives               | SHA-256 of the brief                                    | 10 minutes |
+
+Static assets are outside these caches: the edge serves them with an ETag and
+`max-age=0, must-revalidate`, so a repeat visit costs conditional requests and a
+deploy is never mixed with stale code. The icon is cached for a day.
 
 A neighbourhood checking its air in the same ten minutes makes one upstream
 call. Failures are never cached. API replies themselves are `no-store`, because
