@@ -5,8 +5,8 @@
  * is why the engine's own impact line is always shown. Applied by ./reply-checks.ts.
  */
 
-/** Names that contain digits without being quantities. */
-const NAMES = /\b(?:PM2\.5|PM10|N95|CO2e?|MERV-13)(?![\w.])/gi;
+/** Names that contain digits without being quantities, however a model spaces them ("PM 2.5", "N-95"). */
+const NAMES = /\b(?:PM[ -]?2\.5|PM[ -]?10|N[ -]?95|CO2e?|MERV[ -]?13)(?![\w.])/gi;
 /** A numeral, with any thousands separators or decimal part. */
 const NUMERAL = /\d+(?:[.,]\d+)*/g;
 

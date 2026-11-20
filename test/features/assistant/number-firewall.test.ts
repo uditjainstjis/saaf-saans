@@ -11,6 +11,7 @@ it('finds numerals and normalises separators and trailing zeros', () => {
 
 it('does not read pollutant and product names as quantities', () => {
   expect(numbersIn('PM2.5, PM10, pm2.5, an N95 mask, CO2, CO2e and MERV-13 filters')).toEqual([]);
+  expect(numbersIn('PM 2.5, PM-10, an N-95 mask and a MERV 13 filter')).toEqual([]);
 });
 
 it('still reads a quantity that follows a name', () => {
