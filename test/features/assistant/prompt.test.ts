@@ -18,3 +18,8 @@ it('states every length limit in words, so a reply finishes inside it instead of
   );
   expect(SYSTEM_PROMPT).toContain('Finish every sentence and end it with a full stop');
 });
+
+it('asks each explanation for a reason about these people, not a repeat of the action or its figures', () => {
+  expect(SYSTEM_PROMPT).toContain('Start from these people, not from the action');
+  expect(SYSTEM_PROMPT).toContain('so do not repeat either');
+});
