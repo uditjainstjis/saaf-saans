@@ -12,17 +12,24 @@ integrity of the advice and its numbers, and the Workers AI quota.
 
 ## 1. The request gate
 
-Every POST passes four rules in order, cheapest first
+Every POST passes these rules in order, cheapest first
 ([middleware/admission-rules.ts](src/middleware/admission-rules.ts),
 [middleware/rate-limit.ts](src/middleware/rate-limit.ts), listed in
 [app.ts](src/app.ts)):
 
-| Rule                                                     | Refusal | Why                                                                                                                           |
-| -------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `content-type` must be `application/json`                | 415     | The CSRF control: a cross-origin page cannot send JSON without a preflight, and no CORS policy exists for a preflight to pass |
-| `Sec-Fetch-Site` must be `same-origin`, `none` or absent | 403     | Browsers set it and page script cannot forge it                                                                               |
-| Body at most 4 KB, by declared and by actual size        | 413     | A profile is under 1 KB                                                                                                       |
-| 30 requests a minute per connecting address              | 429     | Protects the model quota; runs last so a refused request never spends the budget                                              |
+| Rule                                                                                               | Refusal | Why                                                                                                                                                                                                                           |
+| -------------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content-type` must be `application/json`                                                          | 415     | The CSRF control: a cross-origin page cannot send JSON without a preflight, and no CORS policy exists for a preflight to pass                                                                                                 |
+| `Sec-Fetch-Site`, when sent, must be `same-origin` or `none`                                       | 403     | Browsers set it and page script cannot forge it                                                                                                                                                                               |
+| `Origin`, when sent, must equal the origin of the request's own URL; the literal `null` is refused | 403     | The same check for clients that send `Origin` without `Sec-Fetch-Site`. A request with neither header is admitted: it comes from a non-browser client, which holds no ambient authority, since the service has no credentials |
+| A declared `content-length` over 4,096 bytes is refused before the body is read                    | 413     | A profile is under 1 KB                                                                                                                                                                                                       |
+| 30 requests a minute per connecting address                                                        | 429     | Protects the model quota; runs last so a refused request never spends the budget                                                                                                                                              |
+
+The size limit does not rest on the header alone. The body is read through a
+byte counter ([middleware/validate.ts](src/middleware/validate.ts)) that fails
+with the same 413 and cancels the stream as soon as more than 4,096 bytes have
+arrived, so a body sent without a `content-length` is bounded too, and the limit
+is in bytes, not characters.
 
 ## 2. Validation
 

@@ -1,6 +1,6 @@
 /**
  * Tests for the admission gate through the real application: the CSRF control,
- * cross-site refusal and the body size limit.
+ * the Sec-Fetch-Site and Origin checks, and the declared body size limit.
  */
 import { expect, it } from 'vitest';
 import { MAX_BODY_BYTES } from '../../src/config/runtime';
@@ -23,6 +23,25 @@ it('refuses cross-site browser requests and admits same-origin and non-browser o
   expect((await site('same-site')).status).toBe(403);
   expect((await site('same-origin')).status).toBe(200);
   expect((await site('none')).status).toBe(200);
+});
+
+it('refuses a foreign or opaque Origin, and admits its own origin or none at all', async () => {
+  const from = (headers: Record<string, string>): Promise<Response> =>
+    Promise.resolve(appWith().fetch(post('/api/plan', FAMILY, headers)));
+  const foreign = await from({ origin: 'https://evil.example' });
+  expect(foreign.status).toBe(403);
+  expect((await foreign.json<Refusal>()).code).toBe('cross_origin');
+  expect((await from({ origin: 'null' })).status).toBe(403);
+  expect((await from({ origin: 'http://saaf.test' })).status).toBe(403);
+  expect((await from({ origin: 'https://saaf.test' })).status).toBe(200);
+  expect((await from({})).status).toBe(200);
+});
+
+it('admits the request the page itself sends: its own Origin and Sec-Fetch-Site same-origin', async () => {
+  const own = { origin: 'https://saaf.test', 'sec-fetch-site': 'same-origin' };
+  expect((await appWith().fetch(post('/api/plan', FAMILY, own))).status).toBe(200);
+  const mixed = { origin: 'https://evil.example', 'sec-fetch-site': 'same-origin' };
+  expect((await appWith().fetch(post('/api/plan', FAMILY, mixed))).status).toBe(403);
 });
 
 it('refuses an oversized body, by its declared and by its actual size', async () => {

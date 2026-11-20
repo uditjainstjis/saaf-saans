@@ -21,20 +21,26 @@ export const requireJson: AdmissionRule = (request) =>
   );
 
 /**
- * Refuses cross-site browser requests. `Sec-Fetch-Site` cannot be forged by
- * page script; it is absent for non-browser clients, which hold no ambient
+ * Refuses requests from another origin, on two signals that page script
+ * cannot forge. `Sec-Fetch-Site`, when sent, must be `same-origin` or `none`;
+ * `Origin`, when sent, must be this request's own origin, so `null` (an opaque
+ * origin) is refused. Non-browser clients send neither, and hold no ambient
  * authority here, since the service has no credentials.
  */
 export const sameOriginOnly: AdmissionRule = (request) => {
+  const own = new URL(request.url).origin;
   const site = request.headers.get('sec-fetch-site') ?? 'none';
+  const origin = request.headers.get('origin') ?? own;
+  const admitted = (site === 'same-origin' || site === 'none') && origin === own;
   return Promise.resolve(
-    site === 'same-origin' || site === 'none'
-      ? undefined
-      : refuse(403, 'cross_origin', 'Cross-site requests are not accepted.'),
+    admitted ? undefined : refuse(403, 'cross_origin', 'Cross-site requests are not accepted.'),
   );
 };
 
-/** Refuses a body that declares itself larger than the limit, before reading it. */
+/**
+ * Refuses a body that declares itself larger than the limit, before reading
+ * it. A body with no declared length is capped as it is read, in ./validate.ts.
+ */
 export const withinSizeLimit: AdmissionRule = (request) =>
   Promise.resolve(
     Number(request.headers.get('content-length') ?? 0) > MAX_BODY_BYTES
