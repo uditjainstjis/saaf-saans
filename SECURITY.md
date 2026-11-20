@@ -71,6 +71,8 @@ Text coming out
 4. The summary, every explanation and the closing line must each end as a
    sentence does (`.`, `!` or `?`, optionally followed by a closing quote or
    bracket), so text cut off at a length limit is never shown.
+5. No text may have a gap where a word was dropped (two spaces inside a
+   sentence), which is how a missing figure shows up in a model's reply.
 
 The firewall reads numerals written in digits. It cannot tell whether a figure
 that is in the facts has been attached to the right thing, which is why the

@@ -130,6 +130,7 @@ public/
 test/                 mirrors src/ and public/js/, plus a11y/, conventions/ and support/
 scripts/              build-assets.mjs: compiles src/config for the page, writes public/_headers
 docs/decisions.md     short decision records
+docs/build-log.md     the tools and prompts used to build this, and how they changed
 ```
 
 ```mermaid
@@ -199,12 +200,12 @@ path needs `wrangler login`.
 
 ```text
  Test Files  89 passed (89)
-      Tests  413 passed (413)
+      Tests  415 passed (415)
 
-Statements   : 100% ( 897/897 )
+Statements   : 100% ( 901/901 )
 Branches     : 100% ( 308/308 )
-Functions    : 100% ( 270/270 )
-Lines        : 100% ( 790/790 )
+Functions    : 100% ( 274/274 )
+Lines        : 100% ( 794/794 )
 ```
 
 | Measured over             | Statements | Branches | Functions | Lines |
@@ -227,7 +228,7 @@ and by hand.
 | JSON-only POST (the CSRF control), `Sec-Fetch-Site` and `Origin` checks, a 4 KB cap on the declared and on the actual body, 30 requests a minute per address  | [middleware/admission-rules.ts](src/middleware/admission-rules.ts), [middleware/validate.ts](src/middleware/validate.ts), [middleware/rate-limit.ts](src/middleware/rate-limit.ts), [wrangler.jsonc](wrangler.jsonc) |
 | Strict schema on every request: unknown keys rejected, numbers bounded, text trimmed and capped                                                               | [plan/schemas.ts](src/features/plan/schemas.ts), [middleware/validate.ts](src/middleware/validate.ts)                                                                                                                |
 | Prompt-injection screen: seven rules, flagged sentences removed, the rest fenced under a per-request random delimiter                                         | [lib/prompt-guard/](src/lib/prompt-guard/)                                                                                                                                                                           |
-| Model output is untrusted: schema, id, number and finished-sentence checks before anything is shown                                                           | [assistant/reply-checks.ts](src/features/assistant/reply-checks.ts), [assistant/reply-issues.ts](src/features/assistant/reply-issues.ts)                                                                             |
+| Model output is untrusted: schema, id, number, finished-sentence and dropped-word checks before anything is shown                                             | [assistant/reply-checks.ts](src/features/assistant/reply-checks.ts), [assistant/reply-issues.ts](src/features/assistant/reply-issues.ts)                                                                             |
 | Content Security Policy with `script-src 'self'`, no inline code, Trusted Types required; HSTS, `nosniff`, frame denial, COOP, CORP, COEP, 22 features denied | [config/security-policy.ts](src/config/security-policy.ts)                                                                                                                                                           |
 | The page writes text, never markup                                                                                                                            | [public/js/dom.js](public/js/dom.js)                                                                                                                                                                                 |
 | Upstream replies and cached values parsed against schemas                                                                                                     | [providers/open-meteo-schemas.ts](src/features/air-quality/providers/open-meteo-schemas.ts), [lib/remember.ts](src/lib/remember.ts)                                                                                  |
@@ -305,14 +306,17 @@ uses `aria-disabled` while a request is in flight, so it stays focusable.
 - **Guardrails.** Notes and the geocoder's place name are screened and fenced;
   the reply must be one complete JSON object that matches the schema, explains
   every recommendation exactly once, contains no numeral outside the facts and
-  the visitor's own notes, and finishes every sentence
-  ([reply-checks.ts](src/features/assistant/reply-checks.ts),
+  the visitor's own notes, finishes every sentence and has no gap where a word
+  was dropped ([reply-checks.ts](src/features/assistant/reply-checks.ts),
   [reply-issues.ts](src/features/assistant/reply-issues.ts)). When a reply is
   rejected, the second model receives the same request with the reasons.
 - **Fallback.** When both attempts fail, a rule-based generator writes the same
   structure ([generators/rules.ts](src/features/assistant/generators/rules.ts)),
   and the page says which of the two wrote the text. Each attempt is logged with
   the model's name and its outcome.
+- **Building it.** Generative AI also built the project. The tools, the prompts
+  that mattered, how they changed and who did what are in
+  [docs/build-log.md](docs/build-log.md).
 
 ## Assumptions Made
 

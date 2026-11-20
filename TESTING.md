@@ -7,12 +7,12 @@ test with coverage. On the committed tree:
 
 ```text
  Test Files  89 passed (89)
-      Tests  413 passed (413)
+      Tests  415 passed (415)
 
-Statements   : 100% ( 897/897 )
+Statements   : 100% ( 901/901 )
 Branches     : 100% ( 308/308 )
-Functions    : 100% ( 270/270 )
-Lines        : 100% ( 790/790 )
+Functions    : 100% ( 274/274 )
+Lines        : 100% ( 794/794 )
 ```
 
 | Directory                            | Statements | Branches | Functions | Lines |
@@ -76,9 +76,9 @@ is checked against published ratios before it is trusted.
 
 - Open-Meteo down, slow, answering an error, or answering a malformed body.
 - The first model down, hanging, replying with prose, with the wrong ids, with
-  an invented number or with a sentence cut short; the second model answering
-  after a failure (given the original request) and after a rejection (given the
-  reasons); both failing, and never a third call.
+  an invented number, with a sentence cut short or with a word dropped; the
+  second model answering after a failure (given the original request) and after
+  a rejection (given the reasons); both failing, and never a third call.
 - A cache that throws on read and on write, and a cached value of a stale shape.
 - Every refusal the API can give (400, 403, 404, 413, 415, 429) and an
   unexpected fault (500 without detail).

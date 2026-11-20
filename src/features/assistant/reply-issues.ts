@@ -1,8 +1,8 @@
 /**
  * The reasons a reply of the right shape is still rejected: an explanation
  * missing, unknown or repeated; a numeral the facts did not contain; a text
- * that stops mid-sentence. Each reason is worded so it can be handed back to a
- * model. Applied by ./reply-checks.ts.
+ * that stops mid-sentence or has a word missing. Each reason is worded so it
+ * can be handed back to a model. Applied by ./reply-checks.ts.
  */
 import type { PlanBrief } from '../plan/types';
 import { factsOf } from './facts';
@@ -33,20 +33,41 @@ function numberIssues(reply: NarrativeReply, brief: PlanBrief): string[] {
 /** How a finished sentence ends: . ! or ?, optionally followed by a closing quote or bracket. */
 const SENTENCE_END = /[.!?]["'”’)\]]?$/;
 
-/** Texts that stop without ending a sentence, as a string cut at its length limit does. */
-function endingIssues(reply: NarrativeReply): string[] {
-  const texts: [string, string][] = [
+/** Every text of a reply, with the name a model knows it by. */
+function namedTexts(reply: NarrativeReply): [string, string][] {
+  return [
     ['The summary', reply.summary],
     ...reply.explanations.map((e): [string, string] => [`The explanation for "${e.id}"`, e.text]),
     ['The encouragement', reply.encouragement],
   ];
-  return texts
+}
+
+/** Texts that stop without ending a sentence, as a string cut at its length limit does. */
+function endingIssues(reply: NarrativeReply): string[] {
+  return namedTexts(reply)
     .filter(([, text]) => !SENTENCE_END.test(text))
     .map(([name]) => `${name} stops mid-sentence; write it shorter and end it with a full stop.`);
+}
+
+/** Two spaces inside a sentence: what is left when a model drops a word or a figure ("10 pm to  am"). */
+const GAP = /[^.!?:;\s]\s{2,}\S/;
+
+/** Texts with a gap where a word is missing. Two spaces after a full stop are a typing habit, not a gap. */
+function gapIssues(reply: NarrativeReply): string[] {
+  return namedTexts(reply)
+    .filter(([, text]) => GAP.test(text))
+    .map(
+      ([name]) => `${name} has a gap where a word is missing; write the sentence again in full.`,
+    );
 }
 
 /** Every reason to reject a well-shaped reply to this brief; empty when there is none. */
 export function issuesIn(reply: NarrativeReply, brief: PlanBrief): string[] {
   const expected = brief.plan.recommendations.map((r) => r.id);
-  return [...idIssues(reply, expected), ...numberIssues(reply, brief), ...endingIssues(reply)];
+  return [
+    ...idIssues(reply, expected),
+    ...numberIssues(reply, brief),
+    ...endingIssues(reply),
+    ...gapIssues(reply),
+  ];
 }

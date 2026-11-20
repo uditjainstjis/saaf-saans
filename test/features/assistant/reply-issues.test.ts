@@ -1,7 +1,7 @@
 /**
- * Tests for the sentence-ending check: a text cut at its length limit is
- * rejected with a reason a model can act on, and every proper ending passes.
- * Ids and numbers are tested through ./reply-checks.test.ts.
+ * Tests for the sentence checks: a text cut at its length limit, or one with
+ * a word missing, is rejected with a reason a model can act on, and every
+ * proper sentence passes. Ids and numbers are tested through ./reply-checks.test.ts.
  */
 import { expect, it } from 'vitest';
 import { issuesIn } from '../../../src/features/assistant/reply-issues';
@@ -52,3 +52,16 @@ it.each(['Start with the bedroom,', 'Start with the bedroom…', 'Start with the
     expect(issuesIn({ ...goodReply(brief), encouragement }, brief)).toHaveLength(1);
   },
 );
+
+it('rejects a text with a gap where the model dropped a word, naming it', () => {
+  const reply = goodReply(brief);
+  const gapped = { ...reply, summary: 'Keep windows shut through the  hours to protect everyone.' };
+  expect(issuesIn(gapped, brief)).toEqual([
+    'The summary has a gap where a word is missing; write the sentence again in full.',
+  ]);
+});
+
+it('accepts two spaces after a full stop, which is a typing habit and not a gap', () => {
+  const spaced = { ...goodReply(brief), summary: 'The air is unhealthy today.  Start indoors.' };
+  expect(issuesIn(spaced, brief)).toEqual([]);
+});

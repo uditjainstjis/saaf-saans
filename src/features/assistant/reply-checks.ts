@@ -2,7 +2,7 @@
  * What a model reply must be before any of it is shown: one JSON object of
  * the agreed shape that passes every check in ./reply-issues.ts (one
  * explanation per recommendation, no numeral outside the facts, no text cut
- * mid-sentence). Shape: ./schemas.ts; unwrapping: ./reply-parser.ts.
+ * mid-sentence or missing a word). Shape: ./schemas.ts; unwrapping: ./reply-parser.ts.
  */
 import type { PlanBrief } from '../plan/types';
 import { issuesIn } from './reply-issues';
