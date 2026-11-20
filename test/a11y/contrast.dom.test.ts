@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { css, shipped } from '../app/harness.dom';
+import { css, shipped } from '../support/page.dom';
 
 /**
  * Colour contrast, enforced on the shipped design tokens.

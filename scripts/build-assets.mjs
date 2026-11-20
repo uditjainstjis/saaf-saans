@@ -2,9 +2,9 @@
  * Writes the files in public/ that are generated from TypeScript in src/, so
  * the page, the edge and the Worker share one definition of each:
  *
- *   public/js/shared/constants.js    src/shared/constants.ts, compiled
+ *   public/js/shared/constants.js    src/config/constants.ts, compiled
  *   public/js/shared/constants.d.ts  its declarations, which type the front end
- *   public/_headers                  headersFile() from src/security/headers.ts
+ *   public/_headers                  headersFile() from src/config/security-policy.ts
  *
  * Generated files are gitignored. `npm run generate` runs this script, and
  * wrangler runs it as build.command before `dev` and `deploy`.
@@ -33,13 +33,13 @@ const compile = (path) => text(path, ts.transpileModule(read(path), { compilerOp
 const declare = (path) => text(path, ts.transpileDeclaration(read(path), { compilerOptions }));
 
 // constants.ts imports nothing, so its compiled copy stands alone in the page.
-const CONSTANTS = 'src/shared/constants.ts';
+const CONSTANTS = 'src/config/constants.ts';
 mkdirSync(new URL('public/js/shared/', root), { recursive: true });
 emit('public/js/shared/constants.js', CONSTANTS, compile(CONSTANTS));
 emit('public/js/shared/constants.d.ts', CONSTANTS, declare(CONSTANTS));
 
 // headers.ts imports nothing, so its compiled text runs as a module on its own.
-const HEADERS = 'src/security/headers.ts';
+const HEADERS = 'src/config/security-policy.ts';
 const { headersFile } = await import(
   `data:text/javascript,${encodeURIComponent(compile(HEADERS))}`
 );

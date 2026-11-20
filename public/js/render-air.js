@@ -3,7 +3,7 @@
 import { $, textEl } from './dom.js';
 import { formatNumber } from './shared/constants.js';
 
-/** @typedef {import('../../src/http/present').PlanView} PlanView */
+/** @typedef {import('../../src/features/plan/view').PlanView} PlanView */
 
 /** @param {number} value */
 const micrograms = (value) => `${formatNumber(value)} µg/m³`;

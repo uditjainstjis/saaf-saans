@@ -8,13 +8,13 @@ import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
  * Cache API, crypto, HTMLRewriter and Request/Response behave in tests as they
  * do in production. It is deliberately not pointed at wrangler.jsonc: Workers
  * AI has no local implementation, and every test injects fakes through the
- * ports in src/ports.ts, so the suite is hermetic and needs no credentials.
+ * ports in src/lib/ports.ts, so the suite is hermetic and needs no credentials.
  *
  * `dom` runs in jsdom on Node for what workerd cannot host: axe-core, the
  * front-end modules in public/js/, and checks that read shipped files off disk.
  *
  * Coverage is measured over every TypeScript module in src/ and every
- * front-end module in public/js/ (the compiled copy of src/shared/ aside, which
+ * front-end module in public/js/ (the compiled copy of src/config/ aside, which
  * is measured as its source), and gated at 100% for statements, branches,
  * functions and lines: below that, `npm test` fails.
  */

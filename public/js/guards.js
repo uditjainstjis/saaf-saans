@@ -4,8 +4,8 @@
  * type by testing it, never by asserting it.
  */
 
-/** @typedef {import('../../src/http/present').PlanView} PlanView */
-/** @typedef {import('../../src/ports').Narrative} Narrative */
+/** @typedef {import('../../src/features/plan/view').PlanView} PlanView */
+/** @typedef {import('../../src/lib/ports').Narrative} Narrative */
 
 /**
  * @param {unknown} value

@@ -3,25 +3,30 @@ import {
   fallbackPlanGenerator,
   modelPlanGenerator,
   rulePlanGenerator,
-} from './ai/generators';
-import { workersAi, type AiRunner } from './ai/workers-ai';
-import { openMeteoAir, openMeteoGeocoder } from './air/open-meteo';
-import { cachedAir, cachedGeocoder, fallbackAir, fallbackGeocoder } from './air/resilient';
-import { typicalAir, typicalGeocoder } from './air/typical';
-import type { Env } from './env';
-import { createApp, type AppDeps } from './http/app';
-import { edgeCache } from './infra/cache';
-import { systemClock } from './infra/clock';
-import { consoleLogger } from './infra/logger';
-import { bindingRateLimiter, type RateLimitBinding } from './infra/rate-limit';
-import type { AssetServer, HttpGet } from './ports';
+} from './features/assistant/service';
+import { workersAi, type AiRunner } from './features/assistant/workers-ai';
+import { openMeteoAir, openMeteoGeocoder } from './features/air-quality/providers/open-meteo';
+import {
+  cachedAir,
+  cachedGeocoder,
+  fallbackAir,
+  fallbackGeocoder,
+} from './features/air-quality/providers/resilient';
+import { typicalAir, typicalGeocoder } from './features/air-quality/providers/typical';
+import type { Env } from './config/env';
+import { createApp, type AppDeps } from './app';
+import { edgeCache } from './lib/cache';
+import { systemClock } from './lib/clock';
+import { consoleLogger } from './lib/logger';
+import { bindingRateLimiter, type RateLimitBinding } from './middleware/rate-limit';
+import type { AssetServer, HttpGet } from './lib/ports';
 
 /**
  * Saaf Saans — Worker entry point and composition root.
  *
  * This is the one module that touches the platform: bindings, `fetch`,
  * `caches`. It chooses a concrete implementation for every port in
- * src/ports.ts and stacks the decorators; everything else receives what it
+ * src/lib/ports.ts and stacks the decorators; everything else receives what it
  * needs as arguments and can be run with fakes.
  */
 

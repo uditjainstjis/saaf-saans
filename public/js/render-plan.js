@@ -3,8 +3,8 @@
 import { $, cloneTemplate, part, textEl } from './dom.js';
 import { CATEGORIES, formatNumber } from './shared/constants.js';
 
-/** @typedef {import('../../src/http/present').PlanView} PlanView */
-/** @typedef {import('../../src/http/present').RecommendationView} RecommendationView */
+/** @typedef {import('../../src/features/plan/view').PlanView} PlanView */
+/** @typedef {import('../../src/features/plan/view').RecommendationView} RecommendationView */
 
 /**
  * One recommendation card. Its element id carries the recommendation id, so

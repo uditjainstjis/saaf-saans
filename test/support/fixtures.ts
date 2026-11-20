@@ -1,9 +1,9 @@
-import { adviceFor, bandFor } from '../../src/domain/aqi';
-import { buildPlan } from '../../src/domain/plan';
-import type { CommunityProfile, FamilyProfile, Profile } from '../../src/domain/profile';
-import { situationOf, type Situation } from '../../src/domain/situation';
-import type { AirReport, HourReading, Place } from '../../src/domain/types';
-import type { PlanBrief } from '../../src/ports';
+import { adviceFor, bandFor } from '../../src/features/air-quality/aqi';
+import { buildPlan } from '../../src/features/plan/planner';
+import type { CommunityProfile, FamilyProfile, Profile } from '../../src/features/plan/schemas';
+import { situationOf, type Situation } from '../../src/features/plan/situation';
+import type { AirReport, HourReading, Place } from '../../src/features/plan/types';
+import type { PlanBrief } from '../../src/lib/ports';
 
 /** Profiles, places and air reports shared by the suite. */
 

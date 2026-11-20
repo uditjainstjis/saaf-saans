@@ -2,7 +2,7 @@
 /** Renders the assistant's wording: who wrote it, the summary, and one explanation per card. */
 import { $, part } from './dom.js';
 
-/** @typedef {import('../../src/ports').Narrative} Narrative */
+/** @typedef {import('../../src/lib/ports').Narrative} Narrative */
 
 const SOURCE_LABEL = {
   model: 'Written by generative AI (Workers AI) from your computed plan',

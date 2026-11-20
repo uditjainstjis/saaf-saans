@@ -12,7 +12,7 @@ import {
   settled,
   stubFetch,
   submit,
-} from '../app/harness.dom';
+} from '../support/page.dom';
 
 /**
  * The accessibility claim, enforced: axe-core, the real engine, over the real

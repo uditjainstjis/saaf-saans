@@ -16,7 +16,7 @@ export default tseslint.config(
       'coverage/**',
       'worker-configuration.d.ts',
       '.wrangler/**',
-      // Compiled from src/shared/, which is linted.
+      // Compiled from src/config/, which is linted.
       'public/js/shared/**',
     ],
   },
@@ -52,7 +52,7 @@ export default tseslint.config(
   },
   {
     // The one module allowed to write to the console: the Logger adapter.
-    files: ['src/infra/logger.ts'],
+    files: ['src/lib/logger.ts'],
     rules: { 'no-console': 'off' },
   },
   {

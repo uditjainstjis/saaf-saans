@@ -10,11 +10,11 @@ import type {
   PlanGenerator,
   TextGenerator,
   TextRequest,
-} from '../../src/ports';
+} from '../../src/lib/ports';
 import { DELHI, SMOG } from './fixtures';
 
 /**
- * Test doubles for every port in src/ports.ts. Each is a plain object that
+ * Test doubles for every port in src/lib/ports.ts. Each is a plain object that
  * honours the port's contract, so it substitutes for the production adapter
  * without a cast or a mocking library.
  */

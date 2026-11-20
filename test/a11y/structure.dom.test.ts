@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { css, mountPage, shipped } from '../app/harness.dom';
+import { css, mountPage, shipped } from '../support/page.dom';
 
 /**
  * Structural WCAG 2.2 AA checks on the shipped markup and stylesheets: the
