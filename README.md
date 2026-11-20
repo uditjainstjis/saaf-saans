@@ -23,7 +23,7 @@ Live: <https://saaf-saans.seriouss.workers.dev>
 
 | Ref | Brief phrase                                          | What the app does                                                                                                                                                                                                            | Where in the UI                                                                 | Code                                                                                                                                                                                                                                                                                                         | Tests                                                                                                                   |
 | --- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| C1  | GenAI-powered assistant                               | Workers AI words the computed plan for this household or group as schema-validated JSON, with one repair retry and a rule-based fallback                                                                                     | "Your GenAI-powered assistant says", and an "AI explanation" on each card       | [features/assistant/](src/features/assistant/)                                                                                                                                                                                                                                                               | [test/features/assistant/](test/features/assistant/)                                                                    |
+| C1  | GenAI-powered assistant                               | Workers AI words the computed plan for this household or group as schema-validated JSON; a second model is asked if the first fails or is rejected, and rules write the text if both do                                      | "Your GenAI-powered assistant says", and an "AI explanation" on each card       | [features/assistant/](src/features/assistant/)                                                                                                                                                                                                                                                               | [test/features/assistant/](test/features/assistant/)                                                                    |
 | C2  | families and communities                              | Two modes with their own fields: a household, or an RWA, school or neighbourhood group of 5 to 50,000 people                                                                                                                 | "Families and communities: who is this plan for?"                               | [plan/schemas.ts](src/features/plan/schemas.ts), [plan/situation.ts](src/features/plan/situation.ts)                                                                                                                                                                                                         | [situation.test.ts](test/features/plan/situation.test.ts), [form-modes.dom.test.ts](test/public/form-modes.dom.test.ts) |
 | C3  | severe winter smog and urban air pollution            | Live US AQI, PM2.5, PM10, dominant pollutant and the cleanest and worst hours of the next 24, with health advice per AQI band                                                                                                | "Severe winter smog and urban air pollution: your air now"                      | [features/air-quality/](src/features/air-quality/)                                                                                                                                                                                                                                                           | [test/features/air-quality/](test/features/air-quality/)                                                                |
 | C4  | low-emission daily routines                           | Re-times outdoor activity and airing to the cleanest hour, moves it indoors on the worst days, masks open-air commutes                                                                                                       | "Low-emission daily routines"                                                   | [shift-outdoor-time.ts](src/features/plan/strategies/shift-outdoor-time.ts), [exercise-indoors.ts](src/features/plan/strategies/exercise-indoors.ts), [mask-on-commute.ts](src/features/plan/strategies/mask-on-commute.ts), [air-at-cleanest-hour.ts](src/features/plan/strategies/air-at-cleanest-hour.ts) | [test/features/plan/strategies/](test/features/plan/strategies/)                                                        |
@@ -53,10 +53,10 @@ Live: <https://saaf-saans.seriouss.workers.dev>
   rejected, so the model cannot introduce a figure of its own.
 - **Degrades instead of failing.** If the air data API is unreachable the app
   plans from typical winter values and says so (place search then knows ten
-  built-in Indian cities only); if the model is unavailable the same explanation
-  is written by rules and labelled as such.
+  built-in Indian cities only); if neither model answers in time the same
+  explanation is written by rules and labelled as such.
 - **Accessible and light.** WCAG 2.2 AA, light and dark themes, no framework,
-  about 19 KB of HTML, CSS and JavaScript over the wire.
+  about 20 KB of HTML, CSS and JavaScript once gzipped.
 
 ## Approach and Logic
 
@@ -80,7 +80,7 @@ The code is organised so each of these can change without touching the others:
 
 | Principle             | Where it shows                                                                                                                                                                                                                                                |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Single responsibility | 99 source modules, one job each (median 1.2 KB); one file per strategy, per factor family, per screening rule                                                                                                                                                 |
+| Single responsibility | 101 source modules, one job each (median 1.3 KB); one file per strategy, per factor family, per screening rule                                                                                                                                                |
 | Open/closed           | [strategies/registry.ts](src/features/plan/strategies/registry.ts): a new strategy is a new file and one entry; the planner, the API and the page do not change                                                                                               |
 | Liskov substitution   | Every provider and generator is checked against one contract in [providers/substitutable.test.ts](test/features/air-quality/providers/substitutable.test.ts) and [generators/substitutable.test.ts](test/features/assistant/generators/substitutable.test.ts) |
 | Interface segregation | Narrow ports ([lib/ports.ts](src/lib/ports.ts), feature `types.ts`); routes receive only the sources and the gate they use                                                                                                                                    |
@@ -96,8 +96,9 @@ limits that are enforced by lint and by tests.
    (cache, then Open-Meteo, then the offline fallback) and runs every strategy.
    The page renders the air, the totals and the recommendations at once.
 3. `POST /api/assistant` rebuilds the same plan server-side, screens and fences
-   the visitor's notes, asks Workers AI to explain it, checks the reply and
-   returns the wording. The page adds it to the cards already on screen.
+   the visitor's notes, asks a Workers AI model to explain it, checks the reply
+   (a second model is asked if the first fails or is rejected) and returns the
+   wording. The page adds it to the cards already on screen.
 
 Nobody waits on a model to see their air or their numbers, and a model outage
 degrades one paragraph rather than the page.
@@ -108,19 +109,19 @@ degrades one paragraph rather than the page.
 src/
   index.ts            composition root: picks an adapter for every port
   app.ts              assembles middleware and feature routes
-  config/             options, limits, labels (shared with the page), runtime, security policy
-  lib/                ports, cache, clock, logger, timeout, fetch-json, app-error
-    prompt-guard/     injection screen: scan, strip, fence, rules/ (one file per rule)
+  config/             options, limits, labels (shared with the page), runtime, env, security policy
+  lib/                ports, cache, remember, content-key, clock, logger, timeout, fetch-json, app-error
+    prompt-guard/     injection screen: scan, strip, fence, invisible, rules/ (one file per rule)
   middleware/         security-headers, admission, admission-rules, rate-limit, validate, error-handler
   features/
     air-quality/      types, schemas, service, view, aqi, aqi-bands, forecast
-      providers/      open-meteo-air, open-meteo-geocoder, typical-*, cached, fallback
+      providers/      open-meteo-*, typical-*, cached, fallback
     impact/           types, service (formulas), sentence
       factors/        one file per factor family
     plan/             routes, service, schemas, types, situation, planner, view
       strategies/     the contract, the registry, one file per strategy
-    assistant/        routes, service, schemas, types, prompt, facts, prompt-builder,
-                      reply-parser, reply-checks, number-firewall, workers-ai
+    assistant/        routes, service, attempt, schemas, types, prompt, facts, prompt-builder,
+                      reply-parser, reply-checks, reply-issues, number-firewall, workers-ai
       generators/     rules, fallback, cached
 public/
   index.html          the page
@@ -147,7 +148,7 @@ flowchart TD
     Plan --> Impact["features/impact: formulas and cited factors"]
   end
   Air -->|"cache, then live, then offline fallback"| OpenMeteo[("Open-Meteo geocoding and air quality")]
-  Assistant -->|"cache, then model with one repair, then rules"| WorkersAI[("Workers AI binding")]
+  Assistant -->|"cache, then two models in turn, then rules"| WorkersAI[("Workers AI binding")]
 ```
 
 ## Endpoints
@@ -164,17 +165,17 @@ status 400, 403, 404, 413, 415 or 429.
 
 ## Engineering Environment
 
-| Concern       | Choice                                                                                                       |
-| ------------- | ------------------------------------------------------------------------------------------------------------ |
-| Runtime       | Cloudflare Workers (`compatibility_date` 2026-08-22), static assets from `public/`                           |
-| Language      | TypeScript 5.9, strict, `noUncheckedIndexedAccess`; front end in plain ES modules type-checked through JSDoc |
-| HTTP          | Hono 4.13                                                                                                    |
-| Validation    | zod 4.6 at every trust boundary                                                                              |
-| GenAI         | Workers AI binding, `@cf/meta/llama-3.3-70b-instruct-fp8-fast`                                               |
-| Data          | Open-Meteo Air Quality and Geocoding APIs (free, no key)                                                     |
-| Tests         | Vitest 4.1 in workerd (`@cloudflare/vitest-pool-workers`) and jsdom, axe-core 4.13, Istanbul coverage        |
-| Quality gates | ESLint 10 with typescript-eslint strict type-checked rules, Prettier 3, GitHub Actions                       |
-| Node          | 22 or later; developed and verified on 26.5.0                                                                |
+| Concern       | Choice                                                                                                                                                |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Runtime       | Cloudflare Workers (`compatibility_date` 2026-08-22), static assets from `public/`                                                                    |
+| Language      | TypeScript 5.9, strict, `noUncheckedIndexedAccess`; front end in plain ES modules type-checked through JSDoc                                          |
+| HTTP          | Hono 4.13                                                                                                                                             |
+| Validation    | zod 4.6 at every trust boundary                                                                                                                       |
+| GenAI         | Workers AI binding: `@cf/mistralai/mistral-small-3.1-24b-instruct`, then `@cf/meta/llama-3.3-70b-instruct-fp8-fast` if the first fails or is rejected |
+| Data          | Open-Meteo Air Quality and Geocoding APIs (free, no key)                                                                                              |
+| Tests         | Vitest 4.1 in workerd (`@cloudflare/vitest-pool-workers`) and jsdom, axe-core 4.13, Istanbul coverage                                                 |
+| Quality gates | ESLint 10 with typescript-eslint strict type-checked rules, Prettier 3, GitHub Actions                                                                |
+| Node          | 22 or later; developed and verified on 26.5.0                                                                                                         |
 
 There are no API keys and no secrets: inference is a binding, and the air data
 API is keyless.
@@ -197,26 +198,27 @@ path needs `wrangler login`.
 `npm run check` on the committed tree:
 
 ```text
- Test Files  86 passed (86)
-      Tests  378 passed (378)
+ Test Files  89 passed (89)
+      Tests  413 passed (413)
 
-Statements   : 100% ( 854/854 )
-Branches     : 100% ( 295/295 )
-Functions    : 100% ( 260/260 )
-Lines        : 100% ( 750/750 )
+Statements   : 100% ( 897/897 )
+Branches     : 100% ( 308/308 )
+Functions    : 100% ( 270/270 )
+Lines        : 100% ( 790/790 )
 ```
 
 | Measured over             | Statements | Branches | Functions | Lines |
 | ------------------------- | ---------- | -------- | --------- | ----- |
 | All files                 | 100        | 100      | 100       | 100   |
-| `src/` (99 modules)       | 100        | 100      | 100       | 100   |
+| `src/` (101 modules)      | 100        | 100      | 100       | 100   |
 | `public/js/` (11 modules) | 100        | 100      | 100       | 100   |
 
 Coverage is gated at 100% on all four measures in
 [vitest.config.ts](vitest.config.ts), so the command fails below that. The suite
 is hermetic: no test touches the network or needs a credential.
 [TESTING.md](TESTING.md) describes the layers (unit, integration, accessibility,
-security, conventions) and the end-to-end run against the live services.
+security, conventions) and what was measured outside the suite, on Cloudflare
+and by hand.
 
 ## Security Practices
 
@@ -225,7 +227,7 @@ security, conventions) and the end-to-end run against the live services.
 | JSON-only POST (the CSRF control), `Sec-Fetch-Site` and `Origin` checks, a 4 KB cap on the declared and on the actual body, 30 requests a minute per address  | [middleware/admission-rules.ts](src/middleware/admission-rules.ts), [middleware/validate.ts](src/middleware/validate.ts), [middleware/rate-limit.ts](src/middleware/rate-limit.ts), [wrangler.jsonc](wrangler.jsonc) |
 | Strict schema on every request: unknown keys rejected, numbers bounded, text trimmed and capped                                                               | [plan/schemas.ts](src/features/plan/schemas.ts), [middleware/validate.ts](src/middleware/validate.ts)                                                                                                                |
 | Prompt-injection screen: seven rules, flagged sentences removed, the rest fenced under a per-request random delimiter                                         | [lib/prompt-guard/](src/lib/prompt-guard/)                                                                                                                                                                           |
-| Model output is untrusted: schema, id and number checks before anything is shown                                                                              | [assistant/reply-checks.ts](src/features/assistant/reply-checks.ts)                                                                                                                                                  |
+| Model output is untrusted: schema, id, number and finished-sentence checks before anything is shown                                                           | [assistant/reply-checks.ts](src/features/assistant/reply-checks.ts), [assistant/reply-issues.ts](src/features/assistant/reply-issues.ts)                                                                             |
 | Content Security Policy with `script-src 'self'`, no inline code, Trusted Types required; HSTS, `nosniff`, frame denial, COOP, CORP, COEP, 22 features denied | [config/security-policy.ts](src/config/security-policy.ts)                                                                                                                                                           |
 | The page writes text, never markup                                                                                                                            | [public/js/dom.js](public/js/dom.js)                                                                                                                                                                                 |
 | Upstream replies and cached values parsed against schemas                                                                                                     | [providers/open-meteo-schemas.ts](src/features/air-quality/providers/open-meteo-schemas.ts), [lib/remember.ts](src/lib/remember.ts)                                                                                  |
@@ -244,10 +246,15 @@ security, conventions) and the end-to-end run against the live services.
   ten minutes, narratives for ten minutes keyed by a hash of the brief.
 - **Bounded waits.** Four seconds for an upstream call and fifteen for a model
   call, each cancelled through an abort signal, each with a fallback.
-- **Small payloads.** The page is 51.9 KB uncompressed and 19.4 KB gzipped for
+- **Short replies.** Output length is what a model call costs, so the model is
+  asked for one sentence per recommendation inside a 600-token budget. Measured
+  on Cloudflare (8 calls, 20 Nov 2026, measured with curl from India):
+  `POST /api/assistant` answered in 6.7 to 11.3 s, every call written by the
+  first model on its first attempt, and `POST /api/plan` in 1.0 s.
+- **Small payloads.** The page is 53.4 KB uncompressed and 19.8 KB gzipped for
   all twenty files; no framework and no third-party request.
 - **Small bundle.** Importing zod as a namespace lets the bundler drop unused
-  locales: 164 KB minified (54 KB gzipped) when bundled with esbuild, down from
+  locales: 166 KB minified (54 KB gzipped) when bundled with esbuild, down from
   515 KB.
 
 [EFFICIENCY.md](EFFICIENCY.md) has the measurements.
@@ -258,16 +265,18 @@ Built to WCAG 2.2 level AA and checked by tests on every run: axe-core over the
 rendered page in five states and both themes, computed contrast for every colour
 pair, and structural checks.
 
-| Success criterion           | How it is met                                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| 1.3.1, 3.3.2                | Landmarks, one `h1`, a label for every control, five fieldsets with legends                                   |
-| 1.4.1                       | The AQI band is a number, a category in words and a symbol; invalid fields get a thicker border and a message |
-| 1.4.3, 1.4.11               | Text at 4.5:1 or better and boundaries at 3:1 or better, in light and dark themes                             |
-| 1.4.4, 1.4.10               | Sizes in `rem`, no fixed widths, zoom never disabled                                                          |
-| 2.1.1, 2.4.1, 2.4.7, 2.4.11 | Native controls only, a skip link, a 3px focus ring that is never removed                                     |
-| 2.5.8                       | Every control's target is at least 48px high                                                                  |
-| 3.3.1, 3.3.3                | An error summary that takes focus and links to each field, with the message beside the field                  |
-| 4.1.2, 4.1.3                | Results announced through a polite live region, errors through an alert                                       |
+| Success criterion           | How it is met                                                                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 1.3.1, 3.3.2                | Landmarks, one `h1`, a label for every control, five fieldsets with legends                                                         |
+| 1.4.1                       | The AQI band is a number, a category in words and a symbol; invalid fields get a thicker border and a message                       |
+| 1.4.3, 1.4.11               | Text at 4.5:1 or better and boundaries at 3:1 or better, in light and dark themes                                                   |
+| 1.4.4, 1.4.10               | Sizes in `rem`, no fixed widths, zoom never disabled                                                                                |
+| 2.1.1, 2.4.1, 2.4.7, 2.4.11 | Native controls only, a skip link, a 3px focus ring that is never removed                                                           |
+| 2.4.1, 2.4.3, 2.4.4         | A navigation named "Sections of your plan" opens the results with a link to each part; following a link moves focus to that heading |
+| 2.4.6, 2.5.3, 4.1.2         | Each "How this was calculated" disclosure is named after its card, beginning with the words on screen                               |
+| 2.5.8                       | Every control's target is at least 48px high                                                                                        |
+| 3.3.1, 3.3.3                | An error summary that takes focus and links to each field, with the message beside the field                                        |
+| 4.1.2, 4.1.3                | Results announced through a polite live region, errors through an alert                                                             |
 
 `prefers-reduced-motion` and `forced-colors` are honoured. The submit button
 uses `aria-disabled` while a request is in flight, so it stays focusable.
@@ -275,24 +284,35 @@ uses `aria-disabled` while a request is in flight, so it stays focusable.
 
 ## How GenAI Is Used
 
-- **Model.** `@cf/meta/llama-3.3-70b-instruct-fp8-fast` through the Workers AI
-  binding, with the reply constrained to a JSON Schema generated from the same
-  zod schema that validates it
-  ([assistant/schemas.ts](src/features/assistant/schemas.ts)).
+- **Models.** Two, asked in order through the Workers AI binding
+  ([config/runtime.ts](src/config/runtime.ts)):
+  `@cf/mistralai/mistral-small-3.1-24b-instruct` writes the text, and
+  `@cf/meta/llama-3.3-70b-instruct-fp8-fast` is asked only when the first call
+  fails, times out or returns a reply that is rejected
+  ([service.ts](src/features/assistant/service.ts),
+  [attempt.ts](src/features/assistant/attempt.ts)). Every request carries a JSON
+  Schema generated from the same zod schema that validates the reply
+  ([assistant/schemas.ts](src/features/assistant/schemas.ts)). Record 10 in
+  [docs/decisions.md](docs/decisions.md) has the measurements behind the choice.
 - **Prompt design.** A fixed system prompt
   ([prompt.ts](src/features/assistant/prompt.ts)) and a user message of computed
   facts ([facts.ts](src/features/assistant/facts.ts)): the air, the outlook, the
   health advice, the profile, and each recommendation with its impact. The model
-  is asked for a summary, one explanation per recommendation and a closing line.
+  is asked for a two-sentence summary, one sentence of advice per recommendation
+  giving the reason it matters for these people, and a closing line. The limits
+  (30, 50 and 15 words) are stated in the prompt, and the model is told not to
+  repeat an action or its impact, which the page prints beside its sentence.
 - **Guardrails.** Notes and the geocoder's place name are screened and fenced;
-  the reply must match the schema, explain every recommendation exactly once and
-  contain no numeral outside the facts and the visitor's own notes
-  ([reply-checks.ts](src/features/assistant/reply-checks.ts)); a rejected reply
-  gets one repair attempt that states the reasons.
-- **Fallback.** When the model fails, times out or is rejected twice, a
-  rule-based generator writes the same structure
-  ([generators/rules.ts](src/features/assistant/generators/rules.ts)), and the
-  page says which of the two wrote the text.
+  the reply must be one complete JSON object that matches the schema, explains
+  every recommendation exactly once, contains no numeral outside the facts and
+  the visitor's own notes, and finishes every sentence
+  ([reply-checks.ts](src/features/assistant/reply-checks.ts),
+  [reply-issues.ts](src/features/assistant/reply-issues.ts)). When a reply is
+  rejected, the second model receives the same request with the reasons.
+- **Fallback.** When both attempts fail, a rule-based generator writes the same
+  structure ([generators/rules.ts](src/features/assistant/generators/rules.ts)),
+  and the page says which of the two wrote the text. Each attempt is logged with
+  the model's name and its outcome.
 
 ## Assumptions Made
 

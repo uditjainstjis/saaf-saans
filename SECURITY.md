@@ -61,20 +61,28 @@ Text going in ([lib/prompt-guard/](src/lib/prompt-guard/)):
    data.
 
 Text coming out
-([assistant/reply-checks.ts](src/features/assistant/reply-checks.ts)):
+([assistant/reply-checks.ts](src/features/assistant/reply-checks.ts),
+[assistant/reply-issues.ts](src/features/assistant/reply-issues.ts)):
 
-1. The reply must be one JSON object matching a strict schema.
+1. The reply must be one complete JSON object matching a strict schema.
 2. It must explain every recommendation exactly once and nothing else.
 3. **Number firewall**: every numeral in it must appear in the computed facts or
    the visitor's own notes. A reply that invents a statistic is rejected.
+4. The summary, every explanation and the closing line must each end as a
+   sentence does (`.`, `!` or `?`, optionally followed by a closing quote or
+   bracket), so text cut off at a length limit is never shown.
 
 The firewall reads numerals written in digits. It cannot tell whether a figure
 that is in the facts has been attached to the right thing, which is why the
-engine's own impact line is always shown beside the model's wording.
+engine's own impact line is always shown beside the model's wording, and why the
+prompt tells the model not to repeat it.
 
-A rejected reply gets one repair attempt; after that the rule-based generator
-answers. The client never tells the model what the air or the numbers are: the
-brief is rebuilt server-side from the validated profile on every request.
+A rejected reply is never shown. A second model is asked once: with the reasons
+for the rejection when the first reply failed these checks, with the original
+request when the first call failed or timed out. If that attempt fails too, the
+rule-based generator answers; there is no third model call. The client never
+tells the model what the air or the numbers are: the brief is rebuilt
+server-side from the validated profile on every request.
 
 ## 4. The page
 
@@ -104,7 +112,10 @@ brief is rebuilt server-side from the validated profile on every request.
   one household cannot read another's narrative.
 - Open-Meteo receives a place name and coordinates rounded to three decimals,
   nothing else.
-- Logs carry an event name and an error reason, never a profile.
+- Logs carry an event name, the model's name and why an attempt failed: an
+  error's message, or the checks a reply did not pass (which can quote an id, a
+  key or a numeral the model wrote). No log call is given the profile, the notes
+  or the prompt.
 - An unexpected fault is answered with a generic 500 and no detail.
 
 ## 6. Supply chain and CI

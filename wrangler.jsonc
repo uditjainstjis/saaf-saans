@@ -20,7 +20,8 @@
   },
 
   // Inference. This is a binding, not an API key: there is no credential in
-  // this repository, in CI, or in the deployed bundle.
+  // this repository, in CI, or in the deployed bundle. Which models are asked,
+  // and in what order, is set by MODELS in src/config/runtime.ts.
   "ai": {
     "binding": "AI",
   },

@@ -6,13 +6,13 @@
 test with coverage. On the committed tree:
 
 ```text
- Test Files  86 passed (86)
-      Tests  378 passed (378)
+ Test Files  89 passed (89)
+      Tests  413 passed (413)
 
-Statements   : 100% ( 854/854 )
-Branches     : 100% ( 295/295 )
-Functions    : 100% ( 260/260 )
-Lines        : 100% ( 750/750 )
+Statements   : 100% ( 897/897 )
+Branches     : 100% ( 308/308 )
+Functions    : 100% ( 270/270 )
+Lines        : 100% ( 790/790 )
 ```
 
 | Directory                            | Statements | Branches | Functions | Lines |
@@ -58,15 +58,15 @@ source tree: the test for `src/features/plan/strategies/seal-gaps.ts` is
 
 ## Layers
 
-| Layer         | What it proves                                                                                                                              | Examples                                                                                                                                                                                                                     |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unit          | Each formula, strategy, rule and adapter on its own. Expected figures are worked out by hand in a comment beside each assertion             | [impact/service.test.ts](test/features/impact/service.test.ts), [strategies/](test/features/plan/strategies/), [factors.test.ts](test/features/impact/factors.test.ts)                                                       |
-| Contract      | Every implementation of a port honours the same contract                                                                                    | [providers/substitutable.test.ts](test/features/air-quality/providers/substitutable.test.ts), [generators/substitutable.test.ts](test/features/assistant/generators/substitutable.test.ts)                                   |
-| Integration   | Routes through the real application with fake dependencies; the composition root inside workerd with only the network and bindings replaced | [plan/routes.test.ts](test/features/plan/routes.test.ts), [assistant/routes.test.ts](test/features/assistant/routes.test.ts), [index.test.ts](test/index.test.ts)                                                            |
-| Security      | The admission gate, validation, the injection screen, the number firewall, headers, and model text rendered as text                         | [test/middleware/](test/middleware/), [test/lib/prompt-guard/](test/lib/prompt-guard/), [reply-checks.test.ts](test/features/assistant/reply-checks.test.ts), [security-policy.test.ts](test/config/security-policy.test.ts) |
-| Front end     | The real `index.html` and the real modules in jsdom: form, errors, rendering, theme                                                         | [test/public/](test/public/)                                                                                                                                                                                                 |
-| Accessibility | axe-core over five rendered states in both themes, computed contrast for every colour pair, structural WCAG checks                          | [test/a11y/](test/a11y/)                                                                                                                                                                                                     |
-| Conventions   | File headers, documented exports, size limits and the layer rules                                                                           | [test/conventions/](test/conventions/)                                                                                                                                                                                       |
+| Layer         | What it proves                                                                                                                              | Examples                                                                                                                                                                                                                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit          | Each formula, strategy, rule and adapter on its own. Expected figures are worked out by hand in a comment beside each assertion             | [impact/service.test.ts](test/features/impact/service.test.ts), [strategies/](test/features/plan/strategies/), [factors.test.ts](test/features/impact/factors.test.ts)                                                                                                                             |
+| Contract      | Every implementation of a port honours the same contract                                                                                    | [providers/substitutable.test.ts](test/features/air-quality/providers/substitutable.test.ts), [generators/substitutable.test.ts](test/features/assistant/generators/substitutable.test.ts)                                                                                                         |
+| Integration   | Routes through the real application with fake dependencies; the composition root inside workerd with only the network and bindings replaced | [plan/routes.test.ts](test/features/plan/routes.test.ts), [assistant/routes.test.ts](test/features/assistant/routes.test.ts), [index.test.ts](test/index.test.ts)                                                                                                                                  |
+| Security      | The admission gate, the capped body read, validation, the injection screen, the reply checks, headers, and model text rendered as text      | [test/middleware/](test/middleware/), [test/lib/prompt-guard/](test/lib/prompt-guard/), [reply-checks.test.ts](test/features/assistant/reply-checks.test.ts), [reply-issues.test.ts](test/features/assistant/reply-issues.test.ts), [security-policy.test.ts](test/config/security-policy.test.ts) |
+| Front end     | The real `index.html` and the real modules in jsdom: form, errors, rendering, theme                                                         | [test/public/](test/public/)                                                                                                                                                                                                                                                                       |
+| Accessibility | axe-core over five rendered states in both themes, computed contrast for every colour pair, structural WCAG checks                          | [test/a11y/](test/a11y/)                                                                                                                                                                                                                                                                           |
+| Conventions   | File headers, documented exports, size limits and the layer rules                                                                           | [test/conventions/](test/conventions/)                                                                                                                                                                                                                                                             |
 
 Two guards keep the gates honest: the axe suite includes a negative control that
 must find violations in a deliberately broken page, and the contrast arithmetic
@@ -75,32 +75,61 @@ is checked against published ratios before it is trusted.
 ## Failure paths that are tested
 
 - Open-Meteo down, slow, answering an error, or answering a malformed body.
-- The model down, hanging, replying with prose, with the wrong ids, or with an
-  invented number; rejected once and repaired; rejected twice.
+- The first model down, hanging, replying with prose, with the wrong ids, with
+  an invented number or with a sentence cut short; the second model answering
+  after a failure (given the original request) and after a rejection (given the
+  reasons); both failing, and never a third call.
 - A cache that throws on read and on write, and a cached value of a stale shape.
 - Every refusal the API can give (400, 403, 404, 413, 415, 429) and an
   unexpected fault (500 without detail).
+- A foreign or `null` `Origin`; a body with no declared length that never ends;
+  a body over the limit in bytes though not in characters.
 - In the page: an invalid form, refusals from the Worker, a reply that is not
   JSON, a reply it cannot render, the network down, the assistant failing while
   the plan stays on screen, and storage being unavailable.
 
-## End-to-end run
+## Measured outside the suite
 
-On 2026-11-20 the application was run with `wrangler dev` against the live
-Open-Meteo APIs and the real Workers AI binding, from a clone of the repository:
+The suite never touches the network, so the deployed behaviour was checked
+separately. Each check below states its conditions.
 
-| Scenario                                                        | Result                                                                                                            |
-| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Family in Delhi, live air, model available                      | Air `live`, US AQI 191 "Unhealthy"; six recommendations; narrative `source: model`, quoting only computed figures |
-| School of 600 in Lucknow with an injection attempt in the notes | Air `live`; seven recommendations; two findings reported; narrative `source: model`                               |
-| Same routes with the model deadline forced to expire            | Air `live`; narrative `source: rules`                                                                             |
-| Upstream calls timing out at the shipped four-second deadline   | Air `typical`, labelled as such; narrative `source: rules`                                                        |
-| Refusals by hand                                                | 415 for `text/plain`, 403 for a cross-site request, 400 listing every invalid field, 404 for an unknown place     |
+### On Cloudflare
 
-The development machine's network drops IPv6, which makes each outbound call
-from local workerd take about six seconds. The first three rows were therefore
-run with the two deadlines raised in the clone only; the fourth is the
-unmodified code on that network.
+8 calls, 20 Nov 2026, measured with curl from India, against a deployment of
+this code with the shipped deadlines.
+
+| Call                                                                                              | Result                                                                                                                         |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `POST /api/assistant` for a family in Delhi (six recommendations) and a school in Lucknow (seven) | `source: model` on all 8 calls, each written by the first model on its first attempt; 6.7 to 11.3 s including the plan rebuild |
+| `POST /api/plan`                                                                                  | 1.0 s                                                                                                                          |
+
+Five of the 8 calls used the prompt as committed and three an earlier wording of
+its second rule. Neither the second model nor the rule-written fallback was
+needed in these calls.
+
+### By hand, on the development machine
+
+`wrangler dev` on the unmodified code, 20 Nov 2026.
+
+| Check                                                                                             | Result   |
+| ------------------------------------------------------------------------------------------------- | -------- |
+| A request with neither `Origin` nor `Sec-Fetch-Site`; a request carrying the service's own origin | 200      |
+| A foreign `Origin`; `Origin: null`; `Sec-Fetch-Site: cross-site`                                  | 403      |
+| `content-type: text/plain`                                                                        | 415      |
+| A 6 KB body with a declared length; the same body sent chunked, with no length                    | 413      |
+| An invalid profile; a place that does not exist                                                   | 400; 404 |
+
+The page was also driven in headless Chrome 158 at 390 px and 320 px: its own
+requests carried the page's origin and `Sec-Fetch-Site: same-origin` and were
+admitted, and the console stayed empty. [ACCESSIBILITY.md](ACCESSIBILITY.md)
+lists what that run showed about focus, names and layout.
+
+This machine's network adds about six seconds to every outbound call from local
+workerd. On it the Open-Meteo calls pass their four-second deadline, so the air
+shown is the labelled typical values; and in one run the first model's call
+passed its 15 s deadline, the second model answered, and the route returned
+model-written text after 30 s. That is the only time the second model was seen
+answering outside the suite, and it says nothing about latency on Cloudflare.
 
 ## Commands
 

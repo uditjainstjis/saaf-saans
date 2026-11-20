@@ -99,7 +99,45 @@ figures would make the whole calculation look more certain than it is.
 **Decision.** The page is static HTML, four stylesheets and eleven small ES
 modules.
 
-**Why.** One form and one result view do not need a runtime, and 19 KB over the
-wire matters on a phone in the cities this is for.
+**Why.** One form and one result view do not need a runtime, and 20 KB gzipped
+matters on a phone in the cities this is for.
 
 **Cost.** Rendering code is written by hand.
+
+## 10. Two models in turn, and short replies
+
+**Decision.** The assistant asks `@cf/mistralai/mistral-small-3.1-24b-instruct`
+first and `@cf/meta/llama-3.3-70b-instruct-fp8-fast` second. The second is asked
+once, and only when the first call fails, times out or returns a reply that is
+rejected: with the reasons after a rejection, with the original request after a
+failure. Replies are short: a two-sentence summary, one sentence per
+recommendation and a closing line, inside a 600-token output budget. The
+deadline of one call stays at 15 s.
+
+**Why.** With one model and a 900-token budget, the deployed service answered
+`POST /api/plan` in 1.0 s but `POST /api/assistant` after 15.9 s with
+`source: rules`; the log read
+`plan_generator_failed … TimeoutError: call exceeded 15000ms`. Candidates were
+then timed on an instrumented copy with a 60 s deadline, one call each, with the
+usage the binding reported:
+
+| Model                                                                  | One call                                                                                                          |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `@cf/meta/llama-3.3-70b-instruct-fp8-fast`                             | 490 completion tokens in 14.0 s (about 35 tokens/s), 134 neurons; without `response_format`, 501 tokens in 15.8 s |
+| `@cf/mistralai/mistral-small-3.1-24b-instruct`                         | 368 completion tokens in 9.1 s, 61 neurons; the reply passed every check first time                               |
+| `@cf/google/gemma-4-26b-a4b-it`, `@cf/openai/gpt-oss-20b`              | Spent all 900 tokens (reasoning) and were rejected twice                                                          |
+| `@cf/meta/llama-4-scout-17b-16e-instruct`, `@cf/zai-org/glm-4.7-flash` | No reply in 60 s                                                                                                  |
+| `@cf/qwen/qwen3-30b-a3b-fp8`, `@cf/meta/llama-3.1-8b-instruct-fp8`     | `AiError 5028`: deprecated on 2026-11-20                                                                          |
+
+Two things follow. Schema mode is not the cost, output length is: the same model
+took 14.0 s with it and 15.8 s without. And models are withdrawn, so a single
+model with no second choice is an outage waiting for a date. After the change, 8
+calls on Cloudflare took 6.7 to 11.3 s, each written by the first model on its
+first attempt (see [EFFICIENCY.md](../EFFICIENCY.md)).
+
+**Cost.** A request can now make two model calls, so the slowest path to the
+rule-written text is two deadlines rather than one, and the page allows 45 s for
+it. One sentence says less than a paragraph: the model gives the reason a step
+matters, and the figures stay with the engine's impact line beside it. The first
+model's timed call cost 61 neurons and the second's 134, against a free
+allowance of 10,000 a day.
