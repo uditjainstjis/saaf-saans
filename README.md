@@ -263,10 +263,12 @@ and by hand.
   on Cloudflare (six profiles, Workers AI models, 20 Nov 2026, with curl from
   India): `POST /api/assistant` answered in 8.2 to 11.4 s, every reply written
   by the first model on its first attempt, and `POST /api/plan` in 0.8 to 0.9 s.
+  With the NVIDIA key set, the same six profiles took 4.8 to 5.4 s; the log
+  named NVIDIA's model in the five calls whose lines were captured.
 - **Checked in a browser.** Lighthouse 13.6.0 on the live page (Chrome 158, 20
-  Nov 2026) gives 100 for performance, accessibility, best practices and SEO on
-  desktop; on mobile it gives 100 for the last three, and 97, 100 and 100 for
-  performance over three runs.
+  Nov 2026) gives 100 for accessibility, best practices and SEO in three desktop
+  and three mobile runs; performance was 93, 100 and 99 on desktop and 100 in
+  each mobile run.
 - **Small payloads.** The page is 55.0 KB uncompressed and 20.7 KB gzipped for
   all twenty-one files; no framework and no third-party request.
 - **Small bundle.** Importing zod as a namespace lets the bundler drop unused

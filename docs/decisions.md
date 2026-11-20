@@ -175,7 +175,8 @@ checks. The Workers AI path measured 8.2 to 11.4 s the same day, for the whole
 [EFFICIENCY.md](../EFFICIENCY.md)); the two figures were taken under different
 conditions.
 
-NVIDIA-FIGURES
+On Cloudflare, with the key set, the whole route then took 4.8 to 5.4 s for six
+profiles, against 8.2 to 11.4 s on the Workers AI path the same day.
 
 **Cost.** One optional secret to hold, and a second host that receives the
 computed facts and the fenced notes. Not every model NVIDIA hosts was usable on

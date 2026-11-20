@@ -17,9 +17,23 @@ under the conditions stated beside the figures.
 
 ## Model latency
 
-NVIDIA-FIGURES
+With the NVIDIA key set, which is how the service is deployed, measured on
+Cloudflare with the shipped deadlines on 20 Nov 2026, with curl from India, for
+the six profiles named below:
 
-The figures below are for the Workers AI models.
+| Route                                             | Wall time    |
+| ------------------------------------------------- | ------------ |
+| `POST /api/plan`                                  | 1.0 to 2.1 s |
+| `POST /api/assistant`, including the plan rebuild | 4.8 to 5.4 s |
+
+All six assistant calls returned `source: model`. The Worker's log named
+`nvidia/nemotron-3.5-bolt-e4b` as the model that answered in the five calls
+whose log lines were captured. On a preview of the same build, twelve of
+thirteen calls took 4.3 to 6.3 s and one took 12.0 s; preview calls are not
+logged, so which model answered that one is not known.
+
+The figures below are for the Workers AI models alone, measured before the key
+was set.
 
 Measured on Cloudflare with the shipped deadlines on 20 Nov 2026, with curl from
 India, for six profiles: families in Delhi, Mumbai, Kanpur and Patna, a school
@@ -121,11 +135,11 @@ characters of text.
 Lighthouse 13.6.0 against the live page, Chrome 158, 20 Nov 2026. These are
 manual runs, not part of `npm run check`.
 
-| Run                                    | Performance     | Accessibility | Best practices | SEO |
-| -------------------------------------- | --------------- | ------------- | -------------- | --- |
-| Desktop preset                         | 100             | 100           | 100            | 100 |
-| Mobile (simulated slow 4G, 4x CPU), x3 | 97, 100 and 100 | 100           | 100            | 100 |
+| Run                                    | Performance    | Accessibility | Best practices | SEO |
+| -------------------------------------- | -------------- | ------------- | -------------- | --- |
+| Desktop preset, x3                     | 93, 100 and 99 | 100           | 100            | 100 |
+| Mobile (simulated slow 4G, 4x CPU), x3 | 100, 100, 100  | 100           | 100            | 100 |
 
-On desktop the largest contentful paint was 0.4 s with no blocking time. On
-mobile it was 1.0 to 1.5 s, with 0 to 150 ms of blocking time and no layout
-shift. The page weighed 42 KiB over the wire.
+On desktop the largest contentful paint was 0.5 to 0.9 s with no blocking time.
+On mobile it was 1.1 to 1.2 s, with 0 to 50 ms of blocking time and no layout
+shift. The page weighed 44 KiB over the wire.
